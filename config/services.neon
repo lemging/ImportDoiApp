@@ -1,0 +1,12 @@
+search:
+	default:
+		in: %appDir%
+		classes:
+			- *Factory
+			- *Facade
+
+
+services:
+	- App\Router\RouterFactory::createRouter
+	- App\Model\Facades\DoiImportFacade
+	- App\Model\Services\XlsxSolverService

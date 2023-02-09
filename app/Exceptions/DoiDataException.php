@@ -1,0 +1,317 @@
+<?php
+
+
+namespace App\Exceptions;
+
+
+use Exception;
+
+class DoiDataException extends ADataException
+{
+    // V pripade, ze ma soubor pouze jeden list, tak nas nazev nezajima.
+    private ?string $sheetTitle = null;
+
+    private int $rowNumber;
+
+    private ?NotSetException $doiNotSetException = null;
+
+    private ?NotSetException $doiStateNotSetException = null;
+
+    private ?NotSetException $urlNotSetException = null;
+
+    private ?NotSetException $doiCreatorsNotSetException = null;
+
+    private ?NotSetException $doiTitlesNotSetException = null;
+
+    private ?NotSetException $publisherNotSetException = null;
+
+    private ?NotSetException $publicationYearNotSetException = null;
+
+    private ?NotSetException $resourceTypeNotSetException = null;
+
+    private ?ValueNotFoundException $doiStateNotFoundException = null;
+
+    /**
+     * @var DoiCreatorDataException[] $doiCreatorDataExceptions
+     */
+    private array $doiCreatorDataExceptions = [];
+
+    /**
+     * @var DoiTitleDataException[] $doiTitleDataExceptions
+     */
+    private array $doiTitleDataExceptions = [];
+
+    public function getErrorMessages(): array
+    {
+        $errorMessages = [];
+
+        if ($this->sheetTitle !== null)
+        {
+            $errorMessages[] = 'V listu s nazvem ' . $this->sheetTitle . ':';
+        }
+
+        $errorMessages[] = 'Na řádku ' . $this->rowNumber . ': ';
+
+        $cellValidationExceptions = [
+            $this->doiNotSetException,
+            $this->doiStateNotSetException,
+            $this->urlNotSetException,
+            $this->doiCreatorsNotSetException,
+            $this->doiTitlesNotSetException,
+            $this->publisherNotSetException,
+            $this->publicationYearNotSetException,
+            $this->resourceTypeNotSetException,
+            $this->doiStateNotFoundException
+        ];
+
+        /** todo mozna udelam vsem nejakou z ktere to bude dedit
+         * @var Exception|null $exception
+         */
+        foreach ($cellValidationExceptions as $exception) {
+            if ($exception !== null)
+            {
+                $errorMessages[] = $exception->getMessage();
+            }
+        }
+
+        foreach ($this->doiCreatorDataExceptions as $doiCreatorDataException)
+        {
+            $errorMessages = array_merge($errorMessages, $doiCreatorDataException->getErrorMessages());
+        }
+
+        foreach ($this->doiTitleDataExceptions as $doiTitleDataException)
+        {
+            $errorMessages = array_merge($errorMessages, $doiTitleDataException->getErrorMessages());
+        }
+
+        return $errorMessages;
+
+    }
+
+    /**
+     * @return NotSetException
+     */
+    public function getDoiNotSetException(): NotSetException
+    {
+        return $this->doiNotSetException;
+    }
+
+    /**
+     * @param NotSetException $doiNotSetException
+     */
+    public function setNewDoiNotSetException(): void
+    {
+        $this->exceptionCount++;
+
+        $this->doiNotSetException = new NotSetException('Chybí atribut doi.');
+    }
+
+    /**
+     * @return NotSetException
+     */
+    public function getDoiStateNotSetException(): NotSetException
+    {
+        return $this->doiStateNotSetException;
+    }
+
+    /**
+     * @param NotSetException $doiStateNotSetException
+     */
+    public function setNewDoiStateNotSetException(): void
+    {
+        $this->exceptionCount++;
+
+        $this->doiStateNotSetException = new NotSetException('Chybí atribut stav.');
+    }
+
+    /**
+     * @return NotSetException|null
+     */
+    public function getUrlNotSetException(): ?NotSetException
+    {
+        return $this->urlNotSetException;
+    }
+
+    /**
+     * @param NotSetException|null $urlNotSetException
+     */
+    public function setNewUrlNotSetException(): void
+    {
+        $this->exceptionCount++;
+
+        $this->urlNotSetException = new NotSetException('Chybí atribut url.');
+    }
+
+    /**
+     * @return NotSetException|null
+     */
+    public function getDoiCreatorsNotSetException(): ?NotSetException
+    {
+        return $this->doiCreatorsNotSetException;
+    }
+
+    /**
+     * @param NotSetException|null $doiCreatorsNotSetException
+     */
+    public function setNewDoiCreatorsNotSetException(): void
+    {
+        $this->exceptionCount++;
+
+        $this->doiCreatorsNotSetException = new NotSetException('Chybí atribut tvůrce.');
+    }
+
+    /**
+     * @return NotSetException|null
+     */
+    public function getDoiTitlesNotSetException(): ?NotSetException
+    {
+        return $this->doiTitlesNotSetException;
+    }
+
+    /**
+     * @param NotSetException|null $doiTitlesNotSetException
+     */
+    public function setNewDoiTitlesNotSetException(): void
+    {
+        $this->exceptionCount++;
+
+        $this->doiTitlesNotSetException = new NotSetException('Chybí titulek.');
+    }
+
+    /**
+     * @return NotSetException|null
+     */
+    public function getPublisherNotSetException(): ?NotSetException
+    {
+        return $this->publisherNotSetException;
+    }
+
+    /**
+     * @param NotSetException|null $publisherNotSetException
+     */
+    public function setNewPublisherNotSetException(): void
+    {
+        $this->exceptionCount++;
+
+        $this->publisherNotSetException = new NotSetException('Chybí atribut vydavatel.');
+    }
+
+    /**
+     * @return NotSetException|null
+     */
+    public function getPublicationYearNotSetException(): ?NotSetException
+    {
+        return $this->publicationYearNotSetException;
+    }
+
+    /**
+     * @param NotSetException|null $publicationYearNotSetException
+     */
+    public function setNewPublicationYearNotSetException(): void
+    {
+        $this->exceptionCount++;
+
+        $this->publicationYearNotSetException = new NotSetException('Chybí atribut rok vydání.');
+    }
+
+    /**
+     * @return NotSetException|null
+     */
+    public function getResourceTypeNotSetException(): ?NotSetException
+    {
+        return $this->resourceTypeNotSetException;
+    }
+
+    /**
+     * @param NotSetException|null $resourceTypeNotSetException
+     */
+    public function setNewResourceTypeNotSetException(): void
+    {
+        $this->exceptionCount++;
+
+        $this->resourceTypeNotSetException = new NotSetException('Chybí atribut typ zdroje.');
+    }
+
+    /**
+     * @return ValueNotFoundException|null
+     */
+    public function getDoiStateNotFoundException(): ?ValueNotFoundException
+    {
+        return $this->doiStateNotFoundException;
+    }
+
+    /**
+     * @param ValueNotFoundException $doiStateNotFoundException
+     */
+    public function setDoiStateNotFoundException(ValueNotFoundException $doiStateNotFoundException): void
+    {
+        $this->exceptionCount++;
+
+        $this->doiStateNotFoundException = $doiStateNotFoundException;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDoiCreatorDataExceptions(): array
+    {
+        return $this->doiCreatorDataExceptions;
+    }
+
+    /**
+     * @param DoiCreatorDataException $doiCreatorDataException
+     */
+    public function addDoiCreatorDataException(DoiCreatorDataException $doiCreatorDataException): void
+    {
+        $this->exceptionCount++;
+
+        $this->doiCreatorDataExceptions[] = $doiCreatorDataException;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDoiTitleDataExceptions(): array
+    {
+        return $this->doiTitleDataExceptions;
+    }
+
+    public function addDoiTitleDataException(DoiTitleDataException $doiTitleDataException): void
+    {
+        $this->exceptionCount++;
+
+        $this->doiTitleDataExceptions[] = $doiTitleDataException;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRowNumber(): int
+    {
+        return $this->rowNumber;
+    }
+
+    /**
+     * @param int $rowNumber
+     */
+    public function setRowNumber(int $rowNumber): void
+    {
+        $this->rowNumber = $rowNumber;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSheetTitle(): ?string
+    {
+        return $this->sheetTitle;
+    }
+
+    /**
+     * @param string|null $sheetTitle
+     */
+    public function setSheetTitle(?string $sheetTitle): void
+    {
+        $this->sheetTitle = $sheetTitle;
+    }
+}

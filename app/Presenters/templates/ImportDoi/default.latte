@@ -1,0 +1,56 @@
+{varType App\Model\Entities\DoiData[]|null $doiDataList}
+{varType App\Exceptions\DoiDataException[]|null $doiDataExceptionList}
+{varType App\Model\Entities\DoiCreatorData $creator}
+{varType string $creatorNameIdentifier}
+{varType string $affiliation}
+{block content}
+
+<h1 n:block=title>Import doi</h1>
+
+{control uploadXlsxFileForm}
+
+
+{foreach $doiDataExceptionList as $doiDataException}
+    {implode('<br>', $doiDataException->getErrorMessages()) |noescape}
+    <br>
+    <br>
+{/foreach}
+
+
+{foreach $doiDataList as $doiData}
+    <ul>
+        <li>Cislo radku: {$doiData->rowNumber}</li>
+        <li>Doi: {$doiData->doi} </li>
+        <li>Stav: {$doiData->state->getType()} </li>
+        <li>Url: {$doiData->url} </li>
+
+        {foreach $doiData->creators as $creator}
+            <li> Tvurce: {$creator->name} </li>
+            <ul>
+                {foreach $creator->nameIdentifiers as $creatorNameIdentifier}
+                    <li> Identifikator jmena: {$creatorNameIdentifier} </li>
+                {/foreach}
+
+            <li> Typ tvurce: {$creator->type->getType()} </li>
+
+                {foreach $creator->affiliations as $affiliation}
+                    <li> Afilace: {$affiliation} </li>
+                {/foreach}
+            </ul>
+        {/foreach}
+
+        {foreach $doiData->titles as $title}
+            <li>Titulek: {$title->title}</li>
+            <ul>
+                <li>Typ titulku: {$title->type->getType()}</li>
+                <li>Jazyk: {$title->language}</li>
+            </ul>
+        {/foreach}
+
+        <li>Vydavatel: {$doiData->publisher}</li>
+        <li>Rok vydani: {$doiData->publicationYear}</li>
+        <li>Typ zdroje: {$doiData->resourceType}</li>
+    </ul>
+    <br>
+{/foreach}
+

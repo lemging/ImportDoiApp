@@ -1,0 +1,52 @@
+{define bootstrap-head}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+{/define}
+
+
+{define bootstrap-form $form}
+    <form n:name=$form class=form-horizontal>
+        <ul class=error n:if="$form->ownErrors">
+            <li n:foreach="$form->ownErrors as $error">{$error |noescape}</li>
+        </ul>
+
+        {if !empty($form->getGroups())}
+            {foreach $form->getGroups() as $group}
+                {if $group->getOption('label')}
+                    <strong>{$group->getOption('label') |noescape}</strong>
+                {/if}
+                {include bootstrap-form-controls $group->getControls()}
+            {/foreach}
+        {else}
+            {include bootstrap-form-controls $form->getControls()}
+        {/if}
+
+    </form>
+{/define}
+
+
+{define bootstrap-form-controls $controls}
+
+    <div n:foreach="$controls as $name => $input"
+         n:if="!$input->getOption(rendered) && $input->getOption(type) !== hidden"
+         n:class="'form-group', $input->required ? 'required', $input->error ? 'has-error'">
+
+        <div class="col-sm-12">{label $input /}</div>
+        <div class="col-sm-12">
+            {if $input->getOption(type) in [text, select, textarea]}
+                {input $input class => $input->getControlPrototype()->class . ' form-control'}
+            {elseif $input->getOption(type) === button}
+                {input $input class => $input->getControlPrototype()->class . ' btn btn-default'}
+            {elseif $input->getOption(type) === checkbox}
+                <div class="checkbox">{input $input}</div>
+            {elseif $input->getOption(type) === radio}
+                <div class="radio">{input $input}</div>
+            {else}
+                {input $input}
+            {/if}
+
+            <span class=has-error n:ifcontent>{$input->error}</span>
+        </div>
+
+    </div>
+
+{/define}
