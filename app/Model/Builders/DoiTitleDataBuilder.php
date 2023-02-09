@@ -2,11 +2,11 @@
 
 namespace App\Model\Builders;
 
-use App\Enums\DoiTitleType;
+use App\Enums\DoiTitleTypeEnum;
 use App\Exceptions\DoiTitleDataException;
-use App\Exceptions\ValueNotFoundException;
-use App\Model\Entities\DoiData;
-use App\Model\Entities\DoiTitleData;
+use App\Exceptions\DoiAttributeValueNotFoundException;
+use App\Model\Data\DoiData;
+use App\Model\Data\DoiTitleData;
 
 class DoiTitleDataBuilder
 {
@@ -59,27 +59,28 @@ class DoiTitleDataBuilder
         $this->doiTitleData->title = $title;
     }
 
-    public function typeString(string $type)
+    public function typeString(string $type, string $coordinate)
     {
         switch(strtolower($type))
         {
             case 'alternative title':
-                $this->doiTitleData->type = DoiTitleType::AlternativeTitle;
+                $this->doiTitleData->type = DoiTitleTypeEnum::AlternativeTitle;
                 break;
             case 'translated title':
-                $this->doiTitleData->type = DoiTitleType::TranslatedTitle;
+                $this->doiTitleData->type = DoiTitleTypeEnum::TranslatedTitle;
                 break;
             case 'subtitle':
-                $this->doiTitleData->type = DoiTitleType::Subtitle;
+                $this->doiTitleData->type = DoiTitleTypeEnum::Subtitle;
                 break;
             case 'other':
-                $this->doiTitleData->type = DoiTitleType::Other;
+                $this->doiTitleData->type = DoiTitleTypeEnum::Other;
                 break;
             default:
                 $this->doiTitleDataException->setTypeNotFoundException(
-                    new ValueNotFoundException(
-                        'Zadán neznámý typ titulku. Akceptované stavy: ' .
-                        'Alternative title, Translated title, Subtitle, Other.'
+                    new DoiAttributeValueNotFoundException(
+                        'typ titulku',
+                        $coordinate,
+                        ['Alternative title', 'Translated title', 'Subtitle', 'Other']
                     )
                 );
                 break;

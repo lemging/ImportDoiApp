@@ -4,12 +4,13 @@
 namespace App\Exceptions;
 
 
+use App\Model\Data\DoiData;
+use App\Model\Data\DoiDataErrorData;
 use Exception;
 
 class DoiDataException extends ADataException
 {
-    // V pripade, ze ma soubor pouze jeden list, tak nas nazev nezajima.
-    private ?string $sheetTitle = null;
+    private string $sheetTitle;
 
     private int $rowNumber;
 
@@ -29,7 +30,7 @@ class DoiDataException extends ADataException
 
     private ?NotSetException $resourceTypeNotSetException = null;
 
-    private ?ValueNotFoundException $doiStateNotFoundException = null;
+    private ?DoiAttributeValueNotFoundException $doiStateNotFoundException = null;
 
     /**
      * @var DoiCreatorDataException[] $doiCreatorDataExceptions
@@ -41,17 +42,34 @@ class DoiDataException extends ADataException
      */
     private array $doiTitleDataExceptions = [];
 
-    public function getErrorMessages(): array
+    public function createDataObject(): DoiDataErrorData
+    {
+        $doiDataErrorData = new DoiDataErrorData();
+
+        $doiDataErrorData->sheetTitle = $this->sheetTitle;
+        $doiDataErrorData->rowNumber = $this->rowNumber;
+        $doiDataErrorData->doiCellDataErrors = $this->getErrorMessages();
+        foreach($this->doiCreatorDataExceptions as $doiCreatorDataException)
+        {
+            $doiDataErrorData->doiCreatorDataErrorDataList[] = $doiCreatorDataException->createDataObject();
+        }
+
+        foreach($this->doiTitleDataExceptions as $doiTitleDataException)
+        {
+            $doiDataErrorData->doiTitleDataErrorDataList[] = $doiTitleDataException->createDataObject();
+        }
+
+
+        return $doiDataErrorData;
+    }
+
+    private function getErrorMessages(): array
     {
         $errorMessages = [];
 
-        if ($this->sheetTitle !== null)
-        {
-            $errorMessages[] = 'V listu s nazvem ' . $this->sheetTitle . ':';
-        }
-
-        $errorMessages[] = 'Na řádku ' . $this->rowNumber . ': ';
-
+        /**
+         * @var ADoiCellDataException[] $cellValidationExceptions
+         */
         $cellValidationExceptions = [
             $this->doiNotSetException,
             $this->doiStateNotSetException,
@@ -64,29 +82,17 @@ class DoiDataException extends ADataException
             $this->doiStateNotFoundException
         ];
 
-        /** todo mozna udelam vsem nejakou z ktere to bude dedit
-         * @var Exception|null $exception
-         */
         foreach ($cellValidationExceptions as $exception) {
             if ($exception !== null)
             {
-                $errorMessages[] = $exception->getMessage();
+                $errorMessages[] = $exception->getErrorMessage();
             }
         }
 
-        foreach ($this->doiCreatorDataExceptions as $doiCreatorDataException)
-        {
-            $errorMessages = array_merge($errorMessages, $doiCreatorDataException->getErrorMessages());
-        }
-
-        foreach ($this->doiTitleDataExceptions as $doiTitleDataException)
-        {
-            $errorMessages = array_merge($errorMessages, $doiTitleDataException->getErrorMessages());
-        }
-
         return $errorMessages;
-
     }
+
+
 
     /**
      * @return NotSetException
@@ -103,7 +109,7 @@ class DoiDataException extends ADataException
     {
         $this->exceptionCount++;
 
-        $this->doiNotSetException = new NotSetException('Chybí atribut doi.');
+        $this->doiNotSetException = new NotSetException('doi');
     }
 
     /**
@@ -121,7 +127,7 @@ class DoiDataException extends ADataException
     {
         $this->exceptionCount++;
 
-        $this->doiStateNotSetException = new NotSetException('Chybí atribut stav.');
+        $this->doiStateNotSetException = new NotSetException('stav');
     }
 
     /**
@@ -139,7 +145,7 @@ class DoiDataException extends ADataException
     {
         $this->exceptionCount++;
 
-        $this->urlNotSetException = new NotSetException('Chybí atribut url.');
+        $this->urlNotSetException = new NotSetException('url');
     }
 
     /**
@@ -157,7 +163,7 @@ class DoiDataException extends ADataException
     {
         $this->exceptionCount++;
 
-        $this->doiCreatorsNotSetException = new NotSetException('Chybí atribut tvůrce.');
+        $this->doiCreatorsNotSetException = new NotSetException('tvůrce');
     }
 
     /**
@@ -175,7 +181,7 @@ class DoiDataException extends ADataException
     {
         $this->exceptionCount++;
 
-        $this->doiTitlesNotSetException = new NotSetException('Chybí titulek.');
+        $this->doiTitlesNotSetException = new NotSetException('titulek');
     }
 
     /**
@@ -193,7 +199,7 @@ class DoiDataException extends ADataException
     {
         $this->exceptionCount++;
 
-        $this->publisherNotSetException = new NotSetException('Chybí atribut vydavatel.');
+        $this->publisherNotSetException = new NotSetException('vydavatel');
     }
 
     /**
@@ -211,7 +217,7 @@ class DoiDataException extends ADataException
     {
         $this->exceptionCount++;
 
-        $this->publicationYearNotSetException = new NotSetException('Chybí atribut rok vydání.');
+        $this->publicationYearNotSetException = new NotSetException('rok vydání');
     }
 
     /**
@@ -229,21 +235,21 @@ class DoiDataException extends ADataException
     {
         $this->exceptionCount++;
 
-        $this->resourceTypeNotSetException = new NotSetException('Chybí atribut typ zdroje.');
+        $this->resourceTypeNotSetException = new NotSetException('typ zdroje');
     }
 
     /**
-     * @return ValueNotFoundException|null
+     * @return DoiAttributeValueNotFoundException|null
      */
-    public function getDoiStateNotFoundException(): ?ValueNotFoundException
+    public function getDoiStateNotFoundException(): ?DoiAttributeValueNotFoundException
     {
         return $this->doiStateNotFoundException;
     }
 
     /**
-     * @param ValueNotFoundException $doiStateNotFoundException
+     * @param DoiAttributeValueNotFoundException $doiStateNotFoundException
      */
-    public function setDoiStateNotFoundException(ValueNotFoundException $doiStateNotFoundException): void
+    public function setDoiStateNotFoundException(DoiAttributeValueNotFoundException $doiStateNotFoundException): void
     {
         $this->exceptionCount++;
 

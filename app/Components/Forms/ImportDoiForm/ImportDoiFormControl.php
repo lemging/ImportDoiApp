@@ -2,20 +2,9 @@
 
 namespace App\Components\Forms\ImportDoiForm;
 
-use App\Exceptions\DoiDataException;
-use App\Model\Builders\DoiDataBuilder;
-use App\Model\Entities\DoiData;
-use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
-use Exception;
-use InvalidArgumentException;
 use Nette\Application\UI\Control;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\UploadControl;
-use Nette\Http\FileUpload;
-use Nette\Utils\ArrayHash;
-use Nette\Utils\FileSystem;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use Psr\Http\Message\UploadedFileInterface;
 
 final class ImportDoiFormControl extends Control
 {

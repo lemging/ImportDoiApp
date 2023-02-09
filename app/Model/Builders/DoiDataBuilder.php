@@ -4,15 +4,15 @@
 namespace App\Model\Builders;
 
 
-use App\Enums\DoiState;
+use App\Enums\DoiStateEnum;
 use App\Exceptions\DoiCreatorDataException;
 use App\Exceptions\DoiDataException;
 use App\Exceptions\DoiTitleDataException;
 use App\Exceptions\NotSetException;
-use App\Exceptions\ValueNotFoundException;
-use App\Model\Entities\DoiCreatorData;
-use App\Model\Entities\DoiData;
-use App\Model\Entities\DoiTitleData;
+use App\Exceptions\DoiAttributeValueNotFoundException;
+use App\Model\Data\DoiCreatorData;
+use App\Model\Data\DoiData;
+use App\Model\Data\DoiTitleData;
 
 class DoiDataBuilder
 {
@@ -20,10 +20,6 @@ class DoiDataBuilder
 
     private DoiDataException $doiDataException;
 
-    /**
-     * DoiDataBuilder constructor.
-     * @param int $rowNumber
-     */
     public function __construct()
     {
         $this->doiData = new DoiData();
@@ -96,23 +92,25 @@ class DoiDataBuilder
         $this->doiData->doi = $doi;
     }
 
-    public function doiStateString(string $doiState)
+    public function doiStateString(string $doiState, string $coordinate)
     {
         switch(strtolower($doiState))
         {
             case 'draft':
-                $this->doiData->state = DoiState::Draft;
+                $this->doiData->state = DoiStateEnum::Draft;
                 break;
             case 'findable':
-                $this->doiData->state = DoiState::Findable;
+                $this->doiData->state = DoiStateEnum::Findable;
                 break;
             case 'registered':
-                $this->doiData->state = DoiState::Registered;
+                $this->doiData->state = DoiStateEnum::Registered;
                 break;
             default:
                 $this->doiDataException->setDoiStateNotFoundException(
-                    new ValueNotFoundException(
-                        'Zadán neznámý stav doi. Akceptované stavy: Draft, Registered, Findable.'
+                    new DoiAttributeValueNotFoundException(
+                        'stav doi',
+                        $coordinate,
+                        ['Draft', 'Registered', 'Findable']
                     )
                 );
                 break;

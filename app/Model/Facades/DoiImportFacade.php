@@ -2,37 +2,42 @@
 
 namespace App\Model\Facades;
 
-use App\Enums\DoiFileHeader;
+use App\Enums\DoiColumnHeaderEnum;
 use App\Exceptions\DoiDataException;
-use App\Exceptions\FileStructureDataException;
+use App\Exceptions\DoiFileStructureDataException;
 use App\Model\Builders\DoiCreatorDataBuilder;
 use App\Model\Builders\DoiDataBuilder;
 use App\Model\Builders\DoiTitleDataBuilder;
-use App\Model\Builders\FileHeaderListDataBuilder;
-use App\Model\Entities\DoiCreatorData;
-use App\Model\Entities\DoiData;
-use App\Model\Entities\DoiTitleData;
+use App\Model\Data\DoiCreatorData;
+use App\Model\Data\DoiData;
+use App\Model\Data\DoiDataErrorData;
+use App\Model\Data\DoiFileStructureErrorData;
+use App\Model\Data\DoiTitleData;
+use App\Model\Data\ImportDoiData;
+use App\Model\Services\DoiJsonGeneratorService;
 use App\Model\Services\XlsxSolverService;
 use InvalidArgumentException;
 use Nette\Http\FileUpload;
+use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 final class DoiImportFacade
 {
     public function __construct(
-        private XlsxSolverService $doiImportService
+        private XlsxSolverService $doiImportService,
+        private DoiJsonGeneratorService $doiJsonGeneratorService
     )
     {
     }
 
     /**
      * @param FileUpload $file
-     * @param DoiData[] $doiDataList
-     * @param DoiDataException[] $doiDataExceptionList
-     * @return void
+     * @return ImportDoiData
+     * @throws Exception
      */
-    public function importDoi(FileUpload $file, array &$doiDataList, array &$doiDataExceptionList)
+    public function importDoi(FileUpload $file): ImportDoiData
     {
+        $importDoiData = new ImportDoiData();
 
         $dest = __DIR__ . '/files/file'; //todo pro test
         $file->move($dest);
@@ -47,7 +52,6 @@ final class DoiImportFacade
         $this->doiImportService->setDoiDataBuilder(DoiDataBuilder::create());
         $this->doiImportService->setDoiCreatorDataBuilder(DoiCreatorDataBuilder::create());
         $this->doiImportService->setDoiTitleDataBuilder(DoiTitleDataBuilder::create());
-        $this->doiImportService->setFileHeaderListDataBuilder(FileHeaderListDataBuilder::create());
 
         // Pro moznost, ze by si chtel uzivatel delit do listu
         foreach ($spreadsheet->getWorksheetIterator() as $sheet)
@@ -60,21 +64,26 @@ final class DoiImportFacade
             try
             {
                 $fileHeaders = $this->doiImportService->getFileStructure($rows);
-
-
             }
-            catch (FileStructureDataException $fileStructureDataException)
+            catch (DoiFileStructureDataException $fileStructureDataException)
             {
                 $fileStructureDataException->setSheetTitle($sheet->getTitle());
+                $importDoiData->doiFileStructureErrorsData[] = $fileStructureDataException->createDataObject();
 
-                return;
+                continue;
             }
 
-            $rows->next();
-
-            $this->doiImportService->processRows($rows, $doiDataList, $doiDataExceptionList, $sheetTitle);
+            $this->doiImportService->processRows(
+                $rows,
+                $importDoiData,
+                $sheetTitle,
+                $fileHeaders
+            );
 
         }
 
+        $this->doiJsonGeneratorService->generateJsonFromDoiData($importDoiData->doiDataList[0]);
+
+        return $importDoiData;
     }
 }

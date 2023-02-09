@@ -3,29 +3,12 @@
 
 namespace App\Exceptions;
 
-
-use Exception;
 use Throwable;
 
-class NotSetException extends Exception
+class NotSetException extends ADoiCellDataException
 {
-//    public function __construct(
-//        private ?string $attribute,
-//        string $message = '',
-//        int $code = 0,
-//        ?Throwable $previous = null
-//    )
-//    {
-//        parent::__construct($message, $code, $previous);
-//    }
-//
-//    public function getMissingAttributeMessage(): string
-//    {
-//        if ($this->attribute === null)
-//        {
-//            return 'Chybí neznámý atribut.';
-//        }
-//
-//        return 'Chybí atribut ' . $this->attribute . '.';
-//    }
+    public function getErrorMessage(): string
+    {
+        return 'Chybí atribut <strong>' . $this->header . '</strong>.';
+    }
 }

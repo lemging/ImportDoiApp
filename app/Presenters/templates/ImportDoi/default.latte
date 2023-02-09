@@ -1,23 +1,46 @@
-{varType App\Model\Entities\DoiData[]|null $doiDataList}
-{varType App\Exceptions\DoiDataException[]|null $doiDataExceptionList}
-{varType App\Model\Entities\DoiCreatorData $creator}
-{varType string $creatorNameIdentifier}
-{varType string $affiliation}
+{varType App\Model\Data\ImportDoiData $importDoiData}
 {block content}
 
 <h1 n:block=title>Import doi</h1>
 
 {control uploadXlsxFileForm}
+{var $sheetTitle = null}
+{foreach $importDoiData->doiDataErrorDataList as $doiDataErrorData}
+    Chybná data v souboru: <br>
+    {if $sheetTitle === null || $sheetTitle !== $doiDataErrorData->sheetTitle}
+        Název listu: <strong>{$doiDataErrorData->sheetTitle}</strong> <br>
+    {/if}
+    Číslo řádku: <strong>{$doiDataErrorData->rowNumber}</strong> <br>
+    {foreach $doiDataErrorData->doiCellDataErrors as $doiCellDataError}
+        {$doiCellDataError |noescape} <br>
+    {/foreach}
 
+    {foreach $doiDataErrorData->doiCreatorDataErrorDataList as $doiCreatorDataErrorData}
+        Chybná data <strong>tvurce</strong>: <br>
+        {foreach $doiCreatorDataErrorData->doiCellDataErrors as $doiCreatorCellDataError}
+            &emsp;{$doiCreatorCellDataError |noescape} <br>
+        {/foreach}
+    {/foreach}
 
-{foreach $doiDataExceptionList as $doiDataException}
-    {implode('<br>', $doiDataException->getErrorMessages()) |noescape}
-    <br>
+    {foreach $doiDataErrorData->doiTitleDataErrorDataList as $doiTitleCellDataError}
+        Chybná data <strong>titulku</strong>: <br>
+        {foreach $doiTitleCellDataError->doiCellDataErrors as $doiCreatorCellDataError}
+            &emsp;{$doiCreatorCellDataError |noescape} <br>
+        {/foreach}
+    {/foreach}
     <br>
 {/foreach}
 
 
-{foreach $doiDataList as $doiData}
+{foreach $importDoiData->doiFileStructureErrorsData as $doiFileStructureErrorData}
+    Chybná struktura souboru: <br>
+    Název listu: <strong>{$doiFileStructureErrorData->sheetTitle}</strong><br>
+    {foreach $doiFileStructureErrorData->columnHeaderErrors as $columnHeaderError}
+        {$columnHeaderError |noescape} <br>
+    {/foreach}
+{/foreach}
+
+{foreach $importDoiData->doiDataList as $doiData}
     <ul>
         <li>Cislo radku: {$doiData->rowNumber}</li>
         <li>Doi: {$doiData->doi} </li>

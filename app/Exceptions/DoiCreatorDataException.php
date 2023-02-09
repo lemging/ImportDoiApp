@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use App\Model\Data\DoiCreatorDataErrorData;
 use Exception;
 
 class DoiCreatorDataException extends ADataException
@@ -10,10 +11,22 @@ class DoiCreatorDataException extends ADataException
 
     private ?NotSetException $nameNotSetException = null;
 
-    private ?ValueNotFoundException $typeNotFoundException = null;
+    private ?DoiAttributeValueNotFoundException $typeNotFoundException = null;
 
-    public function getErrorMessages()
+    public function createDataObject(): DoiCreatorDataErrorData
     {
+        $doiDataErrorData = new DoiCreatorDataErrorData();
+
+        $doiDataErrorData->doiCellDataErrors = $this->getErrorMessages();
+
+        return $doiDataErrorData;
+    }
+
+    private function getErrorMessages()
+    {
+        /**
+         * @var ADoiCellDataException[] $cellValidationExceptions
+         */
         $cellValidationExceptions = [
             $this->typeNotSetException,
             $this->nameNotSetException,
@@ -22,13 +35,10 @@ class DoiCreatorDataException extends ADataException
 
         $errorMessages = [];
 
-        /** todo mozna udelam vsem nejakou z ktere to bude dedit
-         * @var Exception|null $exception
-         */
         foreach ($cellValidationExceptions as $exception) {
             if ($exception !== null)
             {
-                $errorMessages[] = $exception->getMessage();
+                $errorMessages[] = $exception->getErrorMessage();
             }
         }
 
@@ -46,11 +56,11 @@ class DoiCreatorDataException extends ADataException
     /**
      * @param NotSetException|null $typeNotSetException
      */
-    public function setNewTypeNotSetException(): void
+    public function setTypeNotSetException(NotSetException $notSetException): void
     {
         $this->exceptionCount++;
 
-        $this->typeNotSetException = new NotSetException('Chybí typ tvůrce.');
+        $this->typeNotSetException = $notSetException;
     }
 
     /**
@@ -64,25 +74,25 @@ class DoiCreatorDataException extends ADataException
     /**
      * @param NotSetException|null $nameNotSetException
      */
-    public function setNewNameNotSetException(): void
+    public function setNameNotSetException(NotSetException $notSetException): void
     {
         $this->exceptionCount++;
 
-        $this->nameNotSetException = new NotSetException('Chybí jméno tvůrce.');
+        $this->nameNotSetException = $notSetException;
     }
 
     /**
-     * @return ValueNotFoundException|null
+     * @return DoiAttributeValueNotFoundException|null
      */
-    public function getTypeNotFoundException(): ?ValueNotFoundException
+    public function getTypeNotFoundException(): ?DoiAttributeValueNotFoundException
     {
         return $this->typeNotFoundException;
     }
 
     /**
-     * @param ValueNotFoundException|null $typeNotFoundException
+     * @param DoiAttributeValueNotFoundException|null $typeNotFoundException
      */
-    public function setTypeNotFoundException(?ValueNotFoundException $typeNotFoundException): void
+    public function setTypeNotFoundException(?DoiAttributeValueNotFoundException $typeNotFoundException): void
     {
         $this->exceptionCount++;
 

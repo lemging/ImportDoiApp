@@ -2,22 +2,22 @@
 
 namespace App\Model\Services;
 
-use App\Enums\DoiFileHeader;
+use App\Enums\DoiColumnHeaderEnum;
+use App\Exceptions\AColumnHeaderException;
 use App\Exceptions\DoiCreatorDataException;
 use App\Exceptions\DoiDataException;
 use App\Exceptions\DoiTitleDataException;
-use App\Exceptions\FileHeaderException;
-use App\Exceptions\FileStructureDataException;
+use App\Exceptions\DoiFileStructureDataException;
+use App\Exceptions\WrongColumnHeaderOrderException;
 use App\Model\Builders\DoiCreatorDataBuilder;
 use App\Model\Builders\DoiDataBuilder;
 use App\Model\Builders\DoiTitleDataBuilder;
-use App\Model\Builders\FileHeaderListDataBuilder;
-use App\Model\Entities\DoiCreatorData;
-use App\Model\Entities\DoiData;
-use App\Model\Entities\DoiTitleData;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use App\Model\Data\DoiData;
+use App\Model\Data\DoiDataErrorData;
+use App\Model\Data\ImportDoiData;
+use App\Model\Objects\FileHeaderList;
+use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\Worksheet\RowIterator;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class XlsxSolverService
 {
@@ -26,8 +26,6 @@ class XlsxSolverService
     private DoiCreatorDataBuilder $doiCreatorDataBuilder;
 
     private DoiTitleDataBuilder $doiTitleDataBuilder;
-
-    private FileHeaderListDataBuilder $fileHeaderListDataBuilder;
 
     /**
      * @param DoiDataBuilder $doiDataBuilder
@@ -54,293 +52,146 @@ class XlsxSolverService
     }
 
     /**
-     * @param FileHeaderListDataBuilder $fileHeaderListDataBuilder
-     */
-    public function setFileHeaderListDataBuilder(FileHeaderListDataBuilder $fileHeaderListDataBuilder): void
-    {
-        $this->fileHeaderListDataBuilder = $fileHeaderListDataBuilder;
-    }
-
-    /**
      * @param RowIterator $rows
-     * @return \App\Model\Entities\FileHeaderListData
-     * @throws FileStructureDataException
+     * @return \App\Model\Objects\FileHeaderList
+     * @throws DoiFileStructureDataException
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
-    public function getFileStructure(RowIterator $rows)
+    public function getFileStructure(RowIterator $rows): array
     {
-        $fileHeaders = [];
-        $fileStructureException = new FileStructureDataException();
+        $fileHeaderList = new FileHeaderList();
+        $cells = $rows->current()->getColumnIterator();
+        $expectedNextColumnHeader = null;
 
-        foreach ($rows->current()->getColumnIterator() as $cell)
+        foreach ($cells as $cell)
         {
-            $cellValueLower = strtolower($cell->getValue());
-
-            foreach (DoiFileHeader::array() as $headerName => $headerString)
+            if ($cell->getValue() === null)
             {
-                if ($headerString === $cellValueLower)
-                {
-                    $fileHeaders[] = $headerName;
-                }
+                $expectedNextColumnHeader = $fileHeaderList->addColumnHeader(
+                    null,
+                    $cell->getCoordinate(),
+                    $expectedNextColumnHeader
+                );
             }
-            switch (strtolower($cell->getValue()))
+            else
             {
-                // todo asi do konstant
-                case 'doi':
-                    $fileHeaders[] = DoiFileHeader::Doi;
-                    break;
-                case 'stav':
-                    $fileHeaders[] = DoiFileHeader::DoiState;
-                    break;
-                case 'url':
-                    $fileHeaders[] = DoiFileHeader::DoiUrl;
-                    break;
-                case 'identifikator tvurce':
-                    $fileHeaders[] = DoiFileHeader::CreatorNameIdentifier;
-                    break;
-                case 'typ tvurce':
-                    $fileHeaders[] = DoiFileHeader::CreatorType;
-
-                    // Tvurce musi byt pohromade
-                    if (end($fileHeaders) !== DoiFileHeader::CreatorNameIdentifier)
-                    {
-                        $fileStructureException->addHeaderException(
-                            new FileHeaderException("Před sloupecem 'Typ tvůrce' (sloupec " .
-                                $cell->getCoordinate() . ") musí být sloupec 'Identifikator tvurce'."
-                            )
-                        );
-                    }
-                    break;
-                case 'jmeno tvurce':
-                    $fileHeaders[] = DoiFileHeader::CreatorName;
-
-                    // Tvurce musi byt pohromade
-                    if (end($fileHeaders) !== DoiFileHeader::CreatorType)
-                    {
-                        $fileStructureException->addHeaderException(
-                            new FileHeaderException("Před sloupecem 'Jmeno tvurce'(sloupec " .
-                                $cell->getCoordinate() . ") musí být sloupec 'Typ tvurce'."
-                            )
-                        );
-                    }
-                    break;
-                case 'afilace tvurce':
-                    $fileHeaders[] = DoiFileHeader::CreatorAffiliation;
-
-                    // Tvurce musi byt pohromade
-                    if (end($fileHeaders) !== DoiFileHeader::CreatorName)
-                    {
-                        $fileStructureException->addHeaderException(
-                            new FileHeaderException("Před sloupecem 'Afilace tvurce'(sloupec " .
-                                $cell->getCoordinate() . ") musí být sloupec 'Nazev tvurce'."
-                            )
-                        );
-                    }
-                    break;
-                case 'titulek':
-                    $fileHeaders[] = DoiFileHeader::Title;
-                    break;
-                case 'typ titulku':
-                    $fileHeaders[] = DoiFileHeader::TitleType;
-
-                    // Titulek musi byt pohromade
-                    if (end($fileHeaders) !== DoiFileHeader::Title)
-                    {
-                        $fileStructureException->addHeaderException(
-                            new FileHeaderException("Před sloupecem 'Typ titulku'(sloupec " .
-                                $cell->getCoordinate() . ") musí být sloupec 'Titulek'."
-                            )
-                        );
-                    }
-                    break;
-                case 'jazyk titulku':
-                    $fileHeaders[] = DoiFileHeader::TitleLanguage;
-
-                    // Titulek musi byt pohromade
-                    if (end($fileHeaders) !== DoiFileHeader::TitleType)
-                    {
-                        $fileStructureException->addHeaderException(
-                            new FileHeaderException("Před sloupecem 'Jazyk titulku'(sloupec " .
-                                $cell->getCoordinate() . ") musí být sloupec 'Typ titulku'."
-                            )
-                        );
-                    }
-                    break;
-                case 'vydavatel':
-                    $fileHeaders[] = DoiFileHeader::Publisher;
-                    break;
-                case 'rok publikace':
-                    $fileHeaders[] = DoiFileHeader::PublicationYear;
-                    break;
-                case 'typ zdroje':
-                    $fileHeaders[] = DoiFileHeader::ResourceType;
-                    break;
-                default:
-                    $fileStructureException->addHeaderException(
-                        new FileHeaderException('Neznámý sloupec ' . $cell->getCoordinate() . '(' .
-                            $cell->getValue() . '). Zadejte z: Doi, Stav, Url, Identifikator tvurce, Typ tvurce, ' .
-                            'Jmeno tvurce, Afilace tvurce, Titulek, Typ titulku, Nazev titulku, Vydavatel, ' .
-                            'Rok publikace, Typ zrdroje.'
-                        )
-                    );
-                    break;
+                $expectedNextColumnHeader = $fileHeaderList->addColumnHeader(
+                    strtolower($cell->getValue()),
+                    $cell->getCoordinate(),
+                    $expectedNextColumnHeader
+                );
             }
         }
 
-        $this->fileHeaderListDataBuilder->setFileHeaders($fileHeaders);
-        $this->fileHeaderListDataBuilder->setFileStructureException($fileStructureException);
+        $fileHeaderList->checkExpectedColumnHeader($expectedNextColumnHeader, null, null, null);
 
-        return $this->fileHeaderListDataBuilder->build();
-
-
+        return $fileHeaderList->validate()->getColumnHeaders();
     }
 
     /**
      * @param RowIterator $rows
-     * @param DoiData[] $doiDataList
-     * @param DoiDataException[] $doiDataExceptionList
+     * @param ImportDoiData $importDoiData
+     * @param string|null $sheetTitle
+     * @param DoiColumnHeaderEnum|null[] $columnHeaders
      * @return void
+     * @throws Exception
      */
     public function processRows(
         RowIterator $rows,
-        array &$doiDataList,
-        array &$doiDataExceptionList,
-        ?string $sheetTitle
+        ImportDoiData $importDoiData,
+        ?string $sheetTitle,
+        array $columnHeaders
     )
     {
-
         foreach ($rows as $row)
         {
+            if ($row->getRowIndex() === 1)
+            {
+                // Prvni radek jsou nadpisy, ty prestakujeme.
+                continue;
+            }
+
             $this->doiDataBuilder->reset();
 
             $this->doiDataBuilder->rowNumber($row->getRowIndex());
+            $i = 0;
+            foreach($row->getCellIterator() as $cell) {
+                $currentCellValue = (string) $cell->getValue();
 
-            $cell = $row->getCellIterator();
-            // todo, zatim takto, potom podle title
-            if (($currentCellValue = $cell->current()->getValue()) !== null && $currentCellValue !== '')
-            {
-                $this->doiDataBuilder->doi((string) $currentCellValue);
-            }
+                switch ($columnHeaders[$i++])
+                {
+                    case DoiColumnHeaderEnum::Doi:
+                        $this->doiDataBuilder->doi($currentCellValue);
+                        break;
+                    case DoiColumnHeaderEnum::DoiState:
+                        $this->doiDataBuilder->doiStateString($currentCellValue, $cell->getCoordinate());
+                        break;
+                    case DoiColumnHeaderEnum::DoiUrl:
+                        $this->doiDataBuilder->url($currentCellValue);
+                        break;
+                    case DoiColumnHeaderEnum::CreatorNameIdentifier:
+                        $this->doiCreatorDataBuilder->reset();
 
-            $cell->next();
+                        $this->doiCreatorDataBuilder->addNameIdentifier($currentCellValue);
+                        break;
+                    case DoiColumnHeaderEnum::CreatorType:
+                        $this->doiCreatorDataBuilder->typeString($currentCellValue, $cell->getCoordinate());
+                        break;
+                    case DoiColumnHeaderEnum::CreatorName:
+                        $this->doiCreatorDataBuilder->name($currentCellValue);
+                        break;
+                    case DoiColumnHeaderEnum::CreatorAffiliation:
+                        $this->doiCreatorDataBuilder->addAffiliation($currentCellValue);
 
-            if (($currentCellValue = $cell->current()->getValue()) !== null && $currentCellValue !== '')
-            {
-                $this->doiDataBuilder->doiStateString($currentCellValue);
-            }
+                        try {
+                            $doiCreator = $this->doiCreatorDataBuilder->build();
+                            $this->doiDataBuilder->addDoiCreator($doiCreator);
+                        } catch (DoiCreatorDataException $doiCreatorDataException) {
+                            $this->doiDataBuilder->addDoiCreatorDataException($doiCreatorDataException);
+                        }
+                        break;
+                    case DoiColumnHeaderEnum::Title:
+                        $this->doiTitleDataBuilder->reset();
 
-            $cell->next();
+                        $this->doiTitleDataBuilder->title($currentCellValue);
+                        break;
+                    case DoiColumnHeaderEnum::TitleType:
+                        $this->doiTitleDataBuilder->typeString($currentCellValue, $cell->getCoordinate());
+                        break;
+                    case DoiColumnHeaderEnum::TitleLanguage:
+                        $this->doiTitleDataBuilder->language($currentCellValue);
 
-            if (($currentCellValue = $cell->current()->getValue()) !== null && $currentCellValue !== '')
-            {
-                $this->doiDataBuilder->url((string) $currentCellValue);
-            }
-
-            $cell->next();
-
-            $this->doiCreatorDataBuilder->reset();
-
-            if (($currentCellValue = $cell->current()->getValue()) !== null && $currentCellValue !== '')
-            {
-                $this->doiCreatorDataBuilder->addNameIdentifier((string) $currentCellValue);
-            }
-
-            $cell->next();
-
-            if (($currentCellValue = $cell->current()->getValue()) !== null && $currentCellValue !== '')
-            {
-                $this->doiCreatorDataBuilder->typeString((string) $currentCellValue);
-            }
-
-            $cell->next();
-
-            if (($currentCellValue = $cell->current()->getValue()) !== null && $currentCellValue !== '')
-            {
-                $this->doiCreatorDataBuilder->name((string) $currentCellValue);
-            }
-
-            $cell->next();
-
-            if (($currentCellValue = $cell->current()->getValue()) !== null && $currentCellValue !== '')
-            {
-                $this->doiCreatorDataBuilder->addAffiliation((string) $currentCellValue);
-            }
-
-            try
-            {
-                $doiCreator = $this->doiCreatorDataBuilder->build();
-                $this->doiDataBuilder->addDoiCreator($doiCreator);
-            }
-            catch (DoiCreatorDataException $doiCreatorDataException)
-            {
-                $this->doiDataBuilder->addDoiCreatorDataException($doiCreatorDataException);
-            }
-
-
-            $cell->next();
-
-            $this->doiTitleDataBuilder->reset();
-
-            if (($currentCellValue = $cell->current()->getValue()) !== null && $currentCellValue !== '')
-            {
-                $this->doiTitleDataBuilder->title((string) $currentCellValue);
-            }
-
-            $cell->next();
-
-            if (($currentCellValue = $cell->current()->getValue()) !== null && $currentCellValue !== '')
-            {
-                $this->doiTitleDataBuilder->typeString((string) $currentCellValue);
-            }
-
-            $cell->next();
-
-            if (($currentCellValue = $cell->current()->getValue()) !== null && $currentCellValue !== '')
-            {
-                $this->doiTitleDataBuilder->language((string) $currentCellValue);
-            }
-
-            try
-            {
-                $doiTitle = $this->doiTitleDataBuilder->build();
-                $this->doiDataBuilder->addDoiTitle($doiTitle);
-            }
-            catch (DoiTitleDataException $doiCreatorDataException)
-            {
-                $this->doiDataBuilder->addDoiTitleDataException($doiCreatorDataException);
-            }
-
-            $cell->next();
-
-            if (($currentCellValue = $cell->current()->getValue()) !== null && $currentCellValue !== '')
-            {
-                $this->doiDataBuilder->publisher((string) $currentCellValue);
-            }
-
-            $cell->next();
-
-            if (($currentCellValue = $cell->current()->getValue()) !== null && $currentCellValue !== '')
-            {
-                $this->doiDataBuilder->publicationYear((int) $currentCellValue);
-            }
-
-            $cell->next();
-
-
-            if (($currentCellValue = $cell->current()->getValue()) !== null && $currentCellValue !== '')
-            {
-                $this->doiDataBuilder->resourceType((string) $currentCellValue);
+                        try {
+                            $doiTitle = $this->doiTitleDataBuilder->build();
+                            $this->doiDataBuilder->addDoiTitle($doiTitle);
+                        } catch (DoiTitleDataException $doiCreatorDataException) {
+                            $this->doiDataBuilder->addDoiTitleDataException($doiCreatorDataException);
+                        }
+                        break;
+                    case DoiColumnHeaderEnum::Publisher:
+                        $this->doiDataBuilder->publisher($currentCellValue);
+                        break;
+                    case DoiColumnHeaderEnum::PublicationYear:
+                        $this->doiDataBuilder->publicationYear((int)$currentCellValue);
+                        break;
+                    case DoiColumnHeaderEnum::ResourceType:
+                        $this->doiDataBuilder->resourceType($currentCellValue);
+                        break;
+                    case null:
+                        // sloupce s prazdnym nazvem sloupce se preskakuji
+                        break;
+                }
             }
 
             try
             {
                 $doiData = $this->doiDataBuilder->build();
-                $doiDataList[] = $doiData;
+                $importDoiData->doiDataList[] = $doiData;
             }
             catch (DoiDataException $doiDataException)
             {
                 $doiDataException->setSheetTitle($sheetTitle);
-                $doiDataExceptionList[] = $doiDataException;
+                $importDoiData->doiDataErrorDataList[] = $doiDataException->createDataObject();
             }
         }
     }

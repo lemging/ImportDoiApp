@@ -2,10 +2,11 @@
 
 namespace App\Model\Builders;
 
-use App\Enums\DoiCreatorType;
+use App\Enums\DoiCreatorTypeEnum;
 use App\Exceptions\DoiCreatorDataException;
-use App\Exceptions\ValueNotFoundException;
-use App\Model\Entities\DoiCreatorData;
+use App\Exceptions\DoiAttributeValueNotFoundException;
+use App\Exceptions\NotSetException;
+use App\Model\Data\DoiCreatorData;
 
 class DoiCreatorDataBuilder
 {
@@ -29,23 +30,25 @@ class DoiCreatorDataBuilder
         $this->doiCreatorData->nameIdentifiers[] = $nameIdentifier;
     }
 
-    public function typeString(string $type)
+    public function typeString(string $type, string $coordinate)
     {
         switch(strtolower($type))
         {
             case 'organization':
-                $this->doiCreatorData->type = DoiCreatorType::Organization;
+                $this->doiCreatorData->type = DoiCreatorTypeEnum::Organization;
                 break;
             case 'person':
-                $this->doiCreatorData->type = DoiCreatorType::Person;
+                $this->doiCreatorData->type = DoiCreatorTypeEnum::Person;
                 break;
             case 'unknown':
-                $this->doiCreatorData->type = DoiCreatorType::Unknown;
+                $this->doiCreatorData->type = DoiCreatorTypeEnum::Unknown;
                 break;
             default:
                 $this->doiCreatorDataException->setTypeNotFoundException(
-                    new ValueNotFoundException(
-                        'Zadán neznámý typ tvůrce. Akceptované stavy: Organization, Person, Unknown.'
+                    new DoiAttributeValueNotFoundException(
+                        'typ tvurce',
+                        $coordinate,
+                        ['Organization', 'Person', 'Unknown']
                     )
                 );
                 break;
@@ -66,11 +69,11 @@ class DoiCreatorDataBuilder
     {
         if (!isset($this->doiCreatorData->name))
         {
-            $this->doiCreatorDataException->setNewNameNotSetException();
+            $this->doiCreatorDataException->setNameNotSetException(new NotSetException('jméno tvůrce'));
         }
         if ($this->doiCreatorDataException->getTypeNotFoundException() === null && !isset($this->doiCreatorData->type))
         {
-            $this->doiCreatorDataException->setNewTypeNotSetException();
+            $this->doiCreatorDataException->setTypeNotSetException(new NotSetException('typ tvůrce'));
         }
 
         if ($this->doiCreatorDataException->getExceptionCount() > 0)

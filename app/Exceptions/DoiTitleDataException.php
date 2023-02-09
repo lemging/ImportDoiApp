@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use App\Model\Data\DoiTitleDataErrorData;
 use Exception;
 
 class DoiTitleDataException extends ADataException
@@ -12,9 +13,18 @@ class DoiTitleDataException extends ADataException
 
     private ?NotSetException $languageNotSetException = null;
 
-    private ?ValueNotFoundException $typeNotFoundException = null;
+    private ?DoiAttributeValueNotFoundException $typeNotFoundException = null;
 
-    public function getErrorMessages()
+    public function createDataObject(): DoiTitleDataErrorData
+    {
+        $doiDataErrorData = new DoiTitleDataErrorData();
+
+        $doiDataErrorData->doiCellDataErrors = $this->getErrorMessages();
+
+        return $doiDataErrorData;
+    }
+
+    private function getErrorMessages()
     {
         $cellValidationExceptions = [
             $this->titleNotSetException,
@@ -26,12 +36,12 @@ class DoiTitleDataException extends ADataException
         $errorMessages = [];
 
         /**
-         * @var Exception|null $exception
+         * @var ADoiCellDataException|null $exception
          */
         foreach ($cellValidationExceptions as $exception) {
             if ($exception !== null)
             {
-                $errorMessages[] = $exception->getMessage();
+                $errorMessages[] = $exception->getErrorMessage();
             }
         }
 
@@ -54,7 +64,7 @@ class DoiTitleDataException extends ADataException
     {
         $this->exceptionCount++;
 
-        $this->titleNotSetException = new NotSetException('Chybí název titulku.');
+        $this->titleNotSetException = new NotSetException('titulek');
     }
 
     /**
@@ -72,7 +82,7 @@ class DoiTitleDataException extends ADataException
     {
         $this->exceptionCount++;
 
-        $this->typeNotSetException = new NotSetException('Chybí typ titulku.');
+        $this->typeNotSetException = new NotSetException('typ');
     }
 
     /**
@@ -90,21 +100,21 @@ class DoiTitleDataException extends ADataException
     {
         $this->exceptionCount++;
 
-        $this->languageNotSetException = new NotSetException('Chybí jazyk titulku.');;
+        $this->languageNotSetException = new NotSetException('jazyk');
     }
 
     /**
-     * @return ValueNotFoundException
+     * @return DoiAttributeValueNotFoundException
      */
-    public function getTypeNotFoundException(): ?ValueNotFoundException
+    public function getTypeNotFoundException(): ?DoiAttributeValueNotFoundException
     {
         return $this->typeNotFoundException;
     }
 
     /**
-     * @param ValueNotFoundException $typeNotFoundException
+     * @param DoiAttributeValueNotFoundException $typeNotFoundException
      */
-    public function setTypeNotFoundException(ValueNotFoundException $typeNotFoundException): void
+    public function setTypeNotFoundException(DoiAttributeValueNotFoundException $typeNotFoundException): void
     {
         $this->exceptionCount++;
 

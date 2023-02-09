@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace App\Presenters;
 
-use App\Common\AdminAccounting\Facade\Exception\CannotImportDocumentException;
 use App\Components\Forms\ImportDoiForm\IImportDoiFormControlFactory;
 use App\Components\Forms\ImportDoiForm\ImportDoiFormControl;
-use App\Enums\DoiState;
+use App\Enums\DoiStateEnum;
 use App\Exceptions\DoiDataException;
+use App\Exceptions\DoiFileStructureDataException;
 use App\Model\Builders\DoiDataBuilder;
-use App\Model\Entities\DoiCreatorData;
-use App\Model\Entities\DoiData;
-use App\Model\Entities\DoiTitleData;
+use App\Model\Data\DoiCreatorData;
+use App\Model\Data\DoiData;
+use App\Model\Data\DoiDataErrorData;
+use App\Model\Data\DoiFileStructureErrorData;
+use App\Model\Data\DoiTitleData;
+use App\Model\Data\ImportDoiData;
 use App\Model\Facades\DoiImportFacade;
 use InvalidArgumentException;
 use Nette\Application\UI\Form;
@@ -26,14 +29,9 @@ use Tracy\ILogger;
 final class ImportDoiPresenter extends Presenter
 {
     /**
-     * @var DoiData[]
+     * @var ImportDoiData $importDoiData
      */
-    private array $doiDataList = [];
-
-    /**
-     * @var DoiDataException[]
-     */
-    private array $doiDataExceptionList = [];
+    private ImportDoiData $importDoiData;
 
     public function __construct(
         private IImportDoiFormControlFactory $doiFormControlFactory,
@@ -45,8 +43,7 @@ final class ImportDoiPresenter extends Presenter
 
     public function renderDefault()
     {
-        $this->template->doiDataList = $this->doiDataList;
-        $this->template->doiDataExceptionList = $this->doiDataExceptionList;
+        $this->template->importDoiData = $this->importDoiData;
     }
 
     /**
@@ -82,11 +79,8 @@ final class ImportDoiPresenter extends Presenter
         {
             try
             {
-                $this->doiImportFacade->importDoi(
-                    $file,
-                    $this->doiDataList,
-                    $this->doiDataExceptionList
-                );
+                $importDoiData = $this->doiImportFacade->importDoi($file);
+                $this->importDoiData = $importDoiData;
             }
             catch (InvalidArgumentException)
             {
