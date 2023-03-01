@@ -2,8 +2,7 @@
 
 namespace App\Exceptions;
 
-use App\Model\Data\DoiCreatorDataErrorData;
-use Exception;
+use App\Model\Data\ImportDoiConfirmation\CreatorDataErrorData;
 
 class DoiCreatorDataException extends ADataException
 {
@@ -13,9 +12,9 @@ class DoiCreatorDataException extends ADataException
 
     private ?DoiAttributeValueNotFoundException $typeNotFoundException = null;
 
-    public function createDataObject(): DoiCreatorDataErrorData
+    public function createDataObject(): CreatorDataErrorData
     {
-        $doiDataErrorData = new DoiCreatorDataErrorData();
+        $doiDataErrorData = new CreatorDataErrorData();
 
         $doiDataErrorData->doiCellDataErrors = $this->getErrorMessages();
 

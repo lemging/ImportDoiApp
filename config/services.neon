@@ -8,6 +8,8 @@ search:
 
 services:
 	- App\Router\RouterFactory::createRouter
-	- App\Model\Facades\DoiImportFacade
-	- App\Model\Services\XlsxSolverService
-	- App\Model\Services\DoiJsonGeneratorService
+	- App\Model\Services\DoiXlsxSolverService
+	- App\Model\Services\DoiApiCommunicationService
+	- App\Model\Facades\ImportDoiResultMessagesFacade
+	- App\Model\Facades\ImportDoiConfirmationFacade
+	- App\Model\Facades\ImportDoiMainFacade

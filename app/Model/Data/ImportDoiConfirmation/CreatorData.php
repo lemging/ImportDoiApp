@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Model\Data;
+namespace App\Model\Data\ImportDoiConfirmation;
 
 use App\Enums\DoiCreatorTypeEnum;
 
-class DoiCreatorData
+class CreatorData
 {
     /**
      * @var string[]

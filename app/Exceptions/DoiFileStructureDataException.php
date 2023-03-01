@@ -2,7 +2,7 @@
 
 namespace App\Exceptions;
 
-use App\Model\Data\DoiFileStructureErrorData;
+use App\Model\Data\ImportDoiConfirmation\FileStructureErrorData;
 
 class DoiFileStructureDataException extends ADataException
 {
@@ -115,7 +115,7 @@ class DoiFileStructureDataException extends ADataException
 
     public function createDataObject()
     {
-        $doiFileStructureErrorsData = new DoiFileStructureErrorData();
+        $doiFileStructureErrorsData = new FileStructureErrorData();
 
         $doiFileStructureErrorsData->sheetTitle = $this->sheetTitle;
 

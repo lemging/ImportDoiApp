@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Model\Data;
+namespace App\Model\Data\ImportDoiConfirmation;
 
-class DoiFileStructureErrorData
+class FileStructureErrorData
 {
     public string $sheetTitle;
 

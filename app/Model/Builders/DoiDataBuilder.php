@@ -5,14 +5,13 @@ namespace App\Model\Builders;
 
 
 use App\Enums\DoiStateEnum;
+use App\Exceptions\DoiAttributeValueNotFoundException;
 use App\Exceptions\DoiCreatorDataException;
 use App\Exceptions\DoiDataException;
 use App\Exceptions\DoiTitleDataException;
-use App\Exceptions\NotSetException;
-use App\Exceptions\DoiAttributeValueNotFoundException;
-use App\Model\Data\DoiCreatorData;
-use App\Model\Data\DoiData;
-use App\Model\Data\DoiTitleData;
+use App\Model\Data\ImportDoiConfirmation\CreatorData;
+use App\Model\Data\ImportDoiConfirmation\DoiData;
+use App\Model\Data\ImportDoiConfirmation\TitleData;
 
 class DoiDataBuilder
 {
@@ -123,12 +122,12 @@ class DoiDataBuilder
         $this->doiData->url = $url;
     }
 
-    public function addDoiCreator(DoiCreatorData $doiCreatorData)
+    public function addDoiCreator(CreatorData $doiCreatorData)
     {
         $this->doiData->creators[] = $doiCreatorData;
     }
 
-    public function addDoiTitle(DoiTitleData $doiTitleData)
+    public function addDoiTitle(TitleData $doiTitleData)
     {
         $this->doiData->titles[] = $doiTitleData;
     }

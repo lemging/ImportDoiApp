@@ -2,8 +2,7 @@
 
 namespace App\Exceptions;
 
-use App\Model\Data\DoiTitleDataErrorData;
-use Exception;
+use App\Model\Data\ImportDoiConfirmation\DoiTitleDataErrorData;
 
 class DoiTitleDataException extends ADataException
 {

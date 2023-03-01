@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Model\Data;
+namespace App\Model\Data\ImportDoiConfirmation;
 
 class DoiDataErrorData
 {
@@ -14,7 +14,7 @@ class DoiDataErrorData
     public array $doiCellDataErrors = [];
 
     /**
-     * @var DoiCreatorDataErrorData[]
+     * @var CreatorDataErrorData[]
      */
     public array $doiCreatorDataErrorDataList = [];
 

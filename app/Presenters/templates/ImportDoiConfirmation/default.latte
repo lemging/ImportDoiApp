@@ -1,11 +1,8 @@
-{varType App\Model\Data\ImportDoiData $importDoiData}
+{varType App\Model\Data\ImportDoiConfirmationData $data}
 {block content}
 
-<h1 n:block=title>Import doi</h1>
-
-{control uploadXlsxFileForm}
 {var $sheetTitle = null}
-{foreach $importDoiData->doiDataErrorDataList as $doiDataErrorData}
+{foreach $data->doiDataErrorDataList as $doiDataErrorData}
     Chybná data v souboru: <br>
     {if $sheetTitle === null || $sheetTitle !== $doiDataErrorData->sheetTitle}
         Název listu: <strong>{$doiDataErrorData->sheetTitle}</strong> <br>
@@ -32,7 +29,7 @@
 {/foreach}
 
 
-{foreach $importDoiData->doiFileStructureErrorsData as $doiFileStructureErrorData}
+{foreach $data->doiFileStructureErrorsData as $doiFileStructureErrorData}
     Chybná struktura souboru: <br>
     Název listu: <strong>{$doiFileStructureErrorData->sheetTitle}</strong><br>
     {foreach $doiFileStructureErrorData->columnHeaderErrors as $columnHeaderError}
@@ -40,7 +37,7 @@
     {/foreach}
 {/foreach}
 
-{foreach $importDoiData->doiDataList as $doiData}
+{foreach $data->doiDataList as $doiData}
     <ul>
         <li>Cislo radku: {$doiData->rowNumber}</li>
         <li>Doi: {$doiData->doi} </li>
@@ -77,3 +74,7 @@
     <br>
 {/foreach}
 
+<a n:href='ImportDoiMain:default'>Zkusit znovu</a>
+{if $data->doiDataList}
+    <a n:href="addDois!">Odeslat</a>
+{/if}

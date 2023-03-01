@@ -4,7 +4,16 @@ namespace App\Enums;
 
 enum DoiColumnHeaderEnum: string
 {
+    /**
+     * Digital Object Identifier.
+     *
+     * @var string
+     */
     case Doi = 'doi';
+
+    /**
+     *
+     */
     case DoiState = 'stav doi';
     case DoiUrl = 'url';
     case CreatorNameIdentifier = 'identifikator tvurce';
@@ -16,7 +25,7 @@ enum DoiColumnHeaderEnum: string
     case TitleLanguage = 'jazyk';
     case Publisher = 'vydavatel';
     case PublicationYear = 'rok vydani';
-    case ResourceType = 'typ zdroje';
+    case SourceType = 'typ zdroje';
 
     /**
      * @return self[]

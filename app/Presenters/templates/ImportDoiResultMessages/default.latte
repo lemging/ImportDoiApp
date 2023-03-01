@@ -1,0 +1,18 @@
+{varType App\Model\Data\ImportDoiResultMessages\ResultMessagesData $data}
+{block content}
+
+<strong>{$data->doiSendResponseGeneralMessage}</strong><br><br>
+
+{foreach $data->doiSendResponseMessages as $doiSendResponseMessage}
+    {if $doiSendResponseMessage->status === 'failure'}
+        <div style="color: #ff3600">
+    {elseif $doiSendResponseMessage->status === 'alreadyExists'}
+        <div style="color: #b68c00">
+    {else}
+        <div>
+    {/if}
+
+    {$doiSendResponseMessage->message} <br> </div>
+{/foreach}
+
+<a n:href='ImportDoiMain:default'>Nahrát další soubor</a>

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Model\Data;
+namespace App\Model\Data\ImportDoiConfirmation;
 
-class DoiTitleDataErrorData
+class CreatorDataErrorData
 {
     /**
      * @var string[]

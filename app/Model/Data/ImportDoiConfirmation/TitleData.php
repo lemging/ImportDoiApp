@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Model\Data;
+namespace App\Model\Data\ImportDoiConfirmation;
 
 use App\Enums\DoiTitleTypeEnum;
 
-class DoiTitleData
+class TitleData
 {
     public string $title;
 

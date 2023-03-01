@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Model\Data;
+namespace App\Model\Data\ImportDoiConfirmation;
 
-class ImportDoiData
+use App\Model\Data\AData;
+
+class ConfirmationData extends AData
 {
     /**
      * @var DoiData[] $doiDataList
@@ -15,7 +17,9 @@ class ImportDoiData
     public array $doiDataErrorDataList = [];
 
     /**
-     * @var DoiFileStructureErrorData[] $doiFileStructureErrorsData
+     * @var FileStructureErrorData[] $doiFileStructureErrorsData
      */
     public array $doiFileStructureErrorsData = [];
+
+    public array $doiDataJsons = [];
 }

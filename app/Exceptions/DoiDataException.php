@@ -4,9 +4,7 @@
 namespace App\Exceptions;
 
 
-use App\Model\Data\DoiData;
-use App\Model\Data\DoiDataErrorData;
-use Exception;
+use App\Model\Data\ImportDoiConfirmation\DoiDataErrorData;
 
 class DoiDataException extends ADataException
 {

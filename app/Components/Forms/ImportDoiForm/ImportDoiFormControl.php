@@ -19,7 +19,7 @@ final class ImportDoiFormControl extends Control
     public const IMPORT_FILE_FORMAT_XML = 'xml';
 
     /** @var array<callable> */
-    public array $onImport = [];
+    public array $onSuccess = [];
 
     public function __construct(
         private string $importFileFormat,
@@ -53,7 +53,7 @@ final class ImportDoiFormControl extends Control
              */
             $input = $form['xlsxFile'];
 
-            $this->onImport($input->getValue());
+            $this->onSuccess($input->getValue());
         };
 
         return $form;

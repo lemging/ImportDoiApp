@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Model\Data;
+namespace App\Model\Data\ImportDoiConfirmation;
 
 
 use App\Enums\DoiStateEnum;
@@ -18,12 +18,12 @@ class DoiData
     public string $url;
 
     /**
-     * @var DoiCreatorData[]
+     * @var CreatorData[]
      */
     public array $creators = [];
 
     /**
-     * @var DoiTitleData[]
+     * @var TitleData[]
      */
     public array $titles = [];
 
