@@ -2,6 +2,7 @@
 
 namespace App\Presenters;
 
+use App\Exceptions\SystemException;
 use App\Model\Facades\ImportDoiConfirmationFacade;
 use Nette\Application\AbortException;
 use PhpOffice\PhpSpreadsheet\Exception;
@@ -26,12 +27,13 @@ class ImportDoiConfirmationPresenter extends ABasePresenter
      * Základní akce.
      * Zobrazení všechn validních dat z nahraného souboru a všech chyb s možností odeslat nebo náhrát znovu.
      *
+     * @param $destination
      * @throws Exception
+     * @throws SystemException
      */
     public function actionDefault($destination): void
     {
         $importDoiData = $this->importDoiConfirmationFacade->prepareImportDoiConfirmationData($destination);
-        $importDoiData->title = 'Potvrzeni';
         $this->data = $importDoiData;
     }
 

@@ -47,6 +47,7 @@ final class ImportDoiConfirmationFacade
     public function prepareImportDoiConfirmationData(string $destination): ConfirmationData
     {
         $importDoiData = new ConfirmationData();
+        $importDoiData->title = 'Potvrzení dat ze souboru';
 
         // Načteme si soubor.
         $spreadsheet = IOFactory::load($destination);

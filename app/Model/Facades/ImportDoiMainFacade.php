@@ -16,7 +16,7 @@ class ImportDoiMainFacade
     public function prepareImportDoiMainData(): MainData
     {
         $data = new MainData();
-        $data->title = 'Doi import';
+        $data->title = 'Upload souboru';
 
         return $data;
     }

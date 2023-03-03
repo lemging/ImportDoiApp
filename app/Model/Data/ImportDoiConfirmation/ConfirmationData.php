@@ -20,6 +20,4 @@ class ConfirmationData extends AData
      * @var FileStructureErrorData[] $doiFileStructureErrorsData
      */
     public array $doiFileStructureErrorsData = [];
-
-    public array $doiDataJsons = [];
 }

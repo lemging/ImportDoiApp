@@ -45,8 +45,6 @@ final class ImportDoiFormControl extends Control
 
         $form->addSubmit('submit', 'Importovat');
 
-        // todo mozna on validate jestli je to xlsx file
-
         $form->onSuccess[] = function(Form $form): void {
             /**
              * @var UploadControl $input

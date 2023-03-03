@@ -1,9 +1,25 @@
-{varType App\Model\Data\ImportDoiConfirmationData $data}
+{varType App\Model\Data\ImportDoiConfirmation\ConfirmationData $data}
 {block content}
+
+{foreach $data->doiFileStructureErrorsData as $doiFileStructureErrorData}
+    Chybná struktura souboru: <br>
+    Název listu: <strong>{$doiFileStructureErrorData->sheetTitle}</strong><br>
+    {foreach $doiFileStructureErrorData->columnHeaderErrors as $columnHeaderError}
+        {$columnHeaderError |noescape} <br>
+    {/foreach}
+{/foreach}
+
+{if !empty($data->doiDataList)}
+    <a n:href="addDois!">Odeslat validní řádky</a>
+{/if}
+
+{if !empty($data->doiDataErrorDataList)}
+    <a n:href='ImportDoiMain:default'>Zkusit znovu</a>
+    <h3>Soubor obsauhuje tato chybná data: </h3>
+{/if}
 
 {var $sheetTitle = null}
 {foreach $data->doiDataErrorDataList as $doiDataErrorData}
-    Chybná data v souboru: <br>
     {if $sheetTitle === null || $sheetTitle !== $doiDataErrorData->sheetTitle}
         Název listu: <strong>{$doiDataErrorData->sheetTitle}</strong> <br>
     {/if}
@@ -28,53 +44,54 @@
     <br>
 {/foreach}
 
-
-{foreach $data->doiFileStructureErrorsData as $doiFileStructureErrorData}
-    Chybná struktura souboru: <br>
-    Název listu: <strong>{$doiFileStructureErrorData->sheetTitle}</strong><br>
-    {foreach $doiFileStructureErrorData->columnHeaderErrors as $columnHeaderError}
-        {$columnHeaderError |noescape} <br>
-    {/foreach}
-{/foreach}
+{if !empty($data->doiDataList)}
+    <h3>Soubor obsahuje tato validní data: </h3>
+{/if}
 
 {foreach $data->doiDataList as $doiData}
-    <ul>
-        <li>Cislo radku: {$doiData->rowNumber}</li>
-        <li>Doi: {$doiData->doi} </li>
-        <li>Stav: {$doiData->state->getType()} </li>
-        <li>Url: {$doiData->url} </li>
+    <ul style="list-style-type: none; padding: 0"> {*    todo udelat tridu*}
+        <li>Cislo radku: <strong>{$doiData->rowNumber}</strong></li>
+        <li>Doi: <strong>{$doiData->doi}</strong> </li>
+        <li>Stav: <strong>{$doiData->state->getType()}</strong> </li>
+        <li>Url: <strong>{$doiData->url}</strong> </li>
 
         {foreach $doiData->creators as $creator}
-            <li> Tvurce: {$creator->name} </li>
+            <li> Tvurce: <strong>{$creator->name}</strong> </li>
             <ul>
                 {foreach $creator->nameIdentifiers as $creatorNameIdentifier}
-                    <li> Identifikator jmena: {$creatorNameIdentifier} </li>
+                    <li> Identifikator jmena: <strong>{$creatorNameIdentifier}</strong> </li>
                 {/foreach}
 
-            <li> Typ tvurce: {$creator->type->getType()} </li>
+            <li> Typ tvurce: <strong>{$creator->type->getType()}</strong> </li>
 
                 {foreach $creator->affiliations as $affiliation}
-                    <li> Afilace: {$affiliation} </li>
+                    <li> Afilace: <strong>{$affiliation}</strong> </li>
                 {/foreach}
             </ul>
         {/foreach}
 
         {foreach $doiData->titles as $title}
-            <li>Titulek: {$title->title}</li>
+            <li>Titulek: <strong>{$title->title}</strong></li>
             <ul>
-                <li>Typ titulku: {$title->type->getType()}</li>
-                <li>Jazyk: {$title->language}</li>
+                <li>Typ titulku: <strong>{$title->type->getType()}</strong></li>
+                <li>Jazyk: <strong>{$title->language}</strong></li>
             </ul>
         {/foreach}
 
-        <li>Vydavatel: {$doiData->publisher}</li>
-        <li>Rok vydani: {$doiData->publicationYear}</li>
-        <li>Typ zdroje: {$doiData->resourceType}</li>
+        <li>Vydavatel: <strong>{$doiData->publisher}</strong></li>
+        <li>Rok vydani: <strong>{$doiData->publicationYear}</strong></li>
+        <li>Typ zdroje: <strong>{$doiData->resourceType}</strong></li>
     </ul>
     <br>
 {/foreach}
 
-<a n:href='ImportDoiMain:default'>Zkusit znovu</a>
-{if $data->doiDataList}
-    <a n:href="addDois!">Odeslat</a>
+{if !empty($data->doiDataList)}
+    <a n:href="addDois!">Odeslat validní řádky</a>
+{elseif !empty($data->doiFileStructureErrorsData)}
+    <br>
+    <strong> Bohužel soubor neobsahoval žádný validní řádek. </strong>
+{/if}
+{if !empty($data->doiDataErrorDataList) || !empty($data->doiFileStructureErrorsData)}
+    <br>
+    <a n:href='ImportDoiMain:default'>Zkusit znovu</a>
 {/if}

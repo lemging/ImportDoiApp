@@ -15,7 +15,7 @@ final class RouterFactory
 	public static function createRouter(): RouteList
 	{
 		$routeList = new RouteList;
-		$routeList->addRoute('<presenter>/<action>[/<id>]', 'ImportDoiMain:default');
+		$routeList->addRoute('<presenter>/<action>[/<id>]', 'Homepage:default');
 
 		return $routeList;
 	}

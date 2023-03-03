@@ -6,13 +6,51 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
 
-	<title>{ifset title}{include title|stripHtml} | {/ifset}Nette Web</title>
+	<title>{$data->title}</title>
+
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+	<!-- jQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
+	<!-- Latest compiled JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
 </head>
 
 <body>
-	<div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
-	<h1>{$data->title}</h1>
-	{include content}
+	<div class="container">
+		<br>
+		<h1>{$data->title}</h1>
+
+
+		<nav class="navbar navbar-inverse">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="{plink Homepage:default}">Doi import</a>
+				</div>
+				<ul class="nav navbar-nav">
+					{var $homepage='Domovská stránka'}
+					<li{if $data->title === $homepage} class="active"{/if}>
+							<a href="{plink Homepage:default}">{$homepage}</a>
+					</li>
+					{var $fileStructure='Struktura souboru'}
+					<li{if $data->title === $fileStructure} class="active"{/if}>
+							<a href="{plink FileStructure:default}">{$fileStructure}</a>
+					</li>
+					{var $importDoi='Upload souboru'}
+					<li{if $data->title === $importDoi} class="active"{/if}>
+						<a href="{plink ImportDoiMain:default}">{$importDoi}</a>
+					</li>
+				</ul>
+			</div>
+		</nav>
+
+		<div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
+
+		{include content}
+	</div>
 
 	{block scripts}
 	<script src="https://nette.github.io/resources/js/3/netteForms.min.js"></script>

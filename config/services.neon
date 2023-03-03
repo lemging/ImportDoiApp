@@ -13,3 +13,5 @@ services:
 	- App\Model\Facades\ImportDoiResultMessagesFacade
 	- App\Model\Facades\ImportDoiConfirmationFacade
 	- App\Model\Facades\ImportDoiMainFacade
+	- App\Model\Facades\HomepageFacade
+	- App\Model\Facades\FileStructureFacade

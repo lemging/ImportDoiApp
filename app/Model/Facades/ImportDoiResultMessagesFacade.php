@@ -17,7 +17,7 @@ class ImportDoiResultMessagesFacade
     public function prepareImportDoiSetToApiData(array $statusesAndMessages): ResultMessagesData
     {
         $data = new ResultMessagesData();
-        $data->title = 'Odeslano na api';
+        $data->title = 'Výsledky odeslání na API';
         $data->doiSendResponseGeneralMessage =
             $statusesAndMessages[ImportDoiConfirmationFacade::DOI_SEND_RESPONSE_GENERAL_MESSAGE];
         $doiSendResponseMessages = $statusesAndMessages[ImportDoiConfirmationFacade::DOI_SEND_RESPONSE_MESSAGES];
