@@ -5,12 +5,19 @@ namespace App\Model\Facades;
 use App\Model\Data\ImportDoiMain\MainData;
 use InvalidArgumentException;
 use Nette\Http\FileUpload;
+use Nette\Localization\Translator;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ImportDoiMainFacade
 {
+    public function __construct(
+        private Translator $translator
+    )
+    {
+    }
+
     /**
      * Pripravi zakldani data pro ImportDoiMainPresenter.
      *
@@ -19,7 +26,7 @@ class ImportDoiMainFacade
     public function prepareImportDoiMainData(): MainData
     {
         $data = new MainData();
-        $data->title = 'Upload souboru';
+        $data->title = $this->translator->translate('import_doi_main.title');
 
         return $data;
     }

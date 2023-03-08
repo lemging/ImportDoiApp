@@ -4,9 +4,16 @@ namespace App\Model\Facades;
 
 use App\Model\Data\ImportDoiResultMessages\ResultMessageData;
 use App\Model\Data\ImportDoiResultMessages\ResultMessagesData;
+use Nette\Localization\Translator;
 
 class ImportDoiResultMessagesFacade
 {
+    public function __construct(
+        private Translator $translator
+    )
+    {
+    }
+
     /**
      * Pripravi zakladni data pro ImportDoiResultMessagesPresenter. Zpracujeme data z parametru do datových objektů.
      *
@@ -17,7 +24,7 @@ class ImportDoiResultMessagesFacade
     public function prepareImportDoiSetToApiData(array $statusesAndMessages): ResultMessagesData
     {
         $data = new ResultMessagesData();
-        $data->title = 'Výsledky odeslání na API';
+        $data->title = $this->translator->translate('import_doi_result_messages.title');
         $data->doiSendResponseGeneralMessage =
             $statusesAndMessages[ImportDoiConfirmationFacade::DOI_SEND_RESPONSE_GENERAL_MESSAGE];
         $doiSendResponseMessages = $statusesAndMessages[ImportDoiConfirmationFacade::DOI_SEND_RESPONSE_MESSAGES];

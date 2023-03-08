@@ -13,6 +13,7 @@ use App\Model\Data\ImportDoiConfirmation\DoiData;
 use App\Model\Data\ImportDoiConfirmation\ConfirmationData;
 use App\Model\Services\DoiApiCommunicationService;
 use App\Model\Services\DoiXlsxProcessService;
+use Nette\Localization\Translator;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
@@ -31,7 +32,8 @@ final class ImportDoiConfirmationFacade
      */
     public function __construct(
         private DoiXlsxProcessService      $doiXlsxSolverService,
-        private DoiApiCommunicationService $doiApiCommunicationService
+        private DoiApiCommunicationService $doiApiCommunicationService,
+        private Translator $translator
     )
     {
     }
@@ -47,7 +49,7 @@ final class ImportDoiConfirmationFacade
     public function prepareImportDoiConfirmationData(string $destination): ConfirmationData
     {
         $importDoiData = new ConfirmationData();
-        $importDoiData->title = 'Potvrzení dat ze souboru';
+        $importDoiData->title = $this->translator->translate('import_doi_confirmation.title');
 
         // Načteme si soubor.
         $spreadsheet = IOFactory::load($destination);

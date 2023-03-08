@@ -15,3 +15,15 @@ di:
 	export:
 		parameters: no
 		tags: no
+
+extensions:
+    translation: Contributte\Translation\DI\TranslationExtension
+
+translation:
+	locales:
+		whitelist: [en, cs]
+		default: cs
+		fallback: [en]
+	dirs:
+		- %appDir%/langs
+	returnOriginalMessage: true # to not translate undefined messages, default is true
