@@ -76,19 +76,19 @@ class DoiApiCommunicationService
      * Odešle JSON na API. V případě, že id je null, tak přidá nový doi, jinak aktualizuje. Vrátí dekodovanou odpoved.
      *
      * @param string $json
-     * @param string|null $id
+     * @param string|null $doiId
      * @return array
      */
-    public function sendJsonToApi(string $json, ?string $id = null): array
+    public function addOrUpdateDoiByJsonToApi(string $json, ?string $doiId = null): array
     {
-        if ($id === null)
+        if ($doiId === null)
         {
             $ch = curl_init('https://api.test.datacite.org/dois'); //todo
             curl_setopt($ch, CURLOPT_POST, 1);
         }
         else
         {
-            $ch = curl_init('https://api.test.datacite.org/dois/10.82522/' . $id); //82522
+            $ch = curl_init('https://api.test.datacite.org/dois/10.82522/' . $doiId); //82522
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
         }
 
@@ -103,6 +103,20 @@ class DoiApiCommunicationService
         return json_decode($result, true);
     }
 
+    public function getDoiListFromApi()
+    {
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, 'https://api.datacite.org/dois?prefix=10.82522');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+        $output = curl_exec($ch);
+
+        curl_close($ch);
+
+        dumpe($output);
+    }
+
     /**
      * Zpracuje odpověď získanou z API pro přidávní doi. Vrátí textvou odpověď pro uživatele a status.
      *
@@ -110,7 +124,7 @@ class DoiApiCommunicationService
      * @param int $rowNumber
      * @return array{status: JsonSendStatusEnum, message: string}
      */
-    public function processAddDoiResponse(array $response, int $rowNumber): array
+    public function processAddOrUpdateDoiResponse(array $response, int $rowNumber): array
     {
         if (array_key_exists('errors', $response))
         {

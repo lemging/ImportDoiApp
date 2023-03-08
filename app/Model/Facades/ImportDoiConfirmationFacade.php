@@ -12,7 +12,7 @@ use App\Model\Builders\TitleDataBuilder;
 use App\Model\Data\ImportDoiConfirmation\DoiData;
 use App\Model\Data\ImportDoiConfirmation\ConfirmationData;
 use App\Model\Services\DoiApiCommunicationService;
-use App\Model\Services\DoiXlsxSolverService;
+use App\Model\Services\DoiXlsxProcessService;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
@@ -26,12 +26,12 @@ final class ImportDoiConfirmationFacade
     /**
      * Konstruktor.
      *
-     * @param DoiXlsxSolverService $doiImportService
-     * @param DoiApiCommunicationService $doiJsonGeneratorService
+     * @param DoiXlsxProcessService $doiXlsxSolverService
+     * @param DoiApiCommunicationService $doiApiCommunicationService
      */
     public function __construct(
-        private DoiXlsxSolverService       $doiImportService,
-        private DoiApiCommunicationService $doiJsonGeneratorService
+        private DoiXlsxProcessService      $doiXlsxSolverService,
+        private DoiApiCommunicationService $doiApiCommunicationService
     )
     {
     }
@@ -52,9 +52,9 @@ final class ImportDoiConfirmationFacade
         // Načteme si soubor.
         $spreadsheet = IOFactory::load($destination);
 
-        $this->doiImportService->setDoiDataBuilder(DoiDataBuilder::create());
-        $this->doiImportService->setDoiCreatorDataBuilder(CreatorDataBuilder::create());
-        $this->doiImportService->setDoiTitleDataBuilder(TitleDataBuilder::create());
+        $this->doiXlsxSolverService->setDoiDataBuilder(DoiDataBuilder::create());
+        $this->doiXlsxSolverService->setDoiCreatorDataBuilder(CreatorDataBuilder::create());
+        $this->doiXlsxSolverService->setDoiTitleDataBuilder(TitleDataBuilder::create());
 
         // Projdeme všechny listy, pro případ, že by uživatel chtěl dělit data do více listů.
         foreach ($spreadsheet->getWorksheetIterator() as $sheet)
@@ -67,7 +67,7 @@ final class ImportDoiConfirmationFacade
                     {
                         // Uložíme nadpisy sloupců v pořadí v jakém byly v souboru(prázdné nadpisy reprezentuje
                         // hodnota null) a pokračujeme ve zpracování ostatních řádků listu.
-                        $fileHeaders = $this->doiImportService->getFileStructure($row);
+                        $fileHeaders = $this->doiXlsxSolverService->getFileStructure($row);
 
                         continue;
                     }
@@ -90,7 +90,7 @@ final class ImportDoiConfirmationFacade
                 // Pokud obsahoval nevalidní data, vyhodí se DoiDataException se všema chybama, kterou uložíme.
                 try
                 {
-                    $doiData = $this->doiImportService->processRow($row, $fileHeaders);
+                    $doiData = $this->doiXlsxSolverService->processRow($row, $fileHeaders);
 
                     $importDoiData->doiDataList[] = $doiData;
                 }
@@ -115,6 +115,10 @@ final class ImportDoiConfirmationFacade
      */
     public function sendDoisDataToApi(array $doisData): array
     {
+        //todo odstran
+//        $this->doiApiCommunicationService->getDoiListFromApi();
+
+
         // Pole, do kterého se budou ukládat statusy a zprávy pro uživatele pro jednotlivé doi.
         $doiSendResponseStatusesAndMessages = [];
 
@@ -126,22 +130,22 @@ final class ImportDoiConfirmationFacade
         foreach ($doisData as $doiData)
         {
             // Z datového souboru si vytvoříme JSON.
-            $doiJson = $this->doiJsonGeneratorService->generateJsonFromDoiData($doiData);
+            $doiJson = $this->doiApiCommunicationService->generateJsonFromDoiData($doiData);
 
             // Pokusíme se odeslat json do API a vytvořit tím nový doi. Uložíme si odpověd API.
-            $response = $this->doiJsonGeneratorService->sendJsonToApi($doiJson);
+            $response = $this->doiApiCommunicationService->addOrUpdateDoiByJsonToApi($doiJson);
 
             // Zpracujeme odpověd a získáme status a zprávu pro uživatele.
-            $statusAndMessage = $this->doiJsonGeneratorService->processAddDoiResponse($response, $doiData->rowNumber);
+            $statusAndMessage = $this->doiApiCommunicationService->processAddOrUpdateDoiResponse($response, $doiData->rowNumber);
 
             // Pokud API odpovědělo, že doi id už existuje, pokusíme se ho aktualizovat s novými daty.
             if ($statusAndMessage[self::JSON_SEND_STATUS] == JsonSendStatusEnum::AlreadyExists)
             {
                 // Pokusíme se odeslat json do API a aktualizovat tím nový doi. Uložíme si odpověd API.
-                $response = $this->doiJsonGeneratorService->sendJsonToApi($doiJson, $doiData->doi);
+                $response = $this->doiApiCommunicationService->addOrUpdateDoiByJsonToApi($doiJson, $doiData->doi);
 
                 // Zpracujeme odpověd a získáme status a zprávu pro uživatele.
-                $statusAndMessage = $this->doiJsonGeneratorService->processUpdateDoiResponse(
+                $statusAndMessage = $this->doiApiCommunicationService->processUpdateDoiResponse(
                     $response, $doiData->rowNumber, $doiData->doi
                 );
             }
@@ -157,7 +161,7 @@ final class ImportDoiConfirmationFacade
             }
         }
 
-        $doiSendResponseGeneralMessage = $this->doiJsonGeneratorService->createGeneralResponseMessage(
+        $doiSendResponseGeneralMessage = $this->doiApiCommunicationService->createGeneralResponseMessage(
             $allJsonsSuccessfullySend, $allJsonsFailedSend
         );
 

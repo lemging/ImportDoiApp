@@ -8,10 +8,11 @@ search:
 
 services:
 	- App\Router\RouterFactory::createRouter
-	- App\Model\Services\DoiXlsxSolverService
+	- App\Model\Services\DoiXlsxProcessService
 	- App\Model\Services\DoiApiCommunicationService
 	- App\Model\Facades\ImportDoiResultMessagesFacade
 	- App\Model\Facades\ImportDoiConfirmationFacade
 	- App\Model\Facades\ImportDoiMainFacade
 	- App\Model\Facades\HomepageFacade
 	- App\Model\Facades\FileStructureFacade
+	- App\Model\Services\DoiXlsxCreationService

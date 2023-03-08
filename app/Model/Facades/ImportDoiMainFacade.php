@@ -5,6 +5,9 @@ namespace App\Model\Facades;
 use App\Model\Data\ImportDoiMain\MainData;
 use InvalidArgumentException;
 use Nette\Http\FileUpload;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ImportDoiMainFacade
 {
@@ -46,7 +49,7 @@ class ImportDoiMainFacade
      */
     public function saveFile(FileUpload $file)
     {
-        $destination = __DIR__ . '/files/file'; //todo pro test
+        $destination = '../temp/xlsxTempFiles/tempfile.xlsx'; //todo constanta
         $file->move($destination);
 
         return $destination;

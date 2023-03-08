@@ -14,12 +14,13 @@ use App\Model\Data\ImportDoiConfirmation\ConfirmationData;
 use App\Model\Data\ImportDoiConfirmation\DoiData;
 use App\Model\Objects\ColumnHeaderList;
 use PhpOffice\PhpSpreadsheet\Exception;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\RowIterator;
 
 /**
  * Servise pro zpracovaní a validaci dat z xlsx souboru a uložení do datových objektů, případné uložení chyb.
  */
-class DoiXlsxSolverService
+class DoiXlsxProcessService
 {
     /**
      * Builder pro DoiData. Zbuildí datový objekt DoiData, nebo vyhodí vyjímku obsahující všechny chyby v datech.
@@ -233,4 +234,12 @@ class DoiXlsxSolverService
         return $this->doiDataBuilder->build();
     }
 
+    /**
+     * Todo pro test, potom prejmenovat a do jine service
+     * @return void
+     */
+    public function createXlsx()
+    {
+
+    }
 }
