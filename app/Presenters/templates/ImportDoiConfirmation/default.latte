@@ -89,7 +89,8 @@
     <a n:href="addDois!">Odeslat validní řádky</a>
 {elseif !empty($data->doiFileStructureErrorsData)}
     <br>
-    <strong> Bohužel soubor neobsahoval žádný validní řádek. </strong>
+    <strong> Soubor má nevhodnou strukturu. Jak to má vypadata naleznete zde: LINK</strong>
+{*    todo link*}
 {/if}
 {if !empty($data->doiDataErrorDataList) || !empty($data->doiFileStructureErrorsData)}
     <br>
