@@ -85,7 +85,7 @@ final class ImportDoiConfirmationFacade
 
                 if (!isset($fileHeaders))
                 {
-                    throw new SystemException('Nesmí nastat.');
+                    throw new SystemException('Nesmí nastat.'); //todo mozna na toto svoji vyjimku
                 }
 
                 // Zpracuje řádek a uloží data do datového objektu.
@@ -103,7 +103,7 @@ final class ImportDoiConfirmationFacade
                 }
             }
         }
-
+//        dumpe($importDoiData);
         return $importDoiData;
     }
 

@@ -19,21 +19,35 @@ class DoiApiCommunicationService
      */
     public function generateJsonFromDoiData(DoiData $doiData): string
     {
-        $creatorsArray = [];
+        $creatorArrays = [];
         $i = 0;
         foreach ($doiData->creators as $creator) {
             // todo pak upravit validaci(pripadne udelat strict a nestrict) ktera nekontroluje ze tam je napr creator type..
             $creatorArray = [];
-
+//            dumpe($creator);
             $creatorArray['name'] = $creator->name;
             $creatorArray['nameType'] = $creator->type->getType();
-            $creatorArray['affiliation'] = $creator->affiliations; //todo
-            $creatorArray['nameIdentifiers'] = $creator->nameIdentifiers; //todo
+            foreach ($creator->affiliations as $affiliation)
+            {
+                $affiliationArrays[] = [
+                    // todo je pres search bar
+                ];
+            }
 
-            $creatorsArray[$i++] = $creatorArray;
+            $creatorArray['affiliation'] = $affiliationArrays;
+
+            foreach ($creator->nameIdentifiers as $nameIdentifier)
+            {
+                $nameIdentifierArrays[] = [
+                    'nameIdentifier' => $nameIdentifier,
+                ];
+            }
+            $creatorArray['nameIdentifiers'] = $nameIdentifierArrays; //todo
+
+            $creatorArrays[$i++] = $creatorArray;
         }
 
-        $titlesArray = [];
+        $titleArrays = [];
         $i = 0;
         foreach ($doiData->titles as $title) {
             $titleArray = [];
@@ -42,7 +56,7 @@ class DoiApiCommunicationService
             $titleArray['title'] = $title->title;
             $titleArray['titleType'] = $title->type->getType();
 
-            $titlesArray[$i++] = $titleArray;
+            $titleArrays[$i++] = $titleArray;
         }
 
         //todo do konstant
@@ -53,8 +67,8 @@ class DoiApiCommunicationService
                     'prefix' => '10.82522/', //todo '10.82522/'
                     'doi' => '10.82522/' . $doiData->doi,
                     'identifier' => 'DOI',
-                    'creators' => $creatorsArray,
-                    'titles' => $titlesArray,
+                    'creators' => $creatorArrays,
+                    'titles' => $titleArrays,
                     'publisher' => $doiData->publisher,
                     'publicationYear' => $doiData->publicationYear,
                     'types' => [
@@ -88,7 +102,7 @@ class DoiApiCommunicationService
         }
         else
         {
-            $ch = curl_init('https://api.test.datacite.org/dois/10.82522/' . $doiId); //82522
+            $ch = curl_init('https://api.test.datacite.org/dois/10.82522/' . $doiId);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
         }
 

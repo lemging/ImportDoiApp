@@ -170,22 +170,22 @@ class DoiXlsxProcessService
             case DoiColumnHeaderEnum::DoiUrl:
                 $this->doiDataBuilder->url($currentCellValue);
                 break;
-            case DoiColumnHeaderEnum::CreatorNameIdentifier:
+            case DoiColumnHeaderEnum::CreatorName:
                 // Tvůce má sloupce v určitém pořadí, jméno je první, takže vyresetujeme data tvůrce.
                 $this->doiCreatorDataBuilder->reset();
 
-                $this->doiCreatorDataBuilder->addNameIdentifier($currentCellValue);
-                break;
-            case DoiColumnHeaderEnum::CreatorType:
-                $this->doiCreatorDataBuilder->typeString($currentCellValue, $cell->getCoordinate());
-                break;
-            case DoiColumnHeaderEnum::CreatorName:
                 $this->doiCreatorDataBuilder->name($currentCellValue);
+                break;
+            case DoiColumnHeaderEnum::CreatorNameIdentifier:
+                $this->doiCreatorDataBuilder->addNameIdentifier($currentCellValue);
                 break;
             case DoiColumnHeaderEnum::CreatorAffiliation:
                 $this->doiCreatorDataBuilder->addAffiliation($currentCellValue);
+                break;
+            case DoiColumnHeaderEnum::CreatorType:
+                $this->doiCreatorDataBuilder->typeString($currentCellValue, $cell->getCoordinate());
 
-                // Tvůce má sloupce v určitém pořadí, afilace je poslední, takže vytvoříme datový objekt
+                // Tvůce má sloupce v určitém pořadí, typ je poslední, takže vytvoříme datový objekt
                 // a uložíme ho do DoiData, pokud obsahoval chyby, uložíme místo toho chyby.
                 try {
                     $doiCreator = $this->doiCreatorDataBuilder->build();

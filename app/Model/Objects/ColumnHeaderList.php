@@ -132,6 +132,7 @@ class ColumnHeaderList
         string $cellCoordinate,
         DoiColumnHeaderEnum $expectedColumnHeader = null
     ): ?DoiColumnHeaderEnum {
+        // todo tato logika by asi mela byt v servise
         $expectedNextColumnHeader = null;
         $lastHeader = $this->getLastHeader($this->columnHeaders);
 
@@ -146,62 +147,69 @@ class ColumnHeaderList
         case DoiColumnHeaderEnum::DoiUrl->value:
             $this->addDoiUrl($cellCoordinate);
             break;
-        case DoiColumnHeaderEnum::CreatorNameIdentifier->value:
-            $this->addCreatorNameIdentifier($cellCoordinate);
-
-            $expectedNextColumnHeader = DoiColumnHeaderEnum::CreatorType;
-            break;
-        case DoiColumnHeaderEnum::CreatorType->value:
-            // Tvurce musi byt pohromade
-            if ($lastHeader !== DoiColumnHeaderEnum::CreatorNameIdentifier)
-            {
-                $this->fileStructureDataException->addWrongColumnHeaderOrderException(
-                    new WrongColumnHeaderOrderException(
-                        $columnHeader,
-                        [$cellCoordinate],
-                        $lastHeader,
-                        DoiColumnHeaderEnum::CreatorNameIdentifier
-                    )
-                );
-            }
-
-            $this->addCreatorType($cellCoordinate);
-
-            $expectedNextColumnHeader = DoiColumnHeaderEnum::CreatorName;
-            break;
         case DoiColumnHeaderEnum::CreatorName->value:
+            $this->addCreatorName($cellCoordinate);
+
+            $expectedNextColumnHeader = DoiColumnHeaderEnum::CreatorNameIdentifier;
+            break;
+        case DoiColumnHeaderEnum::CreatorNameIdentifier->value:
             // Tvurce musi byt pohromade
-            if ($lastHeader !== DoiColumnHeaderEnum::CreatorType)
+            $expectedLastHeader = DoiColumnHeaderEnum::CreatorName;
+
+            // Identifikator tvurce muze byt vicekrat, takze muze nasledovat i sam po sobe
+            if ($lastHeader !== $expectedLastHeader && $lastHeader !== DoiColumnHeaderEnum::CreatorNameIdentifier)
             {
                 $this->fileStructureDataException->addWrongColumnHeaderOrderException(
                     new WrongColumnHeaderOrderException(
                         $columnHeader,
                         [$cellCoordinate],
                         $lastHeader,
-                        DoiColumnHeaderEnum::CreatorType
+                        $expectedColumnHeader
                     )
                 );
             }
 
-            $this->addCreatorName($cellCoordinate);
+            $this->addCreatorNameIdentifier($cellCoordinate);
 
             $expectedNextColumnHeader = DoiColumnHeaderEnum::CreatorAffiliation;
             break;
         case DoiColumnHeaderEnum::CreatorAffiliation->value:
             // Tvurce musi byt pohromade
-            if ($lastHeader !== DoiColumnHeaderEnum::CreatorName)
+            $expectedLastHeader = DoiColumnHeaderEnum::CreatorNameIdentifier;
+
+            if ($lastHeader !== $expectedLastHeader)
             {
                 $this->fileStructureDataException->addWrongColumnHeaderOrderException(
                     new WrongColumnHeaderOrderException(
                         $columnHeader,
                         [$cellCoordinate],
                         $lastHeader,
-                        DoiColumnHeaderEnum::CreatorName
+                        $expectedLastHeader
                     )
                 );
             }
 
             $this->addCreatorAffiliation($cellCoordinate);
+
+            $expectedNextColumnHeader = DoiColumnHeaderEnum::CreatorType;
+            break;
+        case DoiColumnHeaderEnum::CreatorType->value:
+            // Tvurce musi byt pohromade
+            $expectedLastHeader = DoiColumnHeaderEnum::CreatorAffiliation;
+
+            if ($lastHeader !== $expectedLastHeader)
+            {
+                $this->fileStructureDataException->addWrongColumnHeaderOrderException(
+                    new WrongColumnHeaderOrderException(
+                        $columnHeader,
+                        [$cellCoordinate],
+                        $lastHeader,
+                        $expectedLastHeader
+                    )
+                );
+            }
+
+            $this->addCreatorType($cellCoordinate);
             break;
         case DoiColumnHeaderEnum::Title->value:
             $this->addTitle($cellCoordinate);
@@ -541,7 +549,12 @@ class ColumnHeaderList
         ?string $cellCoordinate
     ): void
     {
-        if ($expectedColumnHeader !== null && $currentHeader !== $expectedColumnHeader) {
+        // todo asi rozdelit do dvou metod
+        if (
+            $expectedColumnHeader !== null &&
+            $currentHeader !== $expectedColumnHeader &&
+            $lastHeader !== $currentHeader // atributy, kterych muze byt vice muzou pokracovat za sebou
+        ) {
             if ($lastHeader === null)
             {
                 $lastHeader = $this->getLastHeader($this->columnHeaders);
