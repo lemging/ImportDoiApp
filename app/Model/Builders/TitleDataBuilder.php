@@ -13,7 +13,7 @@ class TitleDataBuilder
 
     private DoiTitleDataException $doiTitleDataException;
 
-    public function __construct()
+    private function __construct()
     {
         $this->doiTitleData = new TitleData();
         $this->doiTitleDataException = new DoiTitleDataException();
@@ -58,7 +58,7 @@ class TitleDataBuilder
         $this->doiTitleData->title = $title;
     }
 
-    public function typeString(string $type, string $coordinate)
+    public function typeString(string $type, ?string $coordinate = null)
     {
         switch(strtolower($type))
         {

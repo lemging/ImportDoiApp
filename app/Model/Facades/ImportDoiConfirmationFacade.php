@@ -99,7 +99,7 @@ final class ImportDoiConfirmationFacade
                 catch (DoiDataException $doiDataException)
                 {
                     $doiDataException->setSheetTitle($sheet->getTitle());
-                    $importDoiData->doiDataErrorDataList[] = $doiDataException->createDataObject();
+                    $importDoiData->doiDataErrorDataList[] = $doiDataException->createDataObjectDataFromXlsx();
                 }
             }
         }

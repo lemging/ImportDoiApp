@@ -2,17 +2,12 @@
 
 namespace App\Enums;
 
-enum DoiStateEnum {
-    case Draft;
-    case Registered;
-    case Findable;
-
-    public function getType(): string
+enum DoiStateEnum: string {
+    case Draft = 'draft';
+    case Registered = 'registered';
+    case Findable = 'findable';
+    public static function values(): array
     {
-        return match($this) {
-            self::Draft => 'draft',
-            self::Registered => 'registered',
-            self::Findable => 'findable',
-        };
+        return array_column(self::cases(), 'value');
     }
 }

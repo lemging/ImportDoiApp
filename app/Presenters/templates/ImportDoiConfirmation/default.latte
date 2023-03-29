@@ -52,7 +52,7 @@
     <ul style="list-style-type: none; padding: 0"> {*    todo udelat tridu*}
         <li>Cislo radku: <strong>{$doiData->rowNumber}</strong></li>
         <li>Doi: <strong>{$doiData->doi}</strong> </li>
-        <li>Stav: <strong>{$doiData->state->getType()}</strong> </li>
+        <li>Stav: <strong>{$doiData->state->value}</strong> </li>
         <li>Url: <strong>{$doiData->url}</strong> </li>
 
         {foreach $doiData->creators as $creator}
@@ -62,7 +62,7 @@
                     <li> Identifikator jmena: <strong>{$creatorNameIdentifier}</strong> </li>
                 {/foreach}
 
-            <li> Typ tvurce: <strong>{$creator->type->getType()}</strong> </li>
+            <li> Typ tvurce: <strong>{$creator->type->value}</strong> </li>
 
                 {foreach $creator->affiliations as $affiliation}
                     <li> Afilace: <strong>{$affiliation}</strong> </li>
@@ -73,7 +73,7 @@
         {foreach $doiData->titles as $title}
             <li>Titulek: <strong>{$title->title}</strong></li>
             <ul>
-                <li>Typ titulku: <strong>{$title->type->getType()}</strong></li>
+                <li>Typ titulku: <strong>{$title->type->value}</strong></li>
                 <li>Jazyk: <strong>{$title->language}</strong></li>
             </ul>
         {/foreach}

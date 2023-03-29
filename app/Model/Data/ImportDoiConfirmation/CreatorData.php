@@ -19,4 +19,9 @@ class CreatorData
      * @var string[]
      */
     public array $affiliations = [];
+
+    public array $counts = [
+        'nameIdentifiers' => 0,
+        'affiliation' => 0,
+    ];
 }

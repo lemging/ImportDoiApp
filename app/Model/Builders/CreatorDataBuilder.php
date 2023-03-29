@@ -14,7 +14,7 @@ class CreatorDataBuilder
 
     private DoiCreatorDataException $doiCreatorDataException;
 
-    public function __construct()
+    private function __construct()
     {
         $this->doiCreatorData = new CreatorData();
         $this->doiCreatorDataException = new DoiCreatorDataException();
@@ -28,9 +28,10 @@ class CreatorDataBuilder
     public function addNameIdentifier(string $nameIdentifier)
     {
         $this->doiCreatorData->nameIdentifiers[] = $nameIdentifier;
+        $this->doiCreatorData->counts['nameIdentifiers'] += 1;
     }
 
-    public function typeString(string $type, string $coordinate)
+    public function typeString(string $type, ?string $coordinate = null)
     {
         switch(strtolower($type))
         {
@@ -63,6 +64,7 @@ class CreatorDataBuilder
     public function addAffiliation(string $affiliation)
     {
         $this->doiCreatorData->affiliations[] = $affiliation;
+        $this->doiCreatorData->counts['affiliation'] += 1;
     }
 
     public function build()

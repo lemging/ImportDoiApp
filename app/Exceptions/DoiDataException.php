@@ -40,7 +40,7 @@ class DoiDataException extends ADataException
      */
     private array $doiTitleDataExceptions = [];
 
-    public function createDataObject(): DoiDataErrorData
+    public function createDataObjectDataFromXlsx(): DoiDataErrorData
     {
         $doiDataErrorData = new DoiDataErrorData();
 
@@ -59,6 +59,11 @@ class DoiDataException extends ADataException
 
 
         return $doiDataErrorData;
+    }
+
+    public function createDataObjectDataFromApi()
+    {
+        return new DoiDataErrorData(); // todo
     }
 
     private function getErrorMessages(): array

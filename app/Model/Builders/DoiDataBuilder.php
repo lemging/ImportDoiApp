@@ -19,10 +19,15 @@ class DoiDataBuilder
 
     private DoiDataException $doiDataException;
 
-    public function __construct()
+    private function __construct()
     {
         $this->doiData = new DoiData();
         $this->doiDataException = new DoiDataException();
+    }
+
+    static function create()
+    {
+        return new self();
     }
 
     public function build()
@@ -72,12 +77,18 @@ class DoiDataBuilder
             throw $this->doiDataException;
         }
 
-        return $this->doiData;
-    }
+        foreach ($this->doiData->creators as $creator)
+        {
+            foreach ($creator->counts as $attribute => $count)
+            {
+                if ($count > $this->doiData->counts[$attribute])
+                {
+                    $this->doiData->counts[$attribute] = $count;
+                }
+            }
+        }
 
-    static function create()
-    {
-        return new self();
+        return $this->doiData;
     }
 
     public function rowNumber(int $rowNumber)
@@ -91,7 +102,7 @@ class DoiDataBuilder
         $this->doiData->doi = $doi;
     }
 
-    public function doiStateString(string $doiState, string $coordinate)
+    public function doiStateString(string $doiState, ?string $coordinate = null)
     {
         switch(strtolower($doiState))
         {
@@ -125,11 +136,13 @@ class DoiDataBuilder
     public function addDoiCreator(CreatorData $doiCreatorData)
     {
         $this->doiData->creators[] = $doiCreatorData;
+        $this->doiData->counts['creators'] += 1;
     }
 
     public function addDoiTitle(TitleData $doiTitleData)
     {
         $this->doiData->titles[] = $doiTitleData;
+        $this->doiData->counts['titles'] += 1;
     }
 
     public function publisher(string $publisher)

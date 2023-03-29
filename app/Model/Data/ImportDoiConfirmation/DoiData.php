@@ -9,7 +9,7 @@ use App\Enums\DoiStateEnum;
 class DoiData
 {
     // todo doplnit vsechny potrebne atributy
-    public int $rowNumber;
+    public ?int $rowNumber = null;
 
     public string $doi;
 
@@ -32,4 +32,14 @@ class DoiData
     public int $publicationYear;
 
     public string $resourceType;
+
+    /**
+     * @var array<string, int>
+     */
+    public array $counts = [
+        'creators' => 0,
+        'titles' => 0,
+        'nameIdentifiers' => 0,
+        'affiliation' => 0,
+    ];
 }

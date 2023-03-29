@@ -19,6 +19,7 @@ class DoiApiCommunicationService
      */
     public function generateJsonFromDoiData(DoiData $doiData): string
     {
+        // todo mozna pres json seriazable
         $creatorArrays = [];
         $i = 0;
         foreach ($doiData->creators as $creator) {
@@ -26,12 +27,11 @@ class DoiApiCommunicationService
             $creatorArray = [];
 //            dumpe($creator);
             $creatorArray['name'] = $creator->name;
-            $creatorArray['nameType'] = $creator->type->getType();
+            $creatorArray['nameType'] = $creator->type->value;
             foreach ($creator->affiliations as $affiliation)
             {
-                $affiliationArrays[] = [
-                    // todo je pres search bar
-                ];
+                // todo je pres search bar
+                $affiliationArrays[] = $affiliation;
             }
 
             $creatorArray['affiliation'] = $affiliationArrays;
@@ -54,7 +54,7 @@ class DoiApiCommunicationService
 
             $titleArray['lang'] = $title->language;
             $titleArray['title'] = $title->title;
-            $titleArray['titleType'] = $title->type->getType();
+            $titleArray['titleType'] = $title->type->value;
 
             $titleArrays[$i++] = $titleArray;
         }
@@ -74,7 +74,7 @@ class DoiApiCommunicationService
                     'types' => [
                         'resourceTypeGeneral' => $doiData->resourceType
                     ],
-                    'state' => $doiData->state->getType(),
+                    'state' => $doiData->state->value,
                     'url' => $doiData->url,
 
 //                    'subjects' => [], // todo
@@ -121,14 +121,16 @@ class DoiApiCommunicationService
     {
         $ch = curl_init();
 
-        curl_setopt($ch, CURLOPT_URL, 'https://api.datacite.org/dois?prefix=10.82522');
+        curl_setopt($ch, CURLOPT_URL, 'https://api.test.datacite.org/dois?prefix=10.82522');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_USERPWD, "UPWJ.BXXIQF:HJcdp_SDJ-PN5TuDL9CjVuEp"); // todo metoda
 
         $output = curl_exec($ch);
 
         curl_close($ch);
 
-        dumpe($output);
+        return json_decode($output)->data;
+//        dumpe(json_decode($output));
     }
 
     /**

@@ -2,20 +2,14 @@
 
 namespace App\Enums;
 
-enum DoiTitleTypeEnum {
-    case AlternativeTitle;
-    case Subtitle;
-    case TranslatedTitle;
-    case Other;
+enum DoiTitleTypeEnum: string {
+    case AlternativeTitle = 'alternativeTitle';
+    case Subtitle = 'subtitle';
+    case TranslatedTitle = 'translatedTitle';
+    case Other = 'other';
 
-    // todo pres hodnoty
-    public function getType(): string
+    public static function values(): array
     {
-        return match($this) {
-            self::AlternativeTitle => 'alternativeTitle',
-            self::Subtitle => 'subtitle',
-            self::TranslatedTitle => 'translatedTitle',
-            self::Other => 'other',
-        };
+        return array_column(self::cases(), 'value');
     }
 }

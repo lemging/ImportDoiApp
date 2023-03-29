@@ -15,4 +15,3 @@ services:
 	- App\Model\Facades\ImportDoiMainFacade
 	- App\Model\Facades\HomepageFacade
 	- App\Model\Facades\FileStructureFacade
-	- App\Model\Services\DoiXlsxCreationService
