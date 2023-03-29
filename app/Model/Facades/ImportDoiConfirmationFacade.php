@@ -103,7 +103,7 @@ final class ImportDoiConfirmationFacade
                 }
             }
         }
-//        dumpe($importDoiData);
+
         return $importDoiData;
     }
 

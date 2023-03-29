@@ -5,17 +5,18 @@ namespace App\Model\Services;
 use App\Enums\DoiColumnHeaderEnum;
 use App\Enums\DoiCreatorTypeEnum;
 use App\Enums\DoiStateEnum;
+use App\Enums\DoiTitleTypeEnum;
 use App\Exceptions\DoiCreatorDataException;
 use App\Exceptions\DoiDataException;
 use App\Exceptions\DoiFileStructureDataException;
 use App\Exceptions\DoiTitleDataException;
+use App\Model\Builders\ColumnHeadersListDataBuilder;
 use App\Model\Builders\CreatorDataBuilder;
 use App\Model\Builders\DoiDataBuilder;
 use App\Model\Builders\TitleDataBuilder;
 use App\Model\Data\FileStructure\FileStructureData;
 use App\Model\Data\ImportDoiConfirmation\ConfirmationData;
 use App\Model\Data\ImportDoiConfirmation\DoiData;
-use App\Model\Objects\ColumnHeaderList;
 use PhpOffice\PhpSpreadsheet\Cell\DataValidation;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -91,7 +92,7 @@ class DoiXlsxProcessService
      */
     public function getFileStructure($row): array
     {
-        $fileHeaderList = new ColumnHeaderList();
+        $fileHeaderListBuilder = ColumnHeadersListDataBuilder::create();
 
         // Získáme všechny buňky řádku.
         $cells = $row->getColumnIterator();
@@ -111,7 +112,7 @@ class DoiXlsxProcessService
             if ($cell->getValue() === null || $cell->getValue() === '') {
                 // Pokud narazíme na prázdný název sloupce, tak ho přeskakujeme.
                 // Uložíme ale nullovou hodnotu, abychom věděli, že tam je a později ho přeskakovali.
-                $expectedNextColumnHeader = $fileHeaderList->addColumnHeader(
+                $expectedNextColumnHeader = $fileHeaderListBuilder->addColumnHeader(
                     null,
                     $cell->getCoordinate(),
                     $expectedNextColumnHeader
@@ -119,7 +120,7 @@ class DoiXlsxProcessService
             }
             else {
                 // Uložíme nadpis sloupce, abychom získali strukturu souboru(jednotlivé sloupce a jejich pořadí).
-                $expectedNextColumnHeader = $fileHeaderList->addColumnHeader(
+                $expectedNextColumnHeader = $fileHeaderListBuilder->addColumnHeader(
                     strtolower($cell->getValue()),
                     $cell->getCoordinate(),
                     $expectedNextColumnHeader
@@ -128,10 +129,10 @@ class DoiXlsxProcessService
         }
 
         // Zkontrolujeme, že jestli existoval očekávaný nadpis sloupce, že to může být null, protože jsme na konci řádku.
-        $fileHeaderList->checkExpectedColumnHeader($expectedNextColumnHeader, null, null, null);
+        $fileHeaderListBuilder->checkExpectedColumnHeader($expectedNextColumnHeader, null, null, null);
 
-        // Validate zkontroluje, zda je struktura korektní a případně vyhodí vyjímku obsahující všechny chyby.
-        return $fileHeaderList->validate()->getColumnHeaders();
+        // Build zkontroluje, zda je struktura korektní a případně vyhodí vyjímku obsahující všechny chyby.
+        return $fileHeaderListBuilder->build()->columnHeaders;
     }
 
     /**
@@ -367,9 +368,9 @@ class DoiXlsxProcessService
                 $this->createCombobox(
                     $sheet,
                     $columnIterator->current()->getCoordinate(),
-                    ['alternativeTitle', 'subtitle', 'translatedTitle', 'other']
+                    DoiTitleTypeEnum::values()
                 );
-                // todo at vytvori i nejake prazdne comboboxy nize
+
                 if ($i < count($doiData->titles))
                 {
                     $columnIterator->current()->setValue($doiData->titles[$i]->type->value);
@@ -400,7 +401,7 @@ class DoiXlsxProcessService
     }
 
     /**
-     * Vytvori z bunky combobox s moznostma.
+     * Vytvori z bunky v zadaném sheen na zadanych coordiante combobox s moznostma.
      *
      * @param Worksheet $sheet
      * @param string $cooridnate
@@ -454,7 +455,7 @@ class DoiXlsxProcessService
 
             foreach ($creator->affiliation as $affiliation) {
                 if (isset($affiliation))
-                    $this->doiCreatorDataBuilder->addAffiliation($affiliation); //todo ma vic atributu
+                    $this->doiCreatorDataBuilder->addAffiliation($affiliation);
             }
 
             if (isset($creator->nameType))
