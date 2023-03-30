@@ -3,10 +3,10 @@
 namespace App\Enums;
 
 enum DoiTitleTypeEnum: string {
-    case AlternativeTitle = 'alternativeTitle';
-    case Subtitle = 'subtitle';
-    case TranslatedTitle = 'translatedTitle';
-    case Other = 'other';
+    case AlternativeTitle = 'AlternativeTitle';
+    case Subtitle = 'Subtitle';
+    case TranslatedTitle = 'TranslatedTitle';
+    case Other = 'Other';
 
     public static function values(): array
     {

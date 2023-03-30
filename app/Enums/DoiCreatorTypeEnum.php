@@ -3,9 +3,9 @@
 namespace App\Enums;
 
 enum DoiCreatorTypeEnum: string {
-    case Person = 'person';
-    case Organization = 'organization';
-    case Unknown = 'unknown';
+    case Person = 'Person';
+    case Organization = 'Organizational';
+    case Unknown = 'Unknown';
 
     public static function values(): array
     {

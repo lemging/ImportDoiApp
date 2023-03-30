@@ -33,15 +33,16 @@ class CreatorDataBuilder
 
     public function typeString(string $type, ?string $coordinate = null)
     {
-        switch(strtolower($type))
+
+        switch($type)
         {
-            case 'organization':
+            case DoiCreatorTypeEnum::Organization->value:
                 $this->doiCreatorData->type = DoiCreatorTypeEnum::Organization;
                 break;
-            case 'person':
+            case DoiCreatorTypeEnum::Person->value:
                 $this->doiCreatorData->type = DoiCreatorTypeEnum::Person;
                 break;
-            case 'unknown':
+            case DoiCreatorTypeEnum::Unknown->value:
                 $this->doiCreatorData->type = DoiCreatorTypeEnum::Unknown;
                 break;
             default:
@@ -49,7 +50,7 @@ class CreatorDataBuilder
                     new DoiAttributeValueNotFoundException(
                         'typ tvurce',
                         $coordinate,
-                        ['Organization', 'Person', 'Unknown']
+                        DoiCreatorTypeEnum::values()
                     )
                 );
                 break;

@@ -44,7 +44,6 @@ class ColumnHeadersListDataBuilder
         $lastHeader = self::getLastHeader($this->columnHeadersListData->columnHeaders);
 
         switch ($columnHeader) {
-            // todo asi do konstant
             case DoiColumnHeaderEnum::Doi->value:
                 $this->addDoi($cellCoordinate);
                 break;
@@ -84,7 +83,8 @@ class ColumnHeadersListDataBuilder
                 // Tvurce musi byt pohromade
                 $expectedLastHeader = DoiColumnHeaderEnum::CreatorNameIdentifier;
 
-                if ($lastHeader !== $expectedLastHeader)
+                // Afilace tvurce muze byt vicekrat, takze muze nasledovat i sam po sobe
+                if ($lastHeader !== $expectedLastHeader && $lastHeader !== DoiColumnHeaderEnum::CreatorAffiliation)
                 {
                     $this->fileStructureDataException->addWrongColumnHeaderOrderException(
                         new WrongColumnHeaderOrderException(

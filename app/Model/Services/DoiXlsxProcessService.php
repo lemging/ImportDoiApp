@@ -5,6 +5,7 @@ namespace App\Model\Services;
 use App\Enums\DoiColumnHeaderEnum;
 use App\Enums\DoiCreatorTypeEnum;
 use App\Enums\DoiStateEnum;
+use App\Enums\DoiTitleLanguageEnum;
 use App\Enums\DoiTitleTypeEnum;
 use App\Exceptions\DoiCreatorDataException;
 use App\Exceptions\DoiDataException;
@@ -380,6 +381,11 @@ class DoiXlsxProcessService
 
                 if ($i < count($doiData->titles))
                 {
+                    $this->createCombobox(
+                        $sheet,
+                        $columnIterator->current()->getCoordinate(),
+                        DoiTitleLanguageEnum::values()
+                    );
                     $columnIterator->current()->setValue($doiData->titles[$i]->language);
                 }
 
@@ -436,7 +442,7 @@ class DoiXlsxProcessService
 
         // todo mozna tady nejak lip vyresit ty issety
         if (isset($doi->id))
-            $this->doiDataBuilder->doi($doi->id);
+            $this->doiDataBuilder->doi(ltrim(strstr($doi->id, '/'), '/'));
         if (isset($doi->attributes->state))
             $this->doiDataBuilder->doiStateString($doi->attributes->state);
         if (isset($doi->attributes->url))
@@ -454,8 +460,9 @@ class DoiXlsxProcessService
             }
 
             foreach ($creator->affiliation as $affiliation) {
-                if (isset($affiliation))
+                if (isset($affiliation)) {
                     $this->doiCreatorDataBuilder->addAffiliation($affiliation);
+                }
             }
 
             if (isset($creator->nameType))
@@ -480,7 +487,6 @@ class DoiXlsxProcessService
             if (isset($title->lang))
                 $this->doiTitleDataBuilder->language($title->lang);
 
-
             try {
                 $doiTitle = $this->doiTitleDataBuilder->build();
                 $this->doiDataBuilder->addDoiTitle($doiTitle);
@@ -493,8 +499,8 @@ class DoiXlsxProcessService
             $this->doiDataBuilder->publisher($doi->attributes->publisher);
         if (isset($doi->attributes->publicationYear))
             $this->doiDataBuilder->publicationYear((int)$doi->attributes->publicationYear);
-        if (isset($doi->attributes->types->resourceTypeGeneral))
-            $this->doiDataBuilder->resourceType($doi->attributes->types->resourceTypeGeneral);
+        if (isset($doi->attributes->types->resourceType))
+            $this->doiDataBuilder->resourceType($doi->attributes->types->resourceType);
 
         // Vytvoří datový objekt, nebo vyhodí vyjímku obsahující všechny chyby.
         return $this->doiDataBuilder->build();

@@ -2,6 +2,7 @@
 
 namespace App\Model\Services;
 
+use App\Enums\DoiStateEnum;
 use App\Enums\JsonSendStatusEnum;
 use App\Model\Data\ImportDoiConfirmation\DoiData;
 use App\Model\Facades\ImportDoiConfirmationFacade;
@@ -19,22 +20,25 @@ class DoiApiCommunicationService
      */
     public function generateJsonFromDoiData(DoiData $doiData): string
     {
-        // todo mozna pres json seriazable
         $creatorArrays = [];
         $i = 0;
         foreach ($doiData->creators as $creator) {
-            // todo pak upravit validaci(pripadne udelat strict a nestrict) ktera nekontroluje ze tam je napr creator type..
             $creatorArray = [];
 //            dumpe($creator);
             $creatorArray['name'] = $creator->name;
             $creatorArray['nameType'] = $creator->type->value;
+            $affiliationArrays = [];
+
             foreach ($creator->affiliations as $affiliation)
             {
-                // todo je pres search bar
-                $affiliationArrays[] = $affiliation;
+                $affiliationArrays[] = [
+                    'name' => $affiliation
+                ];
             }
 
             $creatorArray['affiliation'] = $affiliationArrays;
+
+            $nameIdentifierArrays = [];
 
             foreach ($creator->nameIdentifiers as $nameIdentifier)
             {
@@ -42,6 +46,7 @@ class DoiApiCommunicationService
                     'nameIdentifier' => $nameIdentifier,
                 ];
             }
+
             $creatorArray['nameIdentifiers'] = $nameIdentifierArrays; //todo
 
             $creatorArrays[$i++] = $creatorArray;
@@ -59,28 +64,33 @@ class DoiApiCommunicationService
             $titleArrays[$i++] = $titleArray;
         }
 
+        $attributes = [
+            'prefix' => '10.82522/', //todo '10.82522/'
+            'doi' => '10.82522/' . $doiData->doi,
+            'identifier' => 'DOI',
+            'creators' => $creatorArrays,
+            'titles' => $titleArrays,
+            'publisher' => $doiData->publisher,
+            'publicationYear' => $doiData->publicationYear,
+            'types' => [
+                'resourceType' => $doiData->resourceType,
+                'resourceTypeGeneral' => 'Other'
+            ],
+            'url' => $doiData->url,
+
+        ];
+
+        $attributes['event'] = match ($doiData->state) {
+            DoiStateEnum::Findable => 'publish',
+            DoiStateEnum::Registered => 'register'
+        };
+
         //todo do konstant
         $doiArray = [
             'data' => [
                 'type' => 'dois',
-                'attributes' => [
-                    'prefix' => '10.82522/', //todo '10.82522/'
-                    'doi' => '10.82522/' . $doiData->doi,
-                    'identifier' => 'DOI',
-                    'creators' => $creatorArrays,
-                    'titles' => $titleArrays,
-                    'publisher' => $doiData->publisher,
-                    'publicationYear' => $doiData->publicationYear,
-                    'types' => [
-                        'resourceTypeGeneral' => $doiData->resourceType
-                    ],
-                    'state' => $doiData->state->value,
-                    'url' => $doiData->url,
-
-//                    'subjects' => [], // todo
-//                    'contributors' => [], // todo
-                ]
-            ],
+                'attributes' => $attributes
+            ]
         ];
 
         return json_encode($doiArray);
@@ -130,7 +140,6 @@ class DoiApiCommunicationService
         curl_close($ch);
 
         return json_decode($output)->data;
-//        dumpe(json_decode($output));
     }
 
     /**
@@ -140,7 +149,7 @@ class DoiApiCommunicationService
      * @param int $rowNumber
      * @return array{status: JsonSendStatusEnum, message: string}
      */
-    public function processAddOrUpdateDoiResponse(array $response, int $rowNumber): array
+    public function processAddDoiResponse(array $response, int $rowNumber, string $doiId): array
     {
         if (array_key_exists('errors', $response))
         {
@@ -166,7 +175,7 @@ class DoiApiCommunicationService
             return [
                 ImportDoiConfirmationFacade::JSON_SEND_STATUS => JsonSendStatusEnum::Success,
                 ImportDoiConfirmationFacade::RESPONSE_MESSAGE =>
-                    'Řádek ' . $rowNumber . ': Doi uspesne vytvoren s id ' . $response['data']['id'] . '.'
+                    'Řádek ' . $rowNumber . ': Doi uspesne vytvoren s id ' . $doiId . '.'
             ];
         }
     }

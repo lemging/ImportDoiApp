@@ -60,18 +60,18 @@ class TitleDataBuilder
 
     public function typeString(string $type, ?string $coordinate = null)
     {
-        switch(strtolower($type))
+        switch($type)
         {
-            case 'alternative title':
+            case DoiTitleTypeEnum::AlternativeTitle->value:
                 $this->doiTitleData->type = DoiTitleTypeEnum::AlternativeTitle;
                 break;
-            case 'translated title':
+            case DoiTitleTypeEnum::TranslatedTitle->value:
                 $this->doiTitleData->type = DoiTitleTypeEnum::TranslatedTitle;
                 break;
-            case 'subtitle':
+            case DoiTitleTypeEnum::Subtitle->value:
                 $this->doiTitleData->type = DoiTitleTypeEnum::Subtitle;
                 break;
-            case 'other':
+            case DoiTitleTypeEnum::Other->value:
                 $this->doiTitleData->type = DoiTitleTypeEnum::Other;
                 break;
             default:
@@ -79,7 +79,7 @@ class TitleDataBuilder
                     new DoiAttributeValueNotFoundException(
                         'typ titulku',
                         $coordinate,
-                        ['Alternative title', 'Translated title', 'Subtitle', 'Other']
+                        DoiTitleTypeEnum::values()
                     )
                 );
                 break;

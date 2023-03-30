@@ -32,17 +32,12 @@ class DoiDataBuilder
 
     public function build()
     {
-        if (!isset($this->doiData->doi))
+        if ($this->doiData->doi === null)
         {
             $this->doiDataException->setNewDoiNotSetException();
         }
 
-        elseif ($this->doiDataException->getDoiStateNotFoundException() === null && !isset($this->doiData->state))
-        {
-            $this->doiDataException->setNewDoiStateNotSetException();
-        }
-
-        if (!isset($this->doiData->url))
+        if ($this->doiData->url === null)
         {
             $this->doiDataException->setNewUrlNotSetException();
         }
@@ -57,22 +52,24 @@ class DoiDataBuilder
             $this->doiDataException->setNewDoiTitlesNotSetException();
         }
 
-        if (!isset($this->doiData->publisher))
+        if ($this->doiData->publisher === null)
         {
             $this->doiDataException->setNewPublisherNotSetException();
         }
 
-        if (!isset($this->doiData->publicationYear))
+        if ($this->doiData->publicationYear === null)
         {
             $this->doiDataException->setNewPublicationYearNotSetException();
         }
 
-        if (!isset($this->doiData->resourceType))
+        if ($this->doiData->resourceType === null)
         {
             $this->doiDataException->setNewResourceTypeNotSetException();
         }
 
-        if ($this->doiDataException->getExceptionCount() > 0)
+        if ($this->doiDataException->getExceptionCount() > 0 &&
+            $this->doiData->state !== DoiStateEnum::Draft // Drafty nemusi mit validni data
+        )
         {
             throw $this->doiDataException;
         }
@@ -104,15 +101,15 @@ class DoiDataBuilder
 
     public function doiStateString(string $doiState, ?string $coordinate = null)
     {
-        switch(strtolower($doiState))
+        switch($doiState)
         {
-            case 'draft':
+            case DoiStateEnum::Draft->value:
                 $this->doiData->state = DoiStateEnum::Draft;
                 break;
-            case 'findable':
+            case DoiStateEnum::Findable->value:
                 $this->doiData->state = DoiStateEnum::Findable;
                 break;
-            case 'registered':
+            case DoiStateEnum::Registered->value:
                 $this->doiData->state = DoiStateEnum::Registered;
                 break;
             default:
@@ -120,7 +117,7 @@ class DoiDataBuilder
                     new DoiAttributeValueNotFoundException(
                         'stav doi',
                         $coordinate,
-                        ['Draft', 'Registered', 'Findable']
+                        DoiStateEnum::values()
                     )
                 );
                 break;

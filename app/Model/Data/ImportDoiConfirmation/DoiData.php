@@ -11,11 +11,11 @@ class DoiData
     // todo doplnit vsechny potrebne atributy
     public ?int $rowNumber = null;
 
-    public string $doi;
+    public ?string $doi = null;
 
-    public DoiStateEnum $state;
+    public DoiStateEnum $state = DoiStateEnum::Draft;
 
-    public string $url;
+    public ?string $url = null;
 
     /**
      * @var CreatorData[]
@@ -27,11 +27,11 @@ class DoiData
      */
     public array $titles = [];
 
-    public string $publisher;
+    public ?string $publisher = null;
 
-    public int $publicationYear;
+    public ?int $publicationYear = null;
 
-    public string $resourceType;
+    public ?string $resourceType = null;
 
     /**
      * @var array<string, int>

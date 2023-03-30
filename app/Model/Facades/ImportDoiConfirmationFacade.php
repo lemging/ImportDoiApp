@@ -138,7 +138,9 @@ final class ImportDoiConfirmationFacade
             $response = $this->doiApiCommunicationService->addOrUpdateDoiByJsonToApi($doiJson);
 
             // Zpracujeme odpověd a získáme status a zprávu pro uživatele.
-            $statusAndMessage = $this->doiApiCommunicationService->processAddOrUpdateDoiResponse($response, $doiData->rowNumber);
+            $statusAndMessage = $this->doiApiCommunicationService->processAddDoiResponse(
+                $response, $doiData->rowNumber, $doiData->doi
+            );
 
             // Pokud API odpovědělo, že doi id už existuje, pokusíme se ho aktualizovat s novými daty.
             if ($statusAndMessage[self::JSON_SEND_STATUS] == JsonSendStatusEnum::AlreadyExists)

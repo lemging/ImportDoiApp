@@ -124,16 +124,6 @@ class DoiDataException extends ADataException
     }
 
     /**
-     * @param NotSetException $doiStateNotSetException
-     */
-    public function setNewDoiStateNotSetException(): void
-    {
-        $this->exceptionCount++;
-
-        $this->doiStateNotSetException = new NotSetException('stav');
-    }
-
-    /**
      * @return NotSetException|null
      */
     public function getUrlNotSetException(): ?NotSetException
