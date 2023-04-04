@@ -1,7 +1,8 @@
 {varType App\Model\Data\Homepage\HomepageData $data}
 {block content}
-{*todo preklady*}
-<p>Importování doi vysvětlení.</p>
-<p>Takováto má být struktura souboru LINK.</p>
-<p>Uploadujte soubor LINK</p>
 
+<p>{_homepage.description}</p>
+<p>{_homepage.description2}</p>
+<p>{_homepage.description3}</p>
+<p>{_homepage.structure, [link => $presenter->link('FileStructure:default')]|noescape}</p>
+<p>{_homepage.upload, [link => $presenter->link('ImportDoiMain:default')]|noescape}</p>

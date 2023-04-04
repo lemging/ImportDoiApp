@@ -1,6 +1,14 @@
 {varType App\Model\Data\FileStructure\FileStructureData $data}
 {block content}
 
+<p>{_file_structure.description|noescape}</p>
+<ul>
+    <li>{_file_structure.rules.required_column_headers, [attributes => implode(', ', $data->requiredColumnHeaders)]|noescape}</li>
+    <li>{_file_structure.rules.duplicit_column_headers, [attributes => implode(', ', $data->requiredColumnHeaders)]|noescape}</li>
+    <li>{_file_structure.rules.column_headers_order|noescape}</li>
+</ul>
+<p>{_file_structure.download_file, [link => '/xlsxTempFilesToDownload/structuredDois.xlsx']|noescape}</p>
+
 {*{if !empty($data->doiErrorDataList)}*}
 {*    <h3>Na vašem účtu jsou tyto nevalidní data: </h3>*}
 {*{/if}*}
@@ -32,12 +40,9 @@
 {*    <br>*}
 {*{/foreach}*}
 {*<a href="./../../../../temp/xlsxTempFiles/tempfileToDownload.xlsx" download>*}
-<a href="./test.txt" download="test.txt">
-    as
-</a>
 
 {if !empty($data->doiDataList)}
-    <h3>Soubor obsahuje tato validní data: </h3>
+    <h3>Soubor obsahuje Vaše DOI, zde jsou vypsány: </h3>
 {/if}
 
 {*todo udelat komponentu*}

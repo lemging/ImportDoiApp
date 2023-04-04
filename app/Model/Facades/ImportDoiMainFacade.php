@@ -3,6 +3,7 @@
 namespace App\Model\Facades;
 
 use App\Model\Data\ImportDoiMain\MainData;
+use App\Presenters\ImportDoiMainPresenter;
 use InvalidArgumentException;
 use Nette\Http\FileUpload;
 use Nette\Localization\Translator;
@@ -27,6 +28,7 @@ class ImportDoiMainFacade
     {
         $data = new MainData();
         $data->title = $this->translator->translate('import_doi_main.title');
+        $data->navbarActiveIndex = 2;
 
         return $data;
     }

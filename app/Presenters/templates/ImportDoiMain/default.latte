@@ -1,6 +1,6 @@
 {varType App\Model\Data\ImportDoiMain\MainData $data}
 {block content}
-{*todo preklady*}
-<p>Nahrání souboru. Soubor musí splňovat tuto strukturu LINK.</p>
+
+<p>{_import_doi_main.description, [link => $presenter->link('FileStructure:default')]|noescape}</p>
 {control uploadXlsxFileForm}
 

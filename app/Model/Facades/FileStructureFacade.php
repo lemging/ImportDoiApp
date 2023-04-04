@@ -2,6 +2,7 @@
 
 namespace App\Model\Facades;
 
+use App\Enums\DoiColumnHeaderEnum;
 use App\Exceptions\DoiDataException;
 use App\Model\Builders\CreatorDataBuilder;
 use App\Model\Builders\DoiDataBuilder;
@@ -9,6 +10,7 @@ use App\Model\Builders\TitleDataBuilder;
 use App\Model\Data\FileStructure\FileStructureData;
 use App\Model\Services\DoiApiCommunicationService;
 use App\Model\Services\DoiXlsxProcessService;
+use App\Presenters\FileStructurePresenter;
 use Nette\Localization\Translator;
 
 class FileStructureFacade
@@ -29,6 +31,8 @@ class FileStructureFacade
         // todo melo by byt taky pres builder
         $fileStructureData = new FileStructureData();
         $fileStructureData->title = $this->translator->translate('file_structure.title');
+        $fileStructureData->navbarActiveIndex = 1;
+        $fileStructureData->requiredColumnHeaders = DoiColumnHeaderEnum::requiredColumnHeaderValues();
 
         $doiList = $this->doiApiCommunicationService->getDoiListFromApi();
 

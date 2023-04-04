@@ -13,6 +13,7 @@ use App\Model\Data\ImportDoiConfirmation\DoiData;
 use App\Model\Data\ImportDoiConfirmation\ConfirmationData;
 use App\Model\Services\DoiApiCommunicationService;
 use App\Model\Services\DoiXlsxProcessService;
+use App\Presenters\ImportDoiConfirmationPresenter;
 use Nette\Localization\Translator;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -117,10 +118,6 @@ final class ImportDoiConfirmationFacade
      */
     public function sendDoisDataToApi(array $doisData): array
     {
-        //todo odstran
-//        $this->doiApiCommunicationService->getDoiListFromApi();
-
-
         // Pole, do kterého se budou ukládat statusy a zprávy pro uživatele pro jednotlivé doi.
         $doiSendResponseStatusesAndMessages = [];
 

@@ -403,7 +403,7 @@ class DoiXlsxProcessService
         }
 
         $writer = new Xlsx($spreadsheet);
-        $writer->save('../temp/xlsxTempFiles/tempfileToDownload.xlsx'); //todo constanta
+        $writer->save('../www/xlsxTempFilesToDownload/structuredDois.xlsx'); //todo constanta
     }
 
     /**

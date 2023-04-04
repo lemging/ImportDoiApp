@@ -25,25 +25,18 @@
 		<h1>{$data->title}</h1>
 
 		<nav class="navbar navbar-inverse">
-			<div class="container-fluid">
-				<div class="navbar-header">
-					<a class="navbar-brand" href="{plink Homepage:default}">Doi import</a>
-				</div>
-				<ul class="nav navbar-nav">
-					{var $homepage='Domovská stránka'}
-					<li{if $data->title === $homepage} class="active"{/if}>
-							<a href="{plink Homepage:default}">{$homepage}</a>
-					</li>
-					{var $fileStructure='Struktura souboru'}
-					<li{if $data->title === $fileStructure} class="active"{/if}>
-							<a href="{plink FileStructure:default}">{$fileStructure}</a>
-					</li>
-					{var $importDoi='Upload souboru'}
-					<li{if $data->title === $importDoi} class="active"{/if}>
-						<a href="{plink ImportDoiMain:default}">{$importDoi}</a>
-					</li>
-				</ul>
-			</div>
+			<ul class="nav navbar-nav">
+
+				<li{if $data->navbarActiveIndex === 0} class="active"{/if}>
+						<a href="{plink Homepage:default}">{_homepage.title}</a>
+				</li>
+				<li{if $data->navbarActiveIndex === 1} class="active"{/if}>
+						<a href="{plink FileStructure:default}">{_file_structure.title}</a>
+				</li>
+				<li{if $data->navbarActiveIndex === 2} class="active"{/if}>
+					<a href="{plink ImportDoiMain:default}">{_import_doi_main.title}</a>
+				</li>
+			</ul>
 		</nav>
 
 		<div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>

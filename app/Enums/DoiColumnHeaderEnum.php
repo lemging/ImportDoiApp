@@ -32,7 +32,7 @@ enum DoiColumnHeaderEnum: string
      */
     public static function names(): array
     {
-        return array_column(self::cases(), 'name');
+        return array_column(self::cases(), 'name'); //todo konst
     }
 
     public static function values(): array
@@ -45,6 +45,31 @@ enum DoiColumnHeaderEnum: string
         return array_combine(self::values(), self::names());
     }
 
+    public static function requiredColumnHeaderValues(): array
+    {
+        return [
+            self::Doi->value,
+            self::DoiState->value,
+            self::DoiUrl->value,
+            self::Publisher->value,
+            self::PublicationYear->value,
+            self::SourceType->value,
+            self::CreatorType->value,
+            self::CreatorAffiliation->value,
+            self::CreatorName->value,
+            self::CreatorNameIdentifier->value,
+            self::Title->value,
+            self::TitleLanguage->value,
+            self::TitleType->value
+        ];
+    }
+
+    public function possibleDuplicateColumnHeaders()
+    {
+//        return [
+//          self::
+//        ];
+    }
 //    public function getType(): string
 //    {
 //        return match($this) {

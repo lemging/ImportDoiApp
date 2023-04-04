@@ -1,1 +1,7 @@
 title: 'Struktura souboru'
+description: '<strong>Excelový soubor</strong>(.xlsx) s vašimi DOI <strong>musí</strong> splňovat tuto strukturu:'
+download_file: 'Zde máte k dispozici <a href="%link%" download>soubor ke stažení</a> s již <strong>hotovou kompletní funkční strukturou</strong> a <strong>Vašimi DOI</strong> i s metadaty. Budete mít přehled o všech, můžete je editovat, nebo přidávat nová. Pokud budete chtít vícekrát některý atribut, který to umožňuje, stačít přidat další sloupec se stejným nadpisem.'
+rules:
+    required_column_headers: '<strong>Musí</strong> existovat sloupec pro každý povinný atribut. <strong>Povinné atributy</strong>: %attributes%.'
+    duplicit_column_headers: 'Výjma atributů, kterých může být více (např. Tvůrce, Titulek, Afilace tvůrce atd.), <strong>nesmí</strong> být <strong>žádný</strong> sloupec více než jednou.'
+    column_headers_order: 'Sloupce atributů tvůrce a titulku <strong>musí</strong> být po sobě v <strong>určeném pořadí</strong>, aby při větším počtu tvůrců nebo titulků bylo možné poznat k čemu co patří. <strong>Pořadí tvůrce</strong>: jméno, identifikátor(může být vícekrát z sebou), afilace(může být vícekrát za sebou), typ. <strong>Pořadí titulku</strong>: titulek, typ, jazyk.'

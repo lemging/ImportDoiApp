@@ -7,5 +7,7 @@ namespace App\Model\Data;
  */
 abstract class AData
 {
-    public string $title;
+    public string $title = '';
+
+    public ?int $navbarActiveIndex = null;
 }

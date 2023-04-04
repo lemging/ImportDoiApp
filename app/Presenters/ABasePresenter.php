@@ -16,7 +16,10 @@ abstract class ABasePresenter extends Presenter
      */
     public function renderDefault(): void
     {
+        $this->data->presenter = ABasePresenter::class;
+
         // Nahrajeme data do šablony.
         $this->template->data = $this->data;
+
     }
 }

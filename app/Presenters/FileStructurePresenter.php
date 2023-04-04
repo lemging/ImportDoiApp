@@ -10,11 +10,11 @@ class FileStructurePresenter extends ABasePresenter
         private FileStructureFacade $fileStructureFacade
     )
     {
+        parent::__construct();
     }
 
     public function actionDefault()
     {
-        $fileStructureData = $this->fileStructureFacade->prepareFileStructureData();
-        $this->data = $fileStructureData;
+        $this->data = $this->fileStructureFacade->prepareFileStructureData();
     }
 }

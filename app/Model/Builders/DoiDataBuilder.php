@@ -30,6 +30,9 @@ class DoiDataBuilder
         return new self();
     }
 
+    /**
+     * @throws DoiDataException
+     */
     public function build()
     {
         if ($this->doiData->doi === null)

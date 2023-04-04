@@ -27,4 +27,6 @@ class FileStructureData extends AData
         'affiliation' => 0,
         'titles' => 0,
     ];
+
+    public array $requiredColumnHeaders = [];
 }

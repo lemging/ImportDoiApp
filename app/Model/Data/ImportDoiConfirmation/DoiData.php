@@ -11,6 +11,7 @@ class DoiData
     // todo doplnit vsechny potrebne atributy
     public ?int $rowNumber = null;
 
+    // todo maj tady byt vychozi hodnoty ?
     public ?string $doi = null;
 
     public DoiStateEnum $state = DoiStateEnum::Draft;
