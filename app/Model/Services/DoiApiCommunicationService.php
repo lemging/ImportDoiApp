@@ -82,7 +82,8 @@ class DoiApiCommunicationService
 
         $attributes['event'] = match ($doiData->state) {
             DoiStateEnum::Findable => 'publish',
-            DoiStateEnum::Registered => 'register'
+            DoiStateEnum::Registered => 'register',
+            DoiStateEnum::Draft => '',
         };
 
         //todo do konstant
@@ -156,7 +157,7 @@ class DoiApiCommunicationService
             // Ve vytvoreni doi se vyskytla chyba.
             if ($response['errors'][0]['title'])
             {
-                // Chybou je, že doi se stejným id u exituje.
+                // Chybou je, že doi se stejným id u exituje. Bude se zkouset DOI aktualizovat.
                 return [
                     ImportDoiConfirmationFacade::JSON_SEND_STATUS => JsonSendStatusEnum::AlreadyExists,
                     ImportDoiConfirmationFacade::RESPONSE_MESSAGE => null
@@ -195,7 +196,8 @@ class DoiApiCommunicationService
             return [
                 ImportDoiConfirmationFacade::JSON_SEND_STATUS => JsonSendStatusEnum::Failure,
                 ImportDoiConfirmationFacade::RESPONSE_MESSAGE =>
-                    'Řádek ' . $rowNumber . ': Doi s id ' . $doiId . ' už existuje, ale nepodařilo se aktualizovat.'
+                    'Řádek ' . $rowNumber . ': Doi s id ' . $doiId . ' už existuje, ale nepodařilo se aktualizovat. Chyba: ' .
+                    $response['errors'][0]['title']
             ];
         }
         else
@@ -219,15 +221,15 @@ class DoiApiCommunicationService
     {
         if ($allSuccessfullySend)
         {
-            return 'Všechny doi se úspěšně přidali.';
+            return 'Všechny doi se úspěšně přidali nebo akualizovali.';
         }
         elseif ($allFailedSend)
         {
-            return 'Žádný doi se nepodařilo přidat.';
+            return 'Žádný doi se nepodařilo přidat nebo akualizovali.';
         }
         else
         {
-            return 'Některé dois se podařilo přidat, některé se nepodařilo.';
+            return 'Některé dois se podařilo přidat  nebo akualizovat, některé se nepodařilo.';
         }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Presenters;
 
+use App\Model\Facades\ImportDoiConfirmationFacade;
 use App\Model\Facades\ImportDoiResultMessagesFacade;
 
 /**
@@ -9,6 +10,9 @@ use App\Model\Facades\ImportDoiResultMessagesFacade;
  */
 class ImportDoiResultMessagesPresenter extends ABasePresenter
 {
+    const DOI_SEND_RESPONSE_MESSAGES_SECTION = 'doiSendResponseMessagesSection';
+    const DOI_SEND_RESPONSE_GENERAL_MESSAGE_AND_MESSAGES = 'doiSendResponseGeneralMessageAndMessages';
+
     /**
      * Konstuktor.
      *
@@ -29,6 +33,8 @@ class ImportDoiResultMessagesPresenter extends ABasePresenter
      */
     public function actionDefault(array $resultMessages): void
     {
-        $this->data = $this->importDoiResultMessagesFacade->prepareImportDoiSetToApiData($resultMessages);
+        $session = $this->getSession()->getSection(self::DOI_SEND_RESPONSE_MESSAGES_SECTION);
+        $generalMessageAndMessages = $session->get(self::DOI_SEND_RESPONSE_GENERAL_MESSAGE_AND_MESSAGES);
+        $this->data = $this->importDoiResultMessagesFacade->prepareImportDoiSetToApiData($generalMessageAndMessages);
     }
 }

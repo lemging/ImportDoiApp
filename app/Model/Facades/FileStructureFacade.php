@@ -6,6 +6,7 @@ use App\Enums\DoiColumnHeaderEnum;
 use App\Exceptions\DoiDataException;
 use App\Model\Builders\CreatorDataBuilder;
 use App\Model\Builders\DoiDataBuilder;
+use App\Model\Builders\FileStructureDataBuilder;
 use App\Model\Builders\TitleDataBuilder;
 use App\Model\Data\FileStructure\FileStructureData;
 use App\Model\Services\DoiApiCommunicationService;
@@ -28,11 +29,10 @@ class FileStructureFacade
      */
     public function prepareFileStructureData()
     {
-        // todo melo by byt taky pres builder
-        $fileStructureData = new FileStructureData();
-        $fileStructureData->title = $this->translator->translate('file_structure.title');
-        $fileStructureData->navbarActiveIndex = 1;
-        $fileStructureData->requiredColumnHeaders = DoiColumnHeaderEnum::requiredColumnHeaderValues();
+        $fileStructureDataBuilder = FileStructureDataBuilder::create();
+        $fileStructureDataBuilder->title($this->translator->translate('file_structure.title'));
+        $fileStructureDataBuilder->navbarActiveIndex(1);
+        $fileStructureDataBuilder->requiredColumnHeaders(DoiColumnHeaderEnum::requiredColumnHeaderValues());
 
         $doiList = $this->doiApiCommunicationService->getDoiListFromApi();
 
@@ -50,29 +50,14 @@ class FileStructureFacade
             try {
                 // Vytvoří datový objekt, nebo vyhodí vyjímku obsahující všechny chyby.
                 $doiData = $this->doiXlsxProcessService->createDoiData($doi);
-                $fileStructureData->doiDataList[] = $doiData;
-
-                // todo toto potom asi v tom builderu
-                foreach ($doiData->counts as $attribute => $currentCount)
-                {
-                    if ($currentCount > $fileStructureData->maxCounts[$attribute])
-                    {
-                        $fileStructureData->maxCounts[$attribute] = $currentCount;
-                    }
-                }
-
+                $fileStructureDataBuilder->addDoiData($doiData);
             } catch (DoiDataException $doiDataException) {
-                $fileStructureData->doiErrorDataList[] = $doiDataException->createDataObjectDataFromApi();
+                $fileStructureDataBuilder->addDoiErrorData($doiDataException->createDataObjectDataFromApi());
             }
         }
 
-//        dumpe($fileStructureData);
-
-//        dumpe($doiDataList);
-//        dumpe($a);
+        $fileStructureData = $fileStructureDataBuilder->build();
         $this->doiXlsxProcessService->createXlsxFromDoiDataList($fileStructureData);
-
-
 
         return $fileStructureData;
     }

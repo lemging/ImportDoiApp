@@ -45,7 +45,9 @@ class ImportDoiConfirmationPresenter extends ABasePresenter
      */
     public function handleAddDois(): void
     {
-        $responseMessages = $this->importDoiConfirmationFacade->sendDoisDataToApi($this->data->doiDataList);
-        $this->redirect('ImportDoiResultMessages:default', [$responseMessages]);
+        $messages = $this->importDoiConfirmationFacade->sendDoisDataToApi($this->data->doiDataList);
+        $session = $this->getSession()->getSection(ImportDoiResultMessagesPresenter::DOI_SEND_RESPONSE_MESSAGES_SECTION);
+        $session->set(ImportDoiResultMessagesPresenter::DOI_SEND_RESPONSE_GENERAL_MESSAGE_AND_MESSAGES, $messages);
+        $this->redirect('ImportDoiResultMessages:default');
     }
 }

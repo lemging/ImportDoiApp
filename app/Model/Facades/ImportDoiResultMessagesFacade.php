@@ -24,8 +24,10 @@ class ImportDoiResultMessagesFacade
      */
     public function prepareImportDoiSetToApiData(array $statusesAndMessages): ResultMessagesData
     {
+
         $data = new ResultMessagesData();
         $data->title = $this->translator->translate('import_doi_result_messages.title');
+        $data->navbarActiveIndex = 2;
 
         $data->doiSendResponseGeneralMessage =
             $statusesAndMessages[ImportDoiConfirmationFacade::DOI_SEND_RESPONSE_GENERAL_MESSAGE];
@@ -35,7 +37,7 @@ class ImportDoiResultMessagesFacade
         {
             $messageData = new ResultMessageData();
             $messageData->status =
-                $doiSendResponseMessage[ImportDoiConfirmationFacade::JSON_SEND_STATUS]['value'];
+                $doiSendResponseMessage[ImportDoiConfirmationFacade::JSON_SEND_STATUS]->value;
             $messageData->message =
                 $doiSendResponseMessage[ImportDoiConfirmationFacade::RESPONSE_MESSAGE];
 

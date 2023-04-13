@@ -14,6 +14,8 @@ use App\Model\Data\ImportDoiConfirmation\ConfirmationData;
 use App\Model\Services\DoiApiCommunicationService;
 use App\Model\Services\DoiXlsxProcessService;
 use App\Presenters\ImportDoiConfirmationPresenter;
+use Nette\Http\Session;
+use Nette\Http\SessionSection;
 use Nette\Localization\Translator;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -34,7 +36,7 @@ final class ImportDoiConfirmationFacade
     public function __construct(
         private DoiXlsxProcessService      $doiXlsxSolverService,
         private DoiApiCommunicationService $doiApiCommunicationService,
-        private Translator $translator
+        private Translator $translator,
     )
     {
     }
@@ -51,6 +53,7 @@ final class ImportDoiConfirmationFacade
     {
         $importDoiData = new ConfirmationData();
         $importDoiData->title = $this->translator->translate('import_doi_confirmation.title');
+        $importDoiData->navbarActiveIndex = 2;
 
         // Načteme si soubor.
         $spreadsheet = IOFactory::load($destination);
@@ -156,7 +159,9 @@ final class ImportDoiConfirmationFacade
             {
                 $allJsonsSuccessfullySend = false;
             }
-            if ($statusAndMessage[self::JSON_SEND_STATUS] === JsonSendStatusEnum::Success)
+            if ($statusAndMessage[self::JSON_SEND_STATUS] === JsonSendStatusEnum::Success ||
+                $statusAndMessage[self::JSON_SEND_STATUS] === JsonSendStatusEnum::AlreadyExists
+            )
             {
                 $allJsonsFailedSend = false;
             }
@@ -165,6 +170,7 @@ final class ImportDoiConfirmationFacade
         $doiSendResponseGeneralMessage = $this->doiApiCommunicationService->createGeneralResponseMessage(
             $allJsonsSuccessfullySend, $allJsonsFailedSend
         );
+
 
         return [
             self::DOI_SEND_RESPONSE_MESSAGES => $doiSendResponseStatusesAndMessages,
