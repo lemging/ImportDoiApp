@@ -155,7 +155,7 @@ class DoiApiCommunicationService
         if (array_key_exists('errors', $response))
         {
             // Ve vytvoreni doi se vyskytla chyba.
-            if ($response['errors'][0]['title'])
+            if ($response['errors'][0]['title'] === 'This DOI has already been taken')
             {
                 // Chybou je, že doi se stejným id u exituje. Bude se zkouset DOI aktualizovat.
                 return [
@@ -164,11 +164,13 @@ class DoiApiCommunicationService
                 ];
             }
 
+            $message = 'Řádek ' . $rowNumber . ': Doi s id ' . $doiId . ' už existuje, ale nepodařilo se vytvořit. Chyba: ';
+            $message .= $this->createErrorMessageFromApiData($response['errors']);
+
             return [
                 ImportDoiConfirmationFacade::JSON_SEND_STATUS => JsonSendStatusEnum::Failure,
-                ImportDoiConfirmationFacade::RESPONSE_MESSAGE =>
-                    'Řádek ' . $rowNumber . ': Vyskytla se chyba. Doi se nevytvoril.'
-            ]; // todo pak mozna konkretnejsi
+                ImportDoiConfirmationFacade::RESPONSE_MESSAGE => $message
+            ];
         }
         else
         {
@@ -193,11 +195,12 @@ class DoiApiCommunicationService
     {
         if (array_key_exists('errors', $response))
         {
+            $message = 'Řádek ' . $rowNumber . ': Doi s id ' . $doiId . ' už existuje, ale nepodařilo se aktualizovat. Chyba: ';
+            $message .= $this->createErrorMessageFromApiData($response['errors']);
+
             return [
                 ImportDoiConfirmationFacade::JSON_SEND_STATUS => JsonSendStatusEnum::Failure,
-                ImportDoiConfirmationFacade::RESPONSE_MESSAGE =>
-                    'Řádek ' . $rowNumber . ': Doi s id ' . $doiId . ' už existuje, ale nepodařilo se aktualizovat. Chyba: ' .
-                    $response['errors'][0]['title']
+                ImportDoiConfirmationFacade::RESPONSE_MESSAGE => $message
             ];
         }
         else
@@ -231,5 +234,23 @@ class DoiApiCommunicationService
         {
             return 'Některé dois se podařilo přidat  nebo akualizovat, některé se nepodařilo.';
         }
+    }
+
+    /**
+     * @param array $errors
+     * @return string
+     */
+    protected function createErrorMessageFromApiData(array $errors): string
+    {
+        $i = 0;
+        $message = '';
+        foreach ($errors as $error) {
+            $message .= $error['title'] . '(' . $error['source'] . ')';
+
+            if ($i++ !== count($errors) - 1) {
+                $message .= ', ';
+            }
+        }
+        return $message;
     }
 }
