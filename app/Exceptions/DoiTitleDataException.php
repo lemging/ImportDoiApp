@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use App\Enums\DoiColumnHeaderEnum;
 use App\Model\Data\ImportDoiConfirmation\DoiTitleDataErrorData;
 
 class DoiTitleDataException extends ADataException
@@ -63,7 +64,7 @@ class DoiTitleDataException extends ADataException
     {
         $this->exceptionCount++;
 
-        $this->titleNotSetException = new NotSetException('titulek');
+        $this->titleNotSetException = new NotSetException(DoiColumnHeaderEnum::Title);
     }
 
     /**
@@ -81,7 +82,7 @@ class DoiTitleDataException extends ADataException
     {
         $this->exceptionCount++;
 
-        $this->typeNotSetException = new NotSetException('typ');
+        $this->typeNotSetException = new NotSetException(DoiColumnHeaderEnum::TitleType);
     }
 
     /**
@@ -99,7 +100,7 @@ class DoiTitleDataException extends ADataException
     {
         $this->exceptionCount++;
 
-        $this->languageNotSetException = new NotSetException('jazyk');
+        $this->languageNotSetException = new NotSetException(DoiColumnHeaderEnum::TitleLanguage);
     }
 
     /**

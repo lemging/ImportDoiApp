@@ -47,7 +47,7 @@ final class ImportDoiMainPresenter extends ABasePresenter
     public function createComponentUploadXlsxFileForm(): ImportDoiFormControl
     {
         // Vytvoří komponentu s formulářem, kde lze uploadnout soubor.
-        $control = $this->doiFormControlFactory->create(ImportDoiFormControl::IMPORT_FILE_FORMAT_XLSX);
+        $control = $this->doiFormControlFactory->create();
 
         // Funkce, která se provede, po úspěšném nahrání souboru.
         $control->onSuccess[] = function (FileUpload $file): void {

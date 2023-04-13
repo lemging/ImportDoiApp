@@ -15,75 +15,9 @@
 
 {if !empty($data->doiDataErrorDataList)}
     <a n:href='ImportDoiMain:default'>Zkusit znovu</a>
-    <h3>Soubor obsauhuje tato chybná data: </h3>
 {/if}
 
-{var $sheetTitle = null}
-{foreach $data->doiDataErrorDataList as $doiDataErrorData}
-    {if $sheetTitle === null || $sheetTitle !== $doiDataErrorData->sheetTitle}
-        Název listu: <strong>{$doiDataErrorData->sheetTitle}</strong> <br>
-    {/if}
-    Číslo řádku: <strong>{$doiDataErrorData->rowNumber}</strong> <br>
-    {foreach $doiDataErrorData->doiCellDataErrors as $doiCellDataError}
-        {$doiCellDataError |noescape} <br>
-    {/foreach}
-
-    {foreach $doiDataErrorData->doiCreatorDataErrorDataList as $doiCreatorDataErrorData}
-        Chybná data <strong>tvurce</strong>: <br>
-        {foreach $doiCreatorDataErrorData->doiCellDataErrors as $doiCreatorCellDataError}
-            &emsp;{$doiCreatorCellDataError |noescape} <br>
-        {/foreach}
-    {/foreach}
-
-    {foreach $doiDataErrorData->doiTitleDataErrorDataList as $doiTitleCellDataError}
-        Chybná data <strong>titulku</strong>: <br>
-        {foreach $doiTitleCellDataError->doiCellDataErrors as $doiCreatorCellDataError}
-            &emsp;{$doiCreatorCellDataError |noescape} <br>
-        {/foreach}
-    {/foreach}
-    <br>
-{/foreach}
-
-{if !empty($data->doiDataList)}
-    <h3>Soubor obsahuje tato validní data: </h3>
-{/if}
-
-{foreach $data->doiDataList as $doiData}
-    <ul style="list-style-type: none; padding: 0"> {*    todo udelat tridu*}
-        <li>Cislo radku: <strong>{$doiData->rowNumber}</strong></li>
-        <li>Doi: <strong>{$doiData->doi}</strong> </li>
-        <li>Stav: <strong>{$doiData->state->value}</strong> </li>
-        <li>Url: <strong>{$doiData->url}</strong> </li>
-
-        {foreach $doiData->creators as $creator}
-            <li> Tvurce: <strong>{$creator->name}</strong> </li>
-            <ul>
-                {foreach $creator->nameIdentifiers as $creatorNameIdentifier}
-                    <li> Identifikator jmena: <strong>{$creatorNameIdentifier}</strong> </li>
-                {/foreach}
-
-            <li> Typ tvurce: <strong>{$creator->type->value}</strong> </li>
-
-                {foreach $creator->affiliations as $affiliation}
-                    <li> Afilace: <strong>{$affiliation}</strong> </li>
-                {/foreach}
-            </ul>
-        {/foreach}
-
-        {foreach $doiData->titles as $title}
-            <li>Titulek: <strong>{$title->title}</strong></li>
-            <ul>
-                <li>Typ titulku: <strong>{$title->type->value}</strong></li>
-                <li>Jazyk: <strong>{$title->language}</strong></li>
-            </ul>
-        {/foreach}
-
-        <li>Vydavatel: <strong>{$doiData->publisher}</strong></li>
-        <li>Rok vydani: <strong>{$doiData->publicationYear}</strong></li>
-        <li>Typ zdroje: <strong>{$doiData->resourceType}</strong></li>
-    </ul>
-    <br>
-{/foreach}
+{control doiValidAndInvalidListControl}
 
 {if !empty($data->doiDataList)}
     <a n:href="addDois!">Odeslat validní řádky</a>

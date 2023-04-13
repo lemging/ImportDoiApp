@@ -2,6 +2,7 @@
 
 namespace App\Model\Builders;
 
+use App\Enums\DoiColumnHeaderEnum;
 use App\Enums\DoiCreatorTypeEnum;
 use App\Exceptions\DoiAttributeValueNotFoundException;
 use App\Exceptions\DoiCreatorDataException;
@@ -48,7 +49,7 @@ class CreatorDataBuilder
             default:
                 $this->doiCreatorDataException->setTypeNotFoundException(
                     new DoiAttributeValueNotFoundException(
-                        'typ tvurce',
+                        DoiColumnHeaderEnum::CreatorType,
                         $coordinate,
                         DoiCreatorTypeEnum::values()
                     )
@@ -72,11 +73,11 @@ class CreatorDataBuilder
     {
         if (!isset($this->doiCreatorData->name))
         {
-            $this->doiCreatorDataException->setNameNotSetException(new NotSetException('jméno tvůrce'));
+            $this->doiCreatorDataException->setNameNotSetException(new NotSetException(DoiColumnHeaderEnum::CreatorName));
         }
         if ($this->doiCreatorDataException->getTypeNotFoundException() === null && !isset($this->doiCreatorData->type))
         {
-            $this->doiCreatorDataException->setTypeNotSetException(new NotSetException('typ tvůrce'));
+            $this->doiCreatorDataException->setTypeNotSetException(new NotSetException(DoiColumnHeaderEnum::CreatorType));
         }
 
         if ($this->doiCreatorDataException->getExceptionCount() > 0)

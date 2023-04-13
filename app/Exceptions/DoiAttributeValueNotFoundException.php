@@ -2,13 +2,15 @@
 
 namespace App\Exceptions;
 
+use App\Enums\DoiColumnHeaderEnum;
+use App\Enums\DoiTitleTypeEnum;
 use Exception;
 use Throwable;
 
 class DoiAttributeValueNotFoundException extends ADoiCellDataException
 {
     public function __construct(
-        protected string  $header,
+        protected DoiColumnHeaderEnum $header,
         protected ?string $coordinate = null,
         protected ?array  $accepted = [],
         string                     $message = "",
@@ -21,7 +23,7 @@ class DoiAttributeValueNotFoundException extends ADoiCellDataException
 
     public function getErrorMessage(): string
     {
-        return 'Zadán neznámý atribut ve sloupci <strong>' . $this->header .  '</strong> na <strong>' . $this->coordinate .
+        return 'Zadán neznámý atribut ve sloupci <strong>' . $this->header->value .  '</strong> na <strong>' . $this->coordinate .
             '</strong>. Akceptované typy: <strong>' . implode('</strong>, <strong>', $this->accepted) . '</strong>.';
     }
 }

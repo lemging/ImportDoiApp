@@ -4,6 +4,7 @@
 namespace App\Exceptions;
 
 
+use App\Enums\DoiColumnHeaderEnum;
 use App\Model\Data\ImportDoiConfirmation\DoiDataErrorData;
 
 class DoiDataException extends ADataException
@@ -11,6 +12,8 @@ class DoiDataException extends ADataException
     private string $sheetTitle;
 
     private int $rowNumber;
+
+    private string $doi;
 
     private ?NotSetException $doiNotSetException = null;
 
@@ -25,6 +28,8 @@ class DoiDataException extends ADataException
     private ?NotSetException $publisherNotSetException = null;
 
     private ?NotSetException $publicationYearNotSetException = null;
+
+    private ?PublicationYearNotInLimitsException $publicationYearNotInLimitsException = null;
 
     private ?NotSetException $resourceTypeNotSetException = null;
 
@@ -63,7 +68,22 @@ class DoiDataException extends ADataException
 
     public function createDataObjectDataFromApi()
     {
-        return new DoiDataErrorData(); // todo
+        $doiDataErrorData = new DoiDataErrorData();
+
+        $doiDataErrorData->doi = $this->doi;
+        $doiDataErrorData->doiCellDataErrors = $this->getErrorMessages();
+        foreach($this->doiCreatorDataExceptions as $doiCreatorDataException)
+        {
+            $doiDataErrorData->doiCreatorDataErrorDataList[] = $doiCreatorDataException->createDataObject();
+        }
+
+        foreach($this->doiTitleDataExceptions as $doiTitleDataException)
+        {
+            $doiDataErrorData->doiTitleDataErrorDataList[] = $doiTitleDataException->createDataObject();
+        }
+
+
+        return $doiDataErrorData;
     }
 
     private function getErrorMessages(): array
@@ -82,7 +102,8 @@ class DoiDataException extends ADataException
             $this->publisherNotSetException,
             $this->publicationYearNotSetException,
             $this->resourceTypeNotSetException,
-            $this->doiStateNotFoundException
+            $this->doiStateNotFoundException,
+            $this->publicationYearNotInLimitsException
         ];
 
         foreach ($cellValidationExceptions as $exception) {
@@ -112,7 +133,7 @@ class DoiDataException extends ADataException
     {
         $this->exceptionCount++;
 
-        $this->doiNotSetException = new NotSetException('doi');
+        $this->doiNotSetException = new NotSetException(DoiColumnHeaderEnum::Doi);
     }
 
     /**
@@ -138,7 +159,7 @@ class DoiDataException extends ADataException
     {
         $this->exceptionCount++;
 
-        $this->urlNotSetException = new NotSetException('url');
+        $this->urlNotSetException = new NotSetException(DoiColumnHeaderEnum::DoiUrl);
     }
 
     /**
@@ -156,7 +177,7 @@ class DoiDataException extends ADataException
     {
         $this->exceptionCount++;
 
-        $this->doiCreatorsNotSetException = new NotSetException('tvůrce');
+        $this->doiCreatorsNotSetException = new NotSetException(DoiColumnHeaderEnum::CreatorName);
     }
 
     /**
@@ -174,7 +195,7 @@ class DoiDataException extends ADataException
     {
         $this->exceptionCount++;
 
-        $this->doiTitlesNotSetException = new NotSetException('titulek');
+        $this->doiTitlesNotSetException = new NotSetException(DoiColumnHeaderEnum::Title);
     }
 
     /**
@@ -192,7 +213,7 @@ class DoiDataException extends ADataException
     {
         $this->exceptionCount++;
 
-        $this->publisherNotSetException = new NotSetException('vydavatel');
+        $this->publisherNotSetException = new NotSetException(DoiColumnHeaderEnum::Publisher);
     }
 
     /**
@@ -210,7 +231,7 @@ class DoiDataException extends ADataException
     {
         $this->exceptionCount++;
 
-        $this->publicationYearNotSetException = new NotSetException('rok vydání');
+        $this->publicationYearNotSetException = new NotSetException(DoiColumnHeaderEnum::PublicationYear);
     }
 
     /**
@@ -228,7 +249,7 @@ class DoiDataException extends ADataException
     {
         $this->exceptionCount++;
 
-        $this->resourceTypeNotSetException = new NotSetException('typ zdroje');
+        $this->resourceTypeNotSetException = new NotSetException(DoiColumnHeaderEnum::SourceType);
     }
 
     /**
@@ -312,5 +333,35 @@ class DoiDataException extends ADataException
     public function setSheetTitle(?string $sheetTitle): void
     {
         $this->sheetTitle = $sheetTitle;
+    }
+
+    public function getPublicationYearNotInLimitsException(): ?PublicationYearNotInLimitsException
+    {
+        return $this->publicationYearNotInLimitsException;
+    }
+
+    public function setPublicationYearNotInLimitsException(
+        ?PublicationYearNotInLimitsException $publicationYearNotInLimitsException
+    ): void
+    {
+        $this->exceptionCount++;
+
+        $this->publicationYearNotInLimitsException = $publicationYearNotInLimitsException;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDoi(): string
+    {
+        return $this->doi;
+    }
+
+    /**
+     * @param string $doi
+     */
+    public function setDoi(string $doi): void
+    {
+        $this->doi = $doi;
     }
 }

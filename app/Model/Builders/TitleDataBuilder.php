@@ -2,6 +2,7 @@
 
 namespace App\Model\Builders;
 
+use App\Enums\DoiColumnHeaderEnum;
 use App\Enums\DoiTitleTypeEnum;
 use App\Exceptions\DoiAttributeValueNotFoundException;
 use App\Exceptions\DoiTitleDataException;
@@ -77,7 +78,7 @@ class TitleDataBuilder
             default:
                 $this->doiTitleDataException->setTypeNotFoundException(
                     new DoiAttributeValueNotFoundException(
-                        'typ titulku',
+                        DoiColumnHeaderEnum::TitleType,
                         $coordinate,
                         DoiTitleTypeEnum::values()
                     )

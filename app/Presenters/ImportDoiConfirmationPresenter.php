@@ -2,7 +2,11 @@
 
 namespace App\Presenters;
 
+use App\Components\DoiValidAndInvalidList\DoiValidAndInvalidListControl;
+use App\Components\DoiValidAndInvalidList\IDoiValidAndInvalidListControlFactory;
 use App\Exceptions\SystemException;
+use App\Model\Data\FileStructure\FileStructureData;
+use App\Model\Data\ImportDoiConfirmation\ConfirmationData;
 use App\Model\Facades\ImportDoiConfirmationFacade;
 use Nette\Application\AbortException;
 use PhpOffice\PhpSpreadsheet\Exception;
@@ -18,7 +22,8 @@ class ImportDoiConfirmationPresenter extends ABasePresenter
      * @param ImportDoiConfirmationFacade              $importDoiConfirmationFacade
      */
     public function __construct(
-        private ImportDoiConfirmationFacade $importDoiConfirmationFacade
+        private ImportDoiConfirmationFacade $importDoiConfirmationFacade,
+        private IDoiValidAndInvalidListControlFactory $doiValidAndInvalidListControlFactory
     ) {
         parent::__construct();
     }
@@ -49,5 +54,13 @@ class ImportDoiConfirmationPresenter extends ABasePresenter
         $session = $this->getSession()->getSection(ImportDoiResultMessagesPresenter::DOI_SEND_RESPONSE_MESSAGES_SECTION);
         $session->set(ImportDoiResultMessagesPresenter::DOI_SEND_RESPONSE_GENERAL_MESSAGE_AND_MESSAGES, $messages);
         $this->redirect('ImportDoiResultMessages:default');
+    }
+
+    public function createComponentDoiValidAndInvalidListControl(): DoiValidAndInvalidListControl
+    {
+        /** @var ConfirmationData $data */
+        $data = $this->data;
+
+        return $this->doiValidAndInvalidListControlFactory->create($data->doiDataList, $data->doiDataErrorDataList);
     }
 }

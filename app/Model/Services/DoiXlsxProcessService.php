@@ -218,7 +218,7 @@ class DoiXlsxProcessService
                 $this->doiDataBuilder->publisher($currentCellValue);
                 break;
             case DoiColumnHeaderEnum::PublicationYear:
-                $this->doiDataBuilder->publicationYear((int)$currentCellValue);
+                $this->doiDataBuilder->publicationYear((int)$currentCellValue, $cell->getCoordinate());
                 break;
             case DoiColumnHeaderEnum::SourceType:
                 $this->doiDataBuilder->resourceType($currentCellValue);

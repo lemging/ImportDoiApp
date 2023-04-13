@@ -12,6 +12,8 @@ use App\Model\Data\FileStructure\ColumnHeadersListData;
 
 class ColumnHeadersListDataBuilder
 {
+    const HEADER = 'header';
+    const COORDINATE = 'coordinate';
     public ColumnHeadersListData $columnHeadersListData;
 
     /**
@@ -67,7 +69,7 @@ class ColumnHeadersListDataBuilder
                 {
                     $this->fileStructureDataException->addWrongColumnHeaderOrderException(
                         new WrongColumnHeaderOrderException(
-                            $columnHeader,
+                            DoiColumnHeaderEnum::CreatorNameIdentifier,
                             [$cellCoordinate],
                             $lastHeader,
                             $expectedColumnHeader
@@ -88,7 +90,7 @@ class ColumnHeadersListDataBuilder
                 {
                     $this->fileStructureDataException->addWrongColumnHeaderOrderException(
                         new WrongColumnHeaderOrderException(
-                            $columnHeader,
+                            DoiColumnHeaderEnum::CreatorAffiliation,
                             [$cellCoordinate],
                             $lastHeader,
                             $expectedLastHeader
@@ -108,7 +110,7 @@ class ColumnHeadersListDataBuilder
                 {
                     $this->fileStructureDataException->addWrongColumnHeaderOrderException(
                         new WrongColumnHeaderOrderException(
-                            $columnHeader,
+                            DoiColumnHeaderEnum::CreatorType,
                             [$cellCoordinate],
                             $lastHeader,
                             $expectedLastHeader
@@ -129,7 +131,7 @@ class ColumnHeadersListDataBuilder
                 {
                     $this->fileStructureDataException->addWrongColumnHeaderOrderException(
                         new WrongColumnHeaderOrderException(
-                            $columnHeader,
+                            DoiColumnHeaderEnum::TitleType,
                             [$cellCoordinate],
                             $lastHeader,
                             DoiColumnHeaderEnum::Title
@@ -147,7 +149,7 @@ class ColumnHeadersListDataBuilder
                 {
                     $this->fileStructureDataException->addWrongColumnHeaderOrderException(
                         new WrongColumnHeaderOrderException(
-                            $columnHeader,
+                            DoiColumnHeaderEnum::TitleLanguage,
                             [$cellCoordinate],
                             $lastHeader,
                             DoiColumnHeaderEnum::TitleType
@@ -177,13 +179,16 @@ class ColumnHeadersListDataBuilder
                 break;
         }
 
-        // zkontrolujeme zda se pridal ocekavany nazev sloupce
-        $this->checkExpectedColumnHeader(
-            $expectedColumnHeader,
-            $lastHeader,
-            end($this->columnHeadersListData->columnHeaders),
-            $cellCoordinate
-        );
+        if (end($this->columnHeadersListData->columnHeaders))
+        {
+            // zkontrolujeme zda se pridal ocekavany nazev sloupce
+            $this->checkExpectedColumnHeader(
+                $expectedColumnHeader,
+                $lastHeader,
+                end($this->columnHeadersListData->columnHeaders),
+                $cellCoordinate
+            );
+        }
 
         return $expectedNextColumnHeader;
     }
@@ -385,47 +390,86 @@ class ColumnHeadersListDataBuilder
     public function build(): ColumnHeadersListData
     {
         $uniqueCoordinates = [
-            DoiColumnHeaderEnum::Doi->value => $this->columnHeadersListData->doiColumnHeadersCoordinates,
-            DoiColumnHeaderEnum::DoiState->value =>$this->columnHeadersListData->doiStateColumnHeadersCoordinates,
-            DoiColumnHeaderEnum::DoiUrl->value => $this->columnHeadersListData->doiUrlColumnHeadersCoordinates,
-            DoiColumnHeaderEnum::Publisher->value => $this->columnHeadersListData->publisherColumnHeadersCoordinates,
-            DoiColumnHeaderEnum::PublicationYear->value => $this->columnHeadersListData->publicationYearColumnHeadersCoordinates,
-            DoiColumnHeaderEnum::SourceType->value => $this->columnHeadersListData->sourceTypeColumnHeadersCoordinates
+            [
+                self::HEADER => DoiColumnHeaderEnum::Doi,
+                self::COORDINATE => $this->columnHeadersListData->doiColumnHeadersCoordinates
+            ],
+            [
+                self::HEADER => DoiColumnHeaderEnum::DoiState,
+                self::COORDINATE => $this->columnHeadersListData->doiStateColumnHeadersCoordinates
+            ],
+            [
+                self::HEADER => DoiColumnHeaderEnum::DoiUrl,
+                self::COORDINATE => $this->columnHeadersListData->doiUrlColumnHeadersCoordinates
+            ],
+            [
+                self::HEADER => DoiColumnHeaderEnum::Publisher,
+                self::COORDINATE => $this->columnHeadersListData->publisherColumnHeadersCoordinates
+            ],
+            [
+                self::HEADER => DoiColumnHeaderEnum::PublicationYear,
+                self::COORDINATE => $this->columnHeadersListData->publicationYearColumnHeadersCoordinates
+            ],
+            [
+                self::HEADER => DoiColumnHeaderEnum::SourceType,
+                self::COORDINATE => $this->columnHeadersListData->sourceTypeColumnHeadersCoordinates
+            ]
         ];
 
         $nonUniqueCoordinates = [
-            DoiColumnHeaderEnum::CreatorType->value => $this->columnHeadersListData->creatorTypeColumnHeadersCoordinates,
-            DoiColumnHeaderEnum::CreatorAffiliation->value => $this->columnHeadersListData->creatorAffiliationColumnHeadersCoordinates,
-            DoiColumnHeaderEnum::CreatorName->value => $this->columnHeadersListData->creatorNameColumnHeadersCoordinates,
-            DoiColumnHeaderEnum::CreatorNameIdentifier->value => $this->columnHeadersListData->creatorNameIdentifierColumnHeadersCoordinates,
-            DoiColumnHeaderEnum::Title->value => $this->columnHeadersListData->titleColumnHeadersCoordinates,
-            DoiColumnHeaderEnum::TitleLanguage->value => $this->columnHeadersListData->titleLanguageColumnHeadersCoordinates,
-            DoiColumnHeaderEnum::TitleType->value => $this->columnHeadersListData->titleTypeColumnHeadersCoordinates
+            [
+                self::HEADER => DoiColumnHeaderEnum::CreatorType,
+                self::COORDINATE => $this->columnHeadersListData->creatorTypeColumnHeadersCoordinates
+            ],
+            [
+                self::HEADER => DoiColumnHeaderEnum::CreatorAffiliation,
+                self::COORDINATE => $this->columnHeadersListData->creatorAffiliationColumnHeadersCoordinates
+            ],
+            [
+                self::HEADER => DoiColumnHeaderEnum::CreatorName,
+                self::COORDINATE => $this->columnHeadersListData->creatorNameColumnHeadersCoordinates
+            ],
+            [
+                self::HEADER => DoiColumnHeaderEnum::CreatorNameIdentifier,
+                self::COORDINATE => $this->columnHeadersListData->creatorNameIdentifierColumnHeadersCoordinates
+            ],
+            [
+                self::HEADER => DoiColumnHeaderEnum::Title,
+                self::COORDINATE => $this->columnHeadersListData->titleColumnHeadersCoordinates
+            ],
+            [
+                self::HEADER => DoiColumnHeaderEnum::TitleLanguage,
+                self::COORDINATE => $this->columnHeadersListData->titleLanguageColumnHeadersCoordinates
+            ],
+            [
+                self::HEADER => DoiColumnHeaderEnum::TitleType,
+                self::COORDINATE => $this->columnHeadersListData->titleTypeColumnHeadersCoordinates
+            ]
         ];
 
-        foreach ($uniqueCoordinates as $header => $attributeCoordinates)
+        foreach ($uniqueCoordinates as $attributeCoordinates)
         {
-            if (empty($attributeCoordinates))
+            if (empty($attributeCoordinates[self::COORDINATE]))
             {
                 $this->fileStructureDataException->addMissingRequiredHeaderExceptions(
-                    new MissingRequiredHeaderException($header)
+                    new MissingRequiredHeaderException($attributeCoordinates[self::HEADER])
                 );
             }
 
-            if (count($attributeCoordinates) > 1)
+            if (count($attributeCoordinates[self::COORDINATE]) > 1)
             {
                 $this->fileStructureDataException->addDuplicitColumnHeaderException(
-                    new DuplicitColumnHeaderException($header, $attributeCoordinates)
+                    new DuplicitColumnHeaderException($attributeCoordinates[self::HEADER], $attributeCoordinates[self::COORDINATE])
                 );
             }
         }
 
-        foreach ($nonUniqueCoordinates as $header => $attributeCoordinates)
+        foreach ($nonUniqueCoordinates as $attributeCoordinates)
         {
-            if (empty($attributeCoordinates))
+            if (empty($attributeCoordinates[self::COORDINATE]))
             {
                 $this->fileStructureDataException->addMissingRequiredHeaderExceptions(
-                    new MissingRequiredHeaderException($header)
+                    new MissingRequiredHeaderException($attributeCoordinates[self::HEADER])
                 );
             }
         }
@@ -464,7 +508,7 @@ class ColumnHeadersListDataBuilder
 
             $this->fileStructureDataException->addWrongColumnHeaderOrderException(
                 new WrongColumnHeaderOrderException(
-                    $lastHeader->value,
+                    $lastHeader,
                     [$cellCoordinate],
                     $currentHeader,
                     $expectedColumnHeader,

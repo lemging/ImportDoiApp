@@ -9,8 +9,8 @@ use Throwable;
 abstract class AColumnHeaderException extends Exception
 {
     public function __construct(
-        protected readonly string $header,
-        protected readonly array   $coordinates = [],
+        protected DoiColumnHeaderEnum $header,
+        protected array   $coordinates = [],
         string                     $message = "",
         int                        $code = 0,
         ?Throwable                 $previous = null
@@ -31,7 +31,7 @@ abstract class AColumnHeaderException extends Exception
 
     protected function getErrorMessage()
     {
-        return 'Chyba ve slopci/sloupsích <strong>' . $this->header .
+        return 'Chyba ve slopci/sloupsích <strong>' . $this->header->value .
             $this->getCoordinateString() !== null ? '</strong> na ' . $this->getCoordinateString() . '.' : '.';
     }
 }

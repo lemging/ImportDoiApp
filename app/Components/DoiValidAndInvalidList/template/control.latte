@@ -1,0 +1,84 @@
+{varType App\Model\Data\ImportDoiConfirmation\DoiData[] $doiDataList}
+{varType App\Model\Data\ImportDoiConfirmation\DoiDataErrorData[] $doiDataErrorDataList}
+
+{if !empty($doiDataErrorDataList)}
+    <h3>DOI s chybnými daty: </h3>
+{/if}
+
+{foreach $doiDataErrorDataList as $doiDataErrorData}
+    <ul style="list-style-type: none; padding: 0">
+        {if $doiDataErrorData->sheetTitle !== null}
+            <li>Název listu: <strong>{$doiDataErrorData->sheetTitle}</strong></li>
+        {/if}
+        {if $doiDataErrorData->rowNumber !== null}
+            <li>Číslo řádku: <strong>{$doiDataErrorData->rowNumber}</strong></li>
+        {/if}
+        {if $doiDataErrorData->doi !== null}
+            <li>Doi: <strong>{$doiDataErrorData->doi}</strong></li>
+        {/if}
+        {foreach $doiDataErrorData->doiCellDataErrors as $doiCellDataError}
+            <li>{$doiCellDataError |noescape}</li>
+        {/foreach}
+
+    {foreach $doiDataErrorData->doiCreatorDataErrorDataList as $doiCreatorDataErrorData}
+            <li>Chybná data <strong>tvurce</strong>: </li>
+            <ul>
+                {foreach $doiCreatorDataErrorData->doiCellDataErrors as $doiCreatorCellDataError}
+                    <li>{$doiCreatorCellDataError |noescape}</li>
+                {/foreach}
+            </ul>
+        {/foreach}
+
+    {foreach $doiDataErrorData->doiTitleDataErrorDataList as $doiTitleCellDataError}
+            <li>Chybná data <strong>titulku</strong>:</li>
+            <ul>
+                {foreach $doiTitleCellDataError->doiCellDataErrors as $doiCreatorCellDataError}
+                    <li>{$doiCreatorCellDataError |noescape}</li>
+                {/foreach}
+            </ul>
+        {/foreach}
+    </ul>
+{/foreach}
+
+{if !empty($doiDataList)}
+    <h3>Validní DOI: </h3>
+{/if}
+
+{foreach $doiDataList as $doiData}
+    <ul style="list-style-type: none; padding: 0"> {*    todo udelat tridu*}
+        {if $doiData->rowNumber !== null}
+            <li>Cislo radku: <strong>{$doiData->rowNumber}</strong></li>
+        {/if}
+        <li>Doi: <strong>{$doiData->doi}</strong> </li>
+        <li>Stav: <strong>{$doiData->state->value}</strong> </li>
+        <li>Url: <strong>{$doiData->url}</strong> </li>
+
+        {foreach $doiData->creators as $creator}
+            <li> Tvurce: <strong>{$creator->name}</strong> </li>
+            <ul>
+                {foreach $creator->nameIdentifiers as $creatorNameIdentifier}
+                    <li> Identifikator jmena: <strong>{$creatorNameIdentifier}</strong> </li>
+                {/foreach}
+
+            <li> Typ tvurce: <strong>{$creator->type->value}</strong> </li>
+
+                {foreach $creator->affiliations as $affiliation}
+                    <li> Afilace: <strong>{$affiliation}</strong> </li>
+                {/foreach}
+            </ul>
+        {/foreach}
+
+        {foreach $doiData->titles as $title}
+            <li>Titulek: <strong>{$title->title}</strong></li>
+            <ul>
+                <li>Typ titulku: <strong>{$title->type->value}</strong></li>
+                <li>Jazyk: <strong>{$title->language}</strong></li>
+            </ul>
+        {/foreach}
+
+        <li>Vydavatel: <strong>{$doiData->publisher}</strong></li>
+        <li>Rok vydani: <strong>{$doiData->publicationYear}</strong></li>
+        <li>Typ zdroje: <strong>{$doiData->resourceType}</strong></li>
+    </ul>
+    <br>
+{/foreach}

@@ -28,7 +28,6 @@ final class ImportDoiFormControl extends Control
     public function createComponentForm(): Form
     {
         $form = new Form();
-        // todo zkontrolovat, jak velke souboru tam lze nahrat
         $form->addUpload('xlsxFile', 'Excel soubor(.xlsx):')
             ->setRequired('Nahrajte excel soubor.');
 

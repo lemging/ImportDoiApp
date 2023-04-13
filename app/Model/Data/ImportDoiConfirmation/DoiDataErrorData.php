@@ -4,9 +4,11 @@ namespace App\Model\Data\ImportDoiConfirmation;
 
 class DoiDataErrorData
 {
-    public string $sheetTitle;
+    public ?string $sheetTitle = null;
 
-    public int $rowNumber;
+    public ?int $rowNumber = null;
+
+    public ?string $doi = null;
 
     /**
      * @var string[]

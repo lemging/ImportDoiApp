@@ -13,11 +13,11 @@ use Throwable;
 class WrongColumnHeaderOrderException extends AColumnHeaderException
 {
     public function __construct(
-        string                               $header,
+        DoiColumnHeaderEnum                  $header,
         array                                $coordinates,
-        private ?DoiColumnHeaderEnum $incorrectHeader,
-        private readonly DoiColumnHeaderEnum $expectedHeader,
-        private readonly bool                $next = false,
+        private ?DoiColumnHeaderEnum         $incorrectHeader,
+        private DoiColumnHeaderEnum          $expectedHeader,
+        private bool                         $next = false,
         string                               $message = '',
         int                                  $code = 0,
         ?Throwable                           $previous = null
@@ -28,8 +28,7 @@ class WrongColumnHeaderOrderException extends AColumnHeaderException
 
     public function getErrorMessage()
     {
-
-        return  'Atribut <strong>' . $this->header . '</strong> v sloupci ' . $this->getCoordinateString() . ' musí ' .
+        return  'Atribut <strong>' . $this->header->value . '</strong> v sloupci ' . $this->getCoordinateString() . ' musí ' .
             ($this->next ? 'predcházet před' : 'následovat po') .
             ' <strong>' . $this->expectedHeader->value . '</strong>, ale ' .
             ($this->next ? 'předchází před' : 'následuje po') . ' <strong>' .

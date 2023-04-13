@@ -4,11 +4,14 @@
 namespace App\Model\Builders;
 
 
+use App\Enums\DoiColumnHeaderEnum;
 use App\Enums\DoiStateEnum;
 use App\Exceptions\DoiAttributeValueNotFoundException;
 use App\Exceptions\DoiCreatorDataException;
 use App\Exceptions\DoiDataException;
 use App\Exceptions\DoiTitleDataException;
+use App\Exceptions\PublicationYearNotInLimitsException;
+use App\Model\Data\FileStructure\ColumnHeadersListData;
 use App\Model\Data\ImportDoiConfirmation\CreatorData;
 use App\Model\Data\ImportDoiConfirmation\DoiData;
 use App\Model\Data\ImportDoiConfirmation\TitleData;
@@ -70,9 +73,8 @@ class DoiDataBuilder
             $this->doiDataException->setNewResourceTypeNotSetException();
         }
 
-        if ($this->doiDataException->getExceptionCount() > 0 &&
-            $this->doiData->state !== DoiStateEnum::Draft // Drafty nemusi mit validni data
-        )
+        // Drafty nemusi mit validni data
+        if ($this->doiData->state !== DoiStateEnum::Draft && $this->doiDataException->getExceptionCount() > 0)
         {
             throw $this->doiDataException;
         }
@@ -100,6 +102,7 @@ class DoiDataBuilder
     public function doi(string $doi)
     {
         $this->doiData->doi = $doi;
+        $this->doiDataException->setDoi($doi);
     }
 
     public function doiStateString(string $doiState, ?string $coordinate = null)
@@ -118,7 +121,7 @@ class DoiDataBuilder
             default:
                 $this->doiDataException->setDoiStateNotFoundException(
                     new DoiAttributeValueNotFoundException(
-                        'stav doi',
+                        DoiColumnHeaderEnum::DoiState,
                         $coordinate,
                         DoiStateEnum::values()
                     )
@@ -150,9 +153,19 @@ class DoiDataBuilder
         $this->doiData->publisher = $publisher;
     }
 
-    public function publicationYear(int $publicationYear)
+    public function publicationYear(int $publicationYear, ?string $coordinate = null)
     {
         $this->doiData->publicationYear = $publicationYear;
+
+        if ($this->doiData->publicationYear < 1000 || $this->doiData->publicationYear > 2028)
+        {
+            $this->doiDataException->setPublicationYearNotInLimitsException(
+                new PublicationYearNotInLimitsException(
+                    DoiColumnHeaderEnum::PublicationYear,
+                    $coordinate
+                )
+            );
+        }
     }
 
     public function resourceType(string $resourceType)
