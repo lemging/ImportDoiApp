@@ -249,7 +249,7 @@ class DoiDataException extends ADataException
     {
         $this->exceptionCount++;
 
-        $this->resourceTypeNotSetException = new NotSetException(DoiColumnHeaderEnum::SourceType);
+        $this->resourceTypeNotSetException = new NotSetException(DoiColumnHeaderEnum::ResourceType);
     }
 
     /**

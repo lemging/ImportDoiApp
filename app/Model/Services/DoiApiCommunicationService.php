@@ -6,12 +6,19 @@ use App\Enums\DoiStateEnum;
 use App\Enums\JsonSendStatusEnum;
 use App\Model\Data\ImportDoiConfirmation\DoiData;
 use App\Model\Facades\ImportDoiConfirmationFacade;
+use Nette\Localization\Translator;
 
 /**
  * Service pro práci s JSONy a komunikaci s API.
  */
 class DoiApiCommunicationService
 {
+    public function __construct(
+        private Translator $translator
+    )
+    {
+    }
+
     /**
      * Vytvoří json akceptovatelný API z doiData.
      *
@@ -164,7 +171,9 @@ class DoiApiCommunicationService
                 ];
             }
 
-            $message = 'Řádek ' . $rowNumber . ': Doi s id ' . $doiId . ' už existuje, ale nepodařilo se vytvořit. Chyba: ';
+            $message = $this->translator->translate(
+                'doi_communication.creation_failed', ['row_number' => $rowNumber, 'doi_id' => $doiId]
+            );
             $message .= $this->createErrorMessageFromApiData($response['errors']);
 
             return [
@@ -177,8 +186,9 @@ class DoiApiCommunicationService
             // Doi se v pořádku vytvořil.
             return [
                 ImportDoiConfirmationFacade::JSON_SEND_STATUS => JsonSendStatusEnum::Success,
-                ImportDoiConfirmationFacade::RESPONSE_MESSAGE =>
-                    'Řádek ' . $rowNumber . ': Doi uspesne vytvoren s id ' . $doiId . '.'
+                ImportDoiConfirmationFacade::RESPONSE_MESSAGE => $this->translator->translate(
+                    'doi_communication.doi_created', ['row_number' => $rowNumber, 'doi_id' => $doiId]
+                )
             ];
         }
     }
@@ -195,7 +205,9 @@ class DoiApiCommunicationService
     {
         if (array_key_exists('errors', $response))
         {
-            $message = 'Řádek ' . $rowNumber . ': Doi s id ' . $doiId . ' už existuje, ale nepodařilo se aktualizovat. Chyba: ';
+            $message = $this->translator->translate(
+                'doi_communication.update_failed', ['row_number' => $rowNumber, 'doi_id' => $doiId]
+            );
             $message .= $this->createErrorMessageFromApiData($response['errors']);
 
             return [
@@ -207,8 +219,9 @@ class DoiApiCommunicationService
         {
             return [
                 ImportDoiConfirmationFacade::JSON_SEND_STATUS => JsonSendStatusEnum::AlreadyExists,
-                ImportDoiConfirmationFacade::RESPONSE_MESSAGE =>
-                    'Řádek ' . $rowNumber . ': Doi s id ' . $doiId . ' už existuje. Úspěšně aktualizován.'
+                ImportDoiConfirmationFacade::RESPONSE_MESSAGE => $this->translator->translate(
+                    'doi_communication.doi_updated', ['row_number' => $rowNumber, 'doi_id' => $doiId]
+                )
             ];
         }
     }
@@ -224,15 +237,15 @@ class DoiApiCommunicationService
     {
         if ($allSuccessfullySend)
         {
-            return 'Všechny doi se úspěšně přidali nebo akualizovali.';
+            return $this->translator->translate('doi_communication.general.all_send');
         }
         elseif ($allFailedSend)
         {
-            return 'Žádný doi se nepodařilo přidat nebo akualizovali.';
+            return $this->translator->translate('doi_communication.general.all_failed_send');
         }
         else
         {
-            return 'Některé dois se podařilo přidat  nebo akualizovat, některé se nepodařilo.';
+            return $this->translator->translate('doi_communication.general.some_send');
         }
     }
 

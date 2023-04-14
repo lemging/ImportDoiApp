@@ -1,6 +1,6 @@
 {varType App\Model\Data\ImportDoiResultMessages\ResultMessagesData $data}
 {block content}
-{*todo preklady*}
+
 <strong>{$data->doiSendResponseGeneralMessage}</strong><br><br>
 
 {foreach $data->doiSendResponseMessages as $doiSendResponseMessage}
@@ -16,4 +16,4 @@
         </div>
 {/foreach}
 
-<a n:href='ImportDoiMain:default'>Nahrát další soubor</a>
+<a n:href='ImportDoiMain:default'>{_import_doi_result_messages.upload_another_file}</a>

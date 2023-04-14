@@ -14,18 +14,18 @@ enum DoiColumnHeaderEnum: string
     /**
      *
      */
-    case DoiState = 'stav doi';
+    case DoiState = 'doi state';
     case DoiUrl = 'url';
-    case CreatorNameIdentifier = 'identifikator tvurce';
-    case CreatorType = 'typ tvurce';
-    case CreatorName = 'cele jmeno';
-    case CreatorAffiliation = 'afilace tvurce';
-    case Title = 'titulek';
-    case TitleType = 'typ titulku';
-    case TitleLanguage = 'jazyk';
-    case Publisher = 'vydavatel';
-    case PublicationYear = 'rok vydani';
-    case SourceType = 'typ zdroje';
+    case CreatorNameIdentifier = 'creator identifier';
+    case CreatorType = 'creator type';
+    case CreatorName = 'creator fullname';
+    case CreatorAffiliation = 'creator affiliation';
+    case Title = 'title';
+    case TitleType = 'title type';
+    case TitleLanguage = 'language';
+    case Publisher = 'publisher';
+    case PublicationYear = 'publication year';
+    case ResourceType = 'resource type';
 
     /**
      * @return self[]
@@ -53,7 +53,7 @@ enum DoiColumnHeaderEnum: string
             self::DoiUrl->value,
             self::Publisher->value,
             self::PublicationYear->value,
-            self::SourceType->value,
+            self::ResourceType->value,
             self::CreatorType->value,
             self::CreatorAffiliation->value,
             self::CreatorName->value,
@@ -63,19 +63,4 @@ enum DoiColumnHeaderEnum: string
             self::TitleType->value
         ];
     }
-
-    public function possibleDuplicateColumnHeaders()
-    {
-//        return [
-//          self::
-//        ];
-    }
-//    public function getType(): string
-//    {
-//        return match($this) {
-//            self::Draft => 'draft',
-//            self::Registered => 'registered',
-//            self::Findable => 'findable',
-//        };
-//    }
 }

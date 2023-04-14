@@ -1,1 +1,6 @@
 title: 'Potvrzení dat ze souboru'
+wrong_file_structure: Chybná struktura souboru
+wrong_file_structure_description: 'Soubor má nevhodnou strukturu. Jak to má vypadata naleznete na <a href="%link%">této stránce</a>.'
+list_name: Název listu
+send_valid_rows: Odeslat validní řádky
+try_again: Zkusit znovu

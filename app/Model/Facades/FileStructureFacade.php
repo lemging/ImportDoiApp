@@ -16,6 +16,8 @@ use Nette\Localization\Translator;
 
 class FileStructureFacade
 {
+    const DOIS_TYPE = 'dois';
+
     public function __construct(
         private Translator                 $translator,
         private DoiXlsxProcessService      $doiXlsxProcessService,
@@ -42,7 +44,7 @@ class FileStructureFacade
 
         foreach ($doiList as $doi)
         {
-            if($doi->type !== 'dois')
+            if($doi->type !== self::DOIS_TYPE)
             {
                 continue;
             }

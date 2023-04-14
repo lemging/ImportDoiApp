@@ -165,7 +165,7 @@ class ColumnHeadersListDataBuilder
             case DoiColumnHeaderEnum::PublicationYear->value:
                 $this->addPublicationYear($cellCoordinate);
                 break;
-            case DoiColumnHeaderEnum::SourceType->value:
+            case DoiColumnHeaderEnum::ResourceType->value:
                 $this->addSourceType($cellCoordinate);
                 break;
             case '' || null:
@@ -369,7 +369,7 @@ class ColumnHeadersListDataBuilder
     public function addSourceType(string $cellCoordinate): void
     {
         $this->columnHeadersListData->sourceTypeColumnHeadersCoordinates[] = $cellCoordinate;
-        $this->columnHeadersListData->columnHeaders[] = DoiColumnHeaderEnum::SourceType;
+        $this->columnHeadersListData->columnHeaders[] = DoiColumnHeaderEnum::ResourceType;
     }
 
     /**
@@ -411,7 +411,7 @@ class ColumnHeadersListDataBuilder
                 self::COORDINATE => $this->columnHeadersListData->publicationYearColumnHeadersCoordinates
             ],
             [
-                self::HEADER => DoiColumnHeaderEnum::SourceType,
+                self::HEADER => DoiColumnHeaderEnum::ResourceType,
                 self::COORDINATE => $this->columnHeadersListData->sourceTypeColumnHeadersCoordinates
             ]
         ];

@@ -1,0 +1,30 @@
+doi_error_data_list:
+    title: DOI s chybnými daty
+    attributes:
+        list: Název listu
+        row_number: Číslo řádku
+        doi: DOI
+        creator:
+            title: Chybná data <strong>tvurce</strong>
+        title:
+            title: Chybná data <strong>titulku</strong>
+
+doi_data_list:
+    title: Validní DOI
+    attributes:
+        row_number: Číslo řádku
+        doi: DOI
+        state: Stav
+        url: Url
+        creator:
+            name: Jméno
+            identifier: Identifikator jmena
+            type: Typ
+            affilation: Afilace
+        title:
+            title: Titulek
+            type: Typ
+            language: Jazyk
+        publisher: Vydavatel
+        publication_year: Rok vydání
+        resource_type: Typ zdroje

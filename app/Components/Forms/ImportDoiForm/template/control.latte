@@ -3,7 +3,7 @@
         <ul class=error n:if="$form->ownErrors">
             <li n:foreach="$form->ownErrors as $error">{$error |noescape}</li>
         </ul>
-        <label class="form-label" for="xlsxFile">Vyberte excel(.xlsx) soubor</label>
+        <label class="form-label" for="xlsxFile">{_import_doi_form.choose_xlsx_file}</label>
         {input xlsxFile, class => "form-control", data-input => "xlsxFile"}
         <br>
         {input submit, class => "btn btn-success", data-input => "submit"}

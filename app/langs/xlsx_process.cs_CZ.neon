@@ -1,0 +1,3 @@
+create_checkbox:
+    promt: 'Musíte vybrat jednu z možností ze seznamu.'
+    error: 'Vyberte jednu jednu z možností ze  seznamu.'

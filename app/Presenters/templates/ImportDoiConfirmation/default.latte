@@ -1,32 +1,31 @@
 {varType App\Model\Data\ImportDoiConfirmation\ConfirmationData $data}
 {block content}
-{*todo preklady*}
+
 {foreach $data->doiFileStructureErrorsData as $doiFileStructureErrorData}
-    Chybná struktura souboru: <br>
-    Název listu: <strong>{$doiFileStructureErrorData->sheetTitle}</strong><br>
+    {_import_doi_confirmation.wrong_file_structure}: <br>
+    {_import_doi_confirmation.list_name}: <strong>{$doiFileStructureErrorData->sheetTitle}</strong><br>
     {foreach $doiFileStructureErrorData->columnHeaderErrors as $columnHeaderError}
         {$columnHeaderError |noescape} <br>
     {/foreach}
 {/foreach}
 
 {if !empty($data->doiDataList)}
-    <a n:href="addDois!">Odeslat validní řádky</a>
+    <a n:href="addDois!">{_import_doi_confirmation.send_valid_rows}</a>
 {/if}
 
 {if !empty($data->doiDataErrorDataList)}
-    <a n:href='ImportDoiMain:default'>Zkusit znovu</a>
+    <a n:href='ImportDoiMain:default'>{_import_doi_confirmation.try_again}</a>
 {/if}
 
 {control doiValidAndInvalidListControl}
 
 {if !empty($data->doiDataList)}
-    <a n:href="addDois!">Odeslat validní řádky</a>
+    <a n:href="addDois!">{_import_doi_confirmation.send_valid_rows}</a>
 {elseif !empty($data->doiFileStructureErrorsData)}
     <br>
-    <strong> Soubor má nevhodnou strukturu. Jak to má vypadata naleznete zde: LINK</strong>
-{*    todo link*}
+    <strong>{_import_doi_confirmation.wrong_file_structure_description, [link => $presenter->link('FileStructure:default')]|noescape}</strong>
 {/if}
 {if !empty($data->doiDataErrorDataList) || !empty($data->doiFileStructureErrorsData)}
     <br>
-    <a n:href='ImportDoiMain:default'>Zkusit znovu</a>
+    <a n:href='ImportDoiMain:default'>{_import_doi_confirmation.try_again}</a>
 {/if}

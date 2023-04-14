@@ -13,6 +13,10 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ImportDoiMainFacade
 {
+    const EXTENSION = 'extension';
+    const XLSX_EXTENSION = 'xlsx';
+    const UPLOADED_TEMP_XLSX_FILE_PATH = '../temp/xlsxTempFiles/tempfileUloaded.xlsx';
+
     public function __construct(
         private Translator $translator
     )
@@ -44,7 +48,7 @@ class ImportDoiMainFacade
     {
         $file_parts = pathinfo($file->getUntrustedName());
 
-        if ($file_parts['extension'] !== 'xlsx')
+        if ($file_parts[self::EXTENSION] !== self::XLSX_EXTENSION)
         {
             throw new InvalidArgumentException(); // todo mozna vlastni exception
         }
@@ -58,7 +62,7 @@ class ImportDoiMainFacade
      */
     public function saveFile(FileUpload $file)
     {
-        $destination = '../temp/xlsxTempFiles/tempfileUloaded.xlsx'; //todo constanta
+        $destination = self::UPLOADED_TEMP_XLSX_FILE_PATH;
         $file->move($destination);
 
         return $destination;

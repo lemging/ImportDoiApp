@@ -18,10 +18,12 @@ use App\Model\Builders\TitleDataBuilder;
 use App\Model\Data\FileStructure\FileStructureData;
 use App\Model\Data\ImportDoiConfirmation\ConfirmationData;
 use App\Model\Data\ImportDoiConfirmation\DoiData;
+use Nette\Localization\Translator;
 use PhpOffice\PhpSpreadsheet\Cell\DataValidation;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\RowCellIterator;
 use PhpOffice\PhpSpreadsheet\Worksheet\RowIterator;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -52,6 +54,12 @@ class DoiXlsxProcessService
      * @var TitleDataBuilder
      */
     private TitleDataBuilder $doiTitleDataBuilder;
+
+    public function __construct(
+        private Translator $translator
+    )
+    {
+    }
 
     /**
      * Setter.
@@ -220,7 +228,7 @@ class DoiXlsxProcessService
             case DoiColumnHeaderEnum::PublicationYear:
                 $this->doiDataBuilder->publicationYear((int)$currentCellValue, $cell->getCoordinate());
                 break;
-            case DoiColumnHeaderEnum::SourceType:
+            case DoiColumnHeaderEnum::ResourceType:
                 $this->doiDataBuilder->resourceType($currentCellValue);
                 break;
             case null:
@@ -248,54 +256,40 @@ class DoiXlsxProcessService
         // todo konstanty
         $columnIterator = $rowIterator->current()->getColumnIterator();
 
-        $columnIterator->current()->setValue('Doi');
-        $columnIterator->next();
-        $columnIterator->current()->setValue('Stav doi');
-        $columnIterator->next();
-        $columnIterator->current()->setValue('Url');
-        $columnIterator->next();
+        $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::Doi);
+        $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::DoiState);
+        $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::DoiUrl);
 
         for ($i = 0; $i < $fileStructureData->maxCounts['creators']; $i++)
         {
-            $columnIterator->current()->setValue('Cele jmeno');
-            $columnIterator->next();
+            $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::CreatorName);
 
             for ($j = 0; $j < $fileStructureData->maxCounts['nameIdentifiers']; $j++)
             {
-                $columnIterator->current()->setValue('Identifikator tvurce'); //
-                $columnIterator->next();
+                $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::CreatorNameIdentifier);
             }
 
             for ($j = 0; $j < $fileStructureData->maxCounts['affiliation']; $j++)
             {
-                $columnIterator->current()->setValue('Afilace tvurce');
-                $columnIterator->next();
+                $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::CreatorAffiliation);
             }
 
-            $columnIterator->current()->setValue('Typ tvurce');
-            $columnIterator->next();
+            $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::CreatorType);
         }
 
         for ($i = 0; $i < $fileStructureData->maxCounts['titles']; $i++)
         {
-            $columnIterator->current()->setValue('Titulek');
-            $columnIterator->next();
-            $columnIterator->current()->setValue('Typ titulku');
-            $columnIterator->next();
-            $columnIterator->current()->setValue('Jazyk');
-            $columnIterator->next();
+            $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::Title);
+            $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::TitleType);
+            $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::TitleLanguage);
         }
 
+        $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::Publisher);
+        $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::PublicationYear);
+        $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::ResourceType);
 
-        $columnIterator->current()->setValue('Vydavatel');
-        $columnIterator->next();
-        $columnIterator->current()->setValue('Rok vydani');
-        $columnIterator->next();
-        $columnIterator->current()->setValue('Typ zdroje');
-        $columnIterator->next();
 
         $rowIterator->next();
-
 
         foreach ($fileStructureData->doiDataList as $doiData)
         {
@@ -402,6 +396,8 @@ class DoiXlsxProcessService
             $rowIterator->next();
         }
 
+        $this->setSheetAutosize($sheet);
+
         $writer = new Xlsx($spreadsheet);
         $writer->save('../www/xlsxTempFilesToDownload/structuredDois.xlsx'); //todo constanta
     }
@@ -424,11 +420,11 @@ class DoiXlsxProcessService
         $validation->setAllowBlank(true);
         $validation->setShowDropDown(true);
         $validation->setShowInputMessage(true);
-        $validation->setPrompt('Must select one from the drop down options.');
+        $validation->setPrompt($this->translator->translate('xlsx_process.create_checkbox.promt'));
         $validation->setShowErrorMessage(true);
         $validation->setErrorStyle(DataValidation::STYLE_STOP);
         $validation->setErrorTitle('Invalid option');
-        $validation->setError('Select one from the drop down list.');
+        $validation->setError($this->translator->translate('xlsx_process.create_checkbox.error'));
     }
 
     /**
@@ -504,5 +500,28 @@ class DoiXlsxProcessService
 
         // Vytvoří datový objekt, nebo vyhodí vyjímku obsahující všechny chyby.
         return $this->doiDataBuilder->build();
+    }
+
+    /**
+     * @param RowCellIterator $columnIterator
+     * @return void
+     * @throws Exception
+     */
+    protected function setHeaderAndMoveNext(RowCellIterator $columnIterator, DoiColumnHeaderEnum $columnHeaderEnum): void
+    {
+        $columnIterator->current()->getStyle()->getFont()->setBold(true)->setSize(12);
+        $columnIterator->current()->setValue($columnHeaderEnum->value);
+        $columnIterator->next();
+    }
+
+    /**
+     * @param Worksheet $sheet
+     * @return void
+     */
+    protected function setSheetAutosize(Worksheet $sheet): void
+    {
+        foreach ($sheet->getColumnIterator() as $column) {
+            $sheet->getColumnDimension($column->getColumnIndex())->setAutoSize(true);
+        }
     }
 }
