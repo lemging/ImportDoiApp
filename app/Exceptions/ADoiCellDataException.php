@@ -19,9 +19,10 @@ abstract class ADoiCellDataException extends Exception
         parent::__construct($message, $code, $previous);
     }
 
-    public function getErrorMessage()
+    public function getErrorMessage(): string
     {
         return 'Chybná data ve sloupci na <strong>' . $this->header->value .
         $this->coordinate !== null ? '</strong> na <strong>' . $this->coordinate . '</strong>.' : '.';
     }
 }
+

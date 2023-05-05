@@ -1,0 +1,30 @@
+doi_error_data_list:
+    title: DOI with incorrect data
+    attributes:
+        list: List name
+        row_number: Row number
+        doi: DOI
+        creator:
+            title: Incorrect <strong>creator</strong> data
+        title:
+            title: Incorrect <strong>title</strong> data
+
+doi_data_list:
+    title: Valid DOI
+    attributes:
+        row_number: Row number
+        doi: DOI
+        state: State
+        url: Url
+        creator:
+            name: Name
+            identifier: Identifier
+            type: Type
+            affilation: Affilation
+        title:
+            title: Title
+            type: Type
+            language: Language
+        publisher: Publisher
+        publication_year: Publication year
+        resource_type: Resource type

@@ -1,0 +1,7 @@
+title: File structure
+description: '<strong>Excel file</strong>(.xlsx) with your DOIs <strong>have to</strong> comply with the stucture:'
+download_file: 'Here you can download a <a href="%link%" download>file</a> with the <strong>complete functional structure</strong> and <strong>your DOIs</strong> and metadata. You will have an overview of all of them, you can edit them or add new ones. If you want an attribute that allows this multiple times, just add another column with the same heading. Only DOIs with valid data are included in the file, to include non-valid ones, correct the listing errors.'
+rules:
+    required_column_headers: '<strong>There</strong> must exist column for every required attribute. <strong>Require attributes</strong>: %attributes%.'
+    duplicit_column_headers: 'Except for attributes that can be multiple (e.g. Creator, Title, Creator Affiliation, etc.), <strong>no column</strong> can be <strong>more than once</strong>.'
+    column_headers_order: 'The creator and subtitle attribute columns <strong>must</strong> be in a specific order so that if there are multiple creators or subtitles, it is possible to tell which belongs to which. <strong>Creator order</strong>: name, identifier(can be multiple in a row), affiliation(can be multiple in a row), type. Order of title: title, type, language.'

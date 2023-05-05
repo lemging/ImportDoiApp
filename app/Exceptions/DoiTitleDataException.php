@@ -35,9 +35,7 @@ class DoiTitleDataException extends ADataException
 
         $errorMessages = [];
 
-        /**
-         * @var ADoiCellDataException|null $exception
-         */
+        /** @var ADoiCellDataException|null $exception */
         foreach ($cellValidationExceptions as $exception) {
             if ($exception !== null)
             {

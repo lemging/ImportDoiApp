@@ -7,6 +7,7 @@ namespace App\Presenters;
 use App\Components\Forms\ImportDoiForm\IImportDoiFormControlFactory;
 use App\Components\Forms\ImportDoiForm\ImportDoiFormControl;
 use App\Model\Facades\ImportDoiMainFacade;
+use Contributte\Translation\Translator;
 use InvalidArgumentException;
 use Nette\Http\FileUpload;
 
@@ -24,7 +25,8 @@ final class ImportDoiMainPresenter extends ABasePresenter
      */
     public function __construct(
         private IImportDoiFormControlFactory $doiFormControlFactory,
-        private ImportDoiMainFacade $doiImportFacade
+        private ImportDoiMainFacade $doiImportFacade,
+        private Translator $translator
     ) {
         parent::__construct();
     }
@@ -40,28 +42,29 @@ final class ImportDoiMainPresenter extends ABasePresenter
     }
 
     /**
-     * Vytvoří komponentu s formulářem pro upload xlsx souboru, uloží soubor.
+     * Creates a component with a form to upload xlsx file, saves the file.
      *
      * @return ImportDoiFormControl
      */
     public function createComponentUploadXlsxFileForm(): ImportDoiFormControl
     {
-        // Vytvoří komponentu s formulářem, kde lze uploadnout soubor.
+        // Creates a component with a form where the file can be uploaded.
         $control = $this->doiFormControlFactory->create();
 
-        // Funkce, která se provede, po úspěšném nahrání souboru.
+        // A function that is executed when the file is successfully uploaded.
         $control->onSuccess[] = function (FileUpload $file): void {
             try
             {
                 $this->doiImportFacade->checkFileExtension($file);
-
                 $destination = $this->doiImportFacade->saveFile($file);
 
                 $this->redirect('ImportDoiConfirmation:default', ['destination' => $destination]);
             }
             catch (InvalidArgumentException)
             {
-                $this->flashMessage('Vyber xlsx soubor.', 'error');
+                $this->flashMessage($this->translator->translate(
+                    'import_doi_main.form.error.chooseXlsxFile'
+                ), 'error');
             }
         };
 

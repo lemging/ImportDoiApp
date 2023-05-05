@@ -1,2 +1,5 @@
-title: 'Upload souboru'
+title: 'Nahrání souboru'
 description: 'Nahrejte soubor s Vašimi DOI, soubor musí splňovat <a href="%link%">tuto strukturu</a>.'
+form:
+    error:
+        chooseXlsxFile: 'Vyber xlsx soubor.'

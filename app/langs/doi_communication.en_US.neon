@@ -1,0 +1,8 @@
+creation_failed: 'Row %row_number%: DOI with id %doi_id% failed to create. Error:'
+doi_created: 'Row %row_number%: DOI successfully created with id %doi_id%.'
+update_failed: 'Row %row_number%: The DOI with id %doi_id% already exists, but failed to update. Error:'
+doi_updated: 'Row %row_number%: DOI with id %doi_id% already exists. Successfully updated.'
+general:
+    all_send: 'All DOI have successfully joined or updated.'
+    all_failed_send: 'No DOIs were added or updated.'
+    some_send: 'Some DOIs were successfully added or updated, some were not.'

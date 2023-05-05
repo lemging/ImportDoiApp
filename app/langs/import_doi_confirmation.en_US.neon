@@ -1,0 +1,6 @@
+title: 'Confirmation of data from a file'
+wrong_file_structure: Error in file structure
+wrong_file_structure_description: 'The file has an inappropriate structure. How it should look like can be found on <a href="%link%">this page</a>.'
+list_name: List name
+send_valid_rows: Send valid rows
+try_again: Try again

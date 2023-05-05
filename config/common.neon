@@ -21,9 +21,9 @@ extensions:
 
 translation:
 	locales:
-		whitelist: [en, cs]
-		default: cs
-		fallback: [en]
+		whitelist: [en_US, cs]
+		default: en_US
+		fallback: [en_US]
 	dirs:
 		- %appDir%/langs
 	returnOriginalMessage: true # to not translate undefined messages, default is true

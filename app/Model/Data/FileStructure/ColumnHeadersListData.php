@@ -98,9 +98,9 @@ class ColumnHeadersListData
     public array $sourceTypeColumnHeadersCoordinates = [];
 
     /**
-     * Nadpisy sloupců v xlsx souboru.
+     * Nadpisy sloupců v xlsx souboru. Null znamena prazdne pole.
      *
-     * @var DoiColumnHeaderEnum|null[] $columnHeaders
+     * @var array<DoiColumnHeaderEnum|null> $columnHeaders
      */
     public array $columnHeaders = [];
 }

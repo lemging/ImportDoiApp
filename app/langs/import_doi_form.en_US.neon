@@ -1,0 +1,3 @@
+choose_xlsx_file: 'Choose excel(.xlsx) file'
+required_xlsx_file: 'Upload excel(.xlsx) file.'
+import: Import

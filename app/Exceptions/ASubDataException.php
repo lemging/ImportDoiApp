@@ -6,7 +6,6 @@ use Throwable;
 
 abstract class ASubDataException extends ADataException
 {
-
     public function __construct(
         protected array   $coordinates = [],
         string                     $message = "",

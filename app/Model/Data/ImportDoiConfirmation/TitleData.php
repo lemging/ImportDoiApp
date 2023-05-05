@@ -6,10 +6,14 @@ use App\Enums\DoiTitleTypeEnum;
 
 class TitleData
 {
-    public string $title;
+    public ?string $title = null;
 
-    // todo nevim jestli je povinne
-    public DoiTitleTypeEnum $type;
+    public ?DoiTitleTypeEnum $type = null;
 
-    public string $language;
+    public ?string $language = null;
 }
+
+
+
+
+

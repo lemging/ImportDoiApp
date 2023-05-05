@@ -71,11 +71,13 @@ class CreatorDataBuilder
 
     public function build()
     {
-        if (!isset($this->doiCreatorData->name))
+        if ($this->doiCreatorData->name === null || $this->doiCreatorData->name === '')
         {
             $this->doiCreatorDataException->setNameNotSetException(new NotSetException(DoiColumnHeaderEnum::CreatorName));
         }
-        if ($this->doiCreatorDataException->getTypeNotFoundException() === null && !isset($this->doiCreatorData->type))
+        if ($this->doiCreatorDataException->getTypeNotFoundException() === null &&
+            ($this->doiCreatorData->type === null || $this->doiCreatorData->type === '')
+        )
         {
             $this->doiCreatorDataException->setTypeNotSetException(new NotSetException(DoiColumnHeaderEnum::CreatorType));
         }

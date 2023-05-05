@@ -14,7 +14,7 @@ class HomepageFacade
     {
     }
 
-    public function prepareHomepageData()
+    public function prepareHomepageData(): HomepageData
     {
         $homepageData = new HomepageData();
         $homepageData->title = $this->translator->translate('homepage.title');

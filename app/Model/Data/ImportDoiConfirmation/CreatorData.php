@@ -3,6 +3,7 @@
 namespace App\Model\Data\ImportDoiConfirmation;
 
 use App\Enums\DoiCreatorTypeEnum;
+use App\Model\Data\ImportDoiConfirmation\DoiData;
 
 class CreatorData
 {
@@ -11,9 +12,9 @@ class CreatorData
      */
     public array $nameIdentifiers = [];
 
-    public DoiCreatorTypeEnum $type;
+    public ?DoiCreatorTypeEnum $type = null;
 
-    public string $name;
+    public ?string $name = null;
 
     /**
      * @var string[]

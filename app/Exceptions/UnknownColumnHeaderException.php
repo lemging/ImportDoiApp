@@ -9,7 +9,7 @@ use Throwable;
 /**
  * Zadany nadpis sloupce neodpovida zadnemu pozadovanemu nadpisu.
  */
-class UnknownColumnHeaderException
+class UnknownColumnHeaderException extends Exception
 {
     public function __construct(
         protected string $header,
@@ -19,6 +19,7 @@ class UnknownColumnHeaderException
         ?Throwable                 $previous = null
     )
     {
+        parent::__construct($message, $code, $previous);
     }
 
     public function getErrorMessage()

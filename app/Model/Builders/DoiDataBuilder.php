@@ -38,12 +38,12 @@ class DoiDataBuilder
      */
     public function build()
     {
-        if ($this->doiData->doi === null)
+        if ($this->doiData->doi === null || $this->doiData->doi === '')
         {
             $this->doiDataException->setNewDoiNotSetException();
         }
 
-        if ($this->doiData->url === null)
+        if ($this->doiData->url === null || $this->doiData->url === '')
         {
             $this->doiDataException->setNewUrlNotSetException();
         }
@@ -58,17 +58,17 @@ class DoiDataBuilder
             $this->doiDataException->setNewDoiTitlesNotSetException();
         }
 
-        if ($this->doiData->publisher === null)
+        if ($this->doiData->publisher === null || $this->doiData->publisher === '')
         {
             $this->doiDataException->setNewPublisherNotSetException();
         }
 
-        if ($this->doiData->publicationYear === null)
+        if ($this->doiData->publicationYear === null || $this->doiData->publicationYear === '')
         {
             $this->doiDataException->setNewPublicationYearNotSetException();
         }
 
-        if ($this->doiData->resourceType === null)
+        if ($this->doiData->resourceType === null || $this->doiData->resourceType === '')
         {
             $this->doiDataException->setNewResourceTypeNotSetException();
         }

@@ -26,10 +26,7 @@ class FileStructureFacade
     {
     }
 
-    /**
-     * @return FileStructureData
-     */
-    public function prepareFileStructureData()
+    public function prepareFileStructureData(): FileStructureData
     {
         $fileStructureDataBuilder = FileStructureDataBuilder::create();
         $fileStructureDataBuilder->title($this->translator->translate('file_structure.title'));

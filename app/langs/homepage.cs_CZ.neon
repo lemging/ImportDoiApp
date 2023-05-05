@@ -1,4 +1,4 @@
-title: 'Doi import'
+title: 'Domovská stránka'
 description: 'Aplikace umožnuje stahnout všechny Vaše DOI z datacite do excelové tabulky i s metadaty.'
 description2: 'V této tabulce můžete upravit Vaše metadata stažených DOI nebo přidat libovolný počet nových DOI.'
 description3: 'Následně tuto tabulku nahrajete do aplikace, která Vámi zadané data zvaliduje a validní data nahraje na datacite - aktualizuje změněná metadata existujících DOI a přidá nově přidané DOI s metadaty.'

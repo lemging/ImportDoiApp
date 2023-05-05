@@ -27,3 +27,5 @@ class DoiAttributeValueNotFoundException extends ADoiCellDataException
             '</strong>. Akceptované typy: <strong>' . implode('</strong>, <strong>', $this->accepted) . '</strong>.';
     }
 }
+
+

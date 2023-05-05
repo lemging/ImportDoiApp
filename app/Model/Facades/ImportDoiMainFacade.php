@@ -25,8 +25,6 @@ class ImportDoiMainFacade
 
     /**
      * Pripravi zakldani data pro ImportDoiMainPresenter.
-     *
-     * @return MainData
      */
     public function prepareImportDoiMainData(): MainData
     {
@@ -40,11 +38,9 @@ class ImportDoiMainFacade
     /**
      * Zkontroluje, zda je soubor xlsx.
      *
-     * @param FileUpload $file
-     * @return void
      * @throws InvalidArgumentException - pokud soubor neni xlsx
      */
-    public function checkFileExtension(FileUpload $file)
+    public function checkFileExtension(FileUpload $file): void
     {
         $file_parts = pathinfo($file->getUntrustedName());
 
@@ -56,9 +52,6 @@ class ImportDoiMainFacade
 
     /**
      * Uloží uploadnutý soubor.
-     *
-     * @param FileUpload $file
-     * @return string
      */
     public function saveFile(FileUpload $file)
     {

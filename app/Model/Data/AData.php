@@ -3,7 +3,7 @@
 namespace App\Model\Data;
 
 /**
- * Abstraktni trida pro datove objekty, ktere se primo posilaji do template.
+ * Abstract class for data objects that are sent directly to the template.
  */
 abstract class AData
 {
@@ -11,3 +11,6 @@ abstract class AData
 
     public ?int $navbarActiveIndex = null;
 }
+
+
+

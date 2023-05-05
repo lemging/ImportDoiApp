@@ -1,0 +1,6 @@
+title: 'Homepage'
+description: 'The application allows you to download all your DOIs from datacite into an excel spreadsheet even with metadata.'
+description2: 'In this table you can edit your metadata of downloaded DOIs or add any number of new DOIs.'
+description3: 'You then upload this table to the application, which validates your data and uploads the valid data to datacite - updating the changed metadata of existing DOIs and adding the newly added DOIs with metadata.'
+structure: 'On <a href="%link%">this page</a> you can download the file with your DOIs.'
+upload: 'If you already have the excel file, you can upload it on <a href="%link%">this page</a>.'

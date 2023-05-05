@@ -27,12 +27,6 @@ final class ImportDoiConfirmationFacade
     const DOI_SEND_RESPONSE_MESSAGES = 'doiSendResponseMessages';
     const DOI_SEND_RESPONSE_GENERAL_MESSAGE = 'doiSendResponseGeneralMessage';
 
-    /**
-     * Konstruktor.
-     *
-     * @param DoiXlsxProcessService $doiXlsxSolverService
-     * @param DoiApiCommunicationService $doiApiCommunicationService
-     */
     public function __construct(
         private DoiXlsxProcessService      $doiXlsxSolverService,
         private DoiApiCommunicationService $doiApiCommunicationService,
@@ -44,8 +38,6 @@ final class ImportDoiConfirmationFacade
     /**
      * Zpracuje to xlsx soubor a pripravi data pro ImportDoiConfirmationPresenter.
      *
-     * @param string $destination
-     * @return ConfirmationData
      * @throws Exception
      * @throws SystemException
      */
@@ -89,7 +81,7 @@ final class ImportDoiConfirmationFacade
 
                 if (!isset($fileHeaders))
                 {
-                    throw new SystemException('Nesmí nastat.'); //todo mozna na toto svoji vyjimku
+                    throw new SystemException();
                 }
 
                 // Zpracuje řádek a uloží data do datového objektu.

@@ -20,28 +20,33 @@ class TitleDataBuilder
         $this->doiTitleDataException = new DoiTitleDataException();
     }
 
-    public static function create()
+    public static function create(): TitleDataBuilder
     {
         return new self();
     }
 
-    public function reset()
+    public function reset(): void
     {
         $this->doiTitleData = new TitleData();
         $this->doiTitleDataException = new DoiTitleDataException();
     }
 
-    public function build()
+    /**
+     * @throws DoiTitleDataException
+     */
+    public function build(): TitleData
     {
-        if (!isset($this->doiTitleData->title))
+        if ($this->doiTitleData->title === null || $this->doiTitleData->title === '')
         {
             $this->doiTitleDataException->setNewTitleNotSetException();
         }
-        if ($this->doiTitleDataException->getTypeNotFoundException() === null && !isset($this->doiTitleData->type))
+        if ($this->doiTitleDataException->getTypeNotFoundException() === null &&
+            $this->doiTitleData->type === null || $this->doiTitleData->type === ''
+        )
         {
             $this->doiTitleDataException->setNewTypeNotSetException();
         }
-        if (!isset($this->doiTitleData->language))
+        if ($this->doiTitleData->language === null || $this->doiTitleData->language === '')
         {
             $this->doiTitleDataException->setLanguageNotSetException();
         }
@@ -54,12 +59,12 @@ class TitleDataBuilder
         return $this->doiTitleData;
     }
 
-    public function title(string $title)
+    public function title(string $title): void
     {
         $this->doiTitleData->title = $title;
     }
 
-    public function typeString(string $type, ?string $coordinate = null)
+    public function typeString(string $type, ?string $coordinate = null): void
     {
         switch($type)
         {
@@ -87,7 +92,7 @@ class TitleDataBuilder
         }
     }
 
-    public function language(string $language)
+    public function language(string $language): void
     {
         $this->doiTitleData->language = $language;
     }

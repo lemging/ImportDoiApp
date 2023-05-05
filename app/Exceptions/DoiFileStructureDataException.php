@@ -141,7 +141,7 @@ class DoiFileStructureDataException extends ADataException
         {
             $doiFileStructureErrorsData->columnHeaderErrors[] = 'Zadané atributy nejsou ve správném pořadí. Některé ' .
                 'atributy týkajcí se například tvůrce nebo titulku ' .
-                'musí následovat po sobě v určitém pořadí, aby bylo jasné, že patří k sobě. Více info zde XXX.';
+                'musí následovat po sobě v určitém pořadí, aby bylo jasné, že patří k sobě. Více info <a href="#">zde</a>.';
 
             // dokud nejsou zadany vsechny attributy a nebo jsou tam nejake navic, tak by bylo zmatene resit poradi
             foreach ($this->wrongColumnHeaderOrderExceptions as $wrongColumnHeaderOrderException)

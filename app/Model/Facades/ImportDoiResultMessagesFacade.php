@@ -16,7 +16,7 @@ class ImportDoiResultMessagesFacade
     }
 
     /**
-     * Pripravi zakladni data pro ImportDoiResultMessagesPresenter. Zpracujeme data z parametru do datových objektů.
+     * Pripravi zakladni data pro ImportDoiResultMessagesPresenter. Zpracuje data z parametru do datových objektů.
      *
      * @param array{doiSendResponseMessages: array{status: array{name: string, value: string}, message: string},
      *              doiSendResponseGeneralMessage: string}  $statusesAndMessages
@@ -24,7 +24,6 @@ class ImportDoiResultMessagesFacade
      */
     public function prepareImportDoiSetToApiData(array $statusesAndMessages): ResultMessagesData
     {
-
         $data = new ResultMessagesData();
         $data->title = $this->translator->translate('import_doi_result_messages.title');
         $data->navbarActiveIndex = 2;

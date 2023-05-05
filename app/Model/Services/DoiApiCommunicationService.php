@@ -13,6 +13,41 @@ use Nette\Localization\Translator;
  */
 class DoiApiCommunicationService
 {
+    const DOI_ARRAY_KEY_CREATOR_NAME = 'name';
+    const DOI_ARRAY_KEY_CREATOR_NAME_TYPE = 'nameType';
+    const DOI_ARRAY_KEY_CREATOR_AFFILATION_NAME = 'name';
+    const DOI_ARRAY_KEY_CREATOR_AFFILATION = 'affiliation';
+    const DOI_ARRAY_KEY_CREATOR_NAME_IDENTIFIER = 'nameIdentifier';
+    const DOI_ARRAY_KEY_CREATOR_NAME_IDENTIFIERS = 'nameIdentifiers';
+    const DOI_ARRAY_KEY_TITLE_LANG = 'lang';
+    const DOI_ARRAY_KEY_TITLE_NAME = self::DOI_RESPONSE_KEY_ERROR_TITLE;
+    const DOI_ARRAY_KEY_TITLE_TYPE = 'titleType';
+    const DOI_ARRAY_KEY_PREFIX = 'prefix';
+    const DOI_ARRAY_KEY_DOI = 'doi';
+    const DOI_ARRAY_KEY_IDENTIFIER = 'identifier';
+    const DOI_ARRAY_KEY_CREATORS = 'creators';
+    const DOI_ARRAY_KEY_TITLES = 'titles';
+    const DOI_ARRAY_KEY_PUBLISHER = 'publisher';
+    const DOI_ARRAY_KEY_PUBLICATION_YEAR = 'publicationYear';
+    const DOI_ARRAY_KEY_TYPES = 'types';
+    const DOI_ARRAY_KEY_RESOURCE_TYPE = 'resourceType';
+    const DOI_ARRAY_KEY_RESOURCE_TYPE_GENERAL = 'resourceTypeGeneral';
+    const DOI_ARRAY_KEY_URL = 'url';
+    const DOI_ARRAY_KEY_EVENT = 'event';
+    const DOI_EVENT_PUBLISH = 'publish';
+    const DOI_EVENT_REGISTER = 'register';
+    const DOI_ARRAY_KEY_DATA = 'data';
+    const DOI_ARRAY_KEY_DATA_TYPE = 'type';
+    const DOI_ARRAY_KEY_DATA_ATTRIBUTES = 'attributes';
+    const DOI_IDENTIFIER_DOI = 'DOI';
+    const DOI_RESOURCE_TYPE_GENERAL_OTHER = 'Other';
+    const DOI_ARRAY_TYPE_VALUE_DOIS = 'dois';
+    const URL_FOR_ADDING_DOI = 'https://api.test.datacite.org/dois';
+    const DOI_URL_FOR_UPDATING_DOI = 'https://api.test.datacite.org/dois/';
+    const DOI_RESPONSE_KEY_ERROR = 'errors';
+    const DOI_RESPONSE_KEY_ERROR_TITLE = 'title';
+    const DOI_RESPONSE_KEY_ERROR_SOURCE = 'source';
+
     public function __construct(
         private Translator $translator
     )
@@ -27,34 +62,34 @@ class DoiApiCommunicationService
      */
     public function generateJsonFromDoiData(DoiData $doiData): string
     {
+        // Vytvorime pole z ktereho se nasledne vytvori json
         $creatorArrays = [];
         $i = 0;
         foreach ($doiData->creators as $creator) {
             $creatorArray = [];
-//            dumpe($creator);
-            $creatorArray['name'] = $creator->name;
-            $creatorArray['nameType'] = $creator->type->value;
+            $creatorArray[self::DOI_ARRAY_KEY_CREATOR_NAME] = $creator->name;
+            $creatorArray[self::DOI_ARRAY_KEY_CREATOR_NAME_TYPE] = $creator->type->value;
             $affiliationArrays = [];
 
             foreach ($creator->affiliations as $affiliation)
             {
                 $affiliationArrays[] = [
-                    'name' => $affiliation
+                    self::DOI_ARRAY_KEY_CREATOR_AFFILATION_NAME => $affiliation
                 ];
             }
 
-            $creatorArray['affiliation'] = $affiliationArrays;
+            $creatorArray[self::DOI_ARRAY_KEY_CREATOR_AFFILATION] = $affiliationArrays;
 
             $nameIdentifierArrays = [];
 
             foreach ($creator->nameIdentifiers as $nameIdentifier)
             {
                 $nameIdentifierArrays[] = [
-                    'nameIdentifier' => $nameIdentifier,
+                    self::DOI_ARRAY_KEY_CREATOR_NAME_IDENTIFIER => $nameIdentifier,
                 ];
             }
 
-            $creatorArray['nameIdentifiers'] = $nameIdentifierArrays; //todo
+            $creatorArray[self::DOI_ARRAY_KEY_CREATOR_NAME_IDENTIFIERS] = $nameIdentifierArrays;
 
             $creatorArrays[$i++] = $creatorArray;
         }
@@ -64,40 +99,39 @@ class DoiApiCommunicationService
         foreach ($doiData->titles as $title) {
             $titleArray = [];
 
-            $titleArray['lang'] = $title->language;
-            $titleArray['title'] = $title->title;
-            $titleArray['titleType'] = $title->type->value;
+            $titleArray[self::DOI_ARRAY_KEY_TITLE_LANG] = $title->language;
+            $titleArray[self::DOI_ARRAY_KEY_TITLE_NAME] = $title->title;
+            $titleArray[self::DOI_ARRAY_KEY_TITLE_TYPE] = $title->type->value;
 
             $titleArrays[$i++] = $titleArray;
         }
 
         $attributes = [
-            'prefix' => '10.82522/', //todo '10.82522/'
-            'doi' => '10.82522/' . $doiData->doi,
-            'identifier' => 'DOI',
-            'creators' => $creatorArrays,
-            'titles' => $titleArrays,
-            'publisher' => $doiData->publisher,
-            'publicationYear' => $doiData->publicationYear,
-            'types' => [
-                'resourceType' => $doiData->resourceType,
-                'resourceTypeGeneral' => 'Other'
+            self::DOI_ARRAY_KEY_PREFIX => '10.82522/', //todo zadavani prefixu
+            self::DOI_ARRAY_KEY_DOI => '10.82522/' . $doiData->doi,
+            self::DOI_ARRAY_KEY_IDENTIFIER => self::DOI_IDENTIFIER_DOI,
+            self::DOI_ARRAY_KEY_CREATORS => $creatorArrays,
+            self::DOI_ARRAY_KEY_TITLES => $titleArrays,
+            self::DOI_ARRAY_KEY_PUBLISHER => $doiData->publisher,
+            self::DOI_ARRAY_KEY_PUBLICATION_YEAR => $doiData->publicationYear,
+            self::DOI_ARRAY_KEY_TYPES => [
+                self::DOI_ARRAY_KEY_RESOURCE_TYPE => $doiData->resourceType,
+                self::DOI_ARRAY_KEY_RESOURCE_TYPE_GENERAL => self::DOI_RESOURCE_TYPE_GENERAL_OTHER
             ],
-            'url' => $doiData->url,
+            self::DOI_ARRAY_KEY_URL => $doiData->url,
 
         ];
 
-        $attributes['event'] = match ($doiData->state) {
-            DoiStateEnum::Findable => 'publish',
-            DoiStateEnum::Registered => 'register',
+        $attributes[self::DOI_ARRAY_KEY_EVENT] = match ($doiData->state) {
+            DoiStateEnum::Findable => self::DOI_EVENT_PUBLISH,
+            DoiStateEnum::Registered => self::DOI_EVENT_REGISTER,
             DoiStateEnum::Draft => '',
         };
 
-        //todo do konstant
         $doiArray = [
-            'data' => [
-                'type' => 'dois',
-                'attributes' => $attributes
+            self::DOI_ARRAY_KEY_DATA => [
+                self::DOI_ARRAY_KEY_DATA_TYPE => self::DOI_ARRAY_TYPE_VALUE_DOIS,
+                self::DOI_ARRAY_KEY_DATA_ATTRIBUTES => $attributes
             ]
         ];
 
@@ -106,21 +140,17 @@ class DoiApiCommunicationService
 
     /**
      * Odešle JSON na API. V případě, že id je null, tak přidá nový doi, jinak aktualizuje. Vrátí dekodovanou odpoved.
-     *
-     * @param string $json
-     * @param string|null $doiId
-     * @return array
      */
     public function addOrUpdateDoiByJsonToApi(string $json, ?string $doiId = null): array
     {
         if ($doiId === null)
         {
-            $ch = curl_init('https://api.test.datacite.org/dois'); //todo
+            $ch = curl_init(self::URL_FOR_ADDING_DOI);
             curl_setopt($ch, CURLOPT_POST, 1);
         }
         else
         {
-            $ch = curl_init('https://api.test.datacite.org/dois/10.82522/' . $doiId);
+            $ch = curl_init(self::DOI_URL_FOR_UPDATING_DOI . '10.82522/' . $doiId);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
         }
 
@@ -153,16 +183,16 @@ class DoiApiCommunicationService
     /**
      * Zpracuje odpověď získanou z API pro přidávní doi. Vrátí textvou odpověď pro uživatele a status.
      *
-     * @param array $response
-     * @param int $rowNumber
      * @return array{status: JsonSendStatusEnum, message: string}
      */
     public function processAddDoiResponse(array $response, int $rowNumber, string $doiId): array
     {
-        if (array_key_exists('errors', $response))
+        if (array_key_exists(self::DOI_RESPONSE_KEY_ERROR, $response))
         {
             // Ve vytvoreni doi se vyskytla chyba.
-            if ($response['errors'][0]['title'] === 'This DOI has already been taken')
+            if ($response[self::DOI_RESPONSE_KEY_ERROR][0][self::DOI_RESPONSE_KEY_ERROR_TITLE] ===
+                'This DOI has already been taken'
+            )
             {
                 // Chybou je, že doi se stejným id u exituje. Bude se zkouset DOI aktualizovat.
                 return [
@@ -174,7 +204,7 @@ class DoiApiCommunicationService
             $message = $this->translator->translate(
                 'doi_communication.creation_failed', ['row_number' => $rowNumber, 'doi_id' => $doiId]
             );
-            $message .= $this->createErrorMessageFromApiData($response['errors']);
+            $message .= $this->createErrorMessageFromApiData($response[self::DOI_RESPONSE_KEY_ERROR]);
 
             return [
                 ImportDoiConfirmationFacade::JSON_SEND_STATUS => JsonSendStatusEnum::Failure,
@@ -196,19 +226,16 @@ class DoiApiCommunicationService
     /**
      * Zpracuje odpověď získanou z API pro aktualizaci doi. Vrátí textvou odpověď pro uživatele a status.
      *
-     * @param array $response
-     * @param int $rowNumber
-     * @param string $doiId
      * @return array{status: JsonSendStatusEnum, message: string}
      */
     public function processUpdateDoiResponse(array $response, int $rowNumber, string $doiId): array
     {
-        if (array_key_exists('errors', $response))
+        if (array_key_exists(self::DOI_RESPONSE_KEY_ERROR, $response))
         {
             $message = $this->translator->translate(
                 'doi_communication.update_failed', ['row_number' => $rowNumber, 'doi_id' => $doiId]
             );
-            $message .= $this->createErrorMessageFromApiData($response['errors']);
+            $message .= $this->createErrorMessageFromApiData($response[self::DOI_RESPONSE_KEY_ERROR]);
 
             return [
                 ImportDoiConfirmationFacade::JSON_SEND_STATUS => JsonSendStatusEnum::Failure,
@@ -228,10 +255,6 @@ class DoiApiCommunicationService
 
     /**
      * Vytvoří obecnou odpověď pro uživatele získanou z hodnot všech odpovědí.
-     *
-     * @param bool $allSuccessfullySend
-     * @param bool $allFailedSend
-     * @return string
      */
     public function createGeneralResponseMessage(bool $allSuccessfullySend, bool $allFailedSend): string
     {
@@ -249,16 +272,12 @@ class DoiApiCommunicationService
         }
     }
 
-    /**
-     * @param array $errors
-     * @return string
-     */
     protected function createErrorMessageFromApiData(array $errors): string
     {
         $i = 0;
         $message = '';
         foreach ($errors as $error) {
-            $message .= $error['title'] . '(' . $error['source'] . ')';
+            $message .= $error[self::DOI_RESPONSE_KEY_ERROR_TITLE] . '(' . $error[self::DOI_RESPONSE_KEY_ERROR_SOURCE] . ')';
 
             if ($i++ !== count($errors) - 1) {
                 $message .= ', ';

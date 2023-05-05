@@ -61,31 +61,16 @@ class DoiXlsxProcessService
     {
     }
 
-    /**
-     * Setter.
-     *
-     * @param DoiDataBuilder $doiDataBuilder
-     */
     public function setDoiDataBuilder(DoiDataBuilder $doiDataBuilder): void
     {
         $this->doiDataBuilder = $doiDataBuilder;
     }
 
-    /**
-     * Setter.
-     *
-     * @param CreatorDataBuilder $doiCreatorDataBuilder
-     */
     public function setDoiCreatorDataBuilder(CreatorDataBuilder $doiCreatorDataBuilder): void
     {
         $this->doiCreatorDataBuilder = $doiCreatorDataBuilder;
     }
 
-    /**
-     * Setter.
-     *
-     * @param TitleDataBuilder $doiTitleDataBuilder
-     */
     public function setDoiTitleDataBuilder(TitleDataBuilder $doiTitleDataBuilder): void
     {
         $this->doiTitleDataBuilder = $doiTitleDataBuilder;
@@ -95,7 +80,7 @@ class DoiXlsxProcessService
      * Získá strukturu souboru.
      *
      * @param  $row - První řádek listu, který by měl obsahovat nadpisy sloupců.
-     * @return array
+     * @return array<DoiColumnHeaderEnum|null>
      * @throws DoiFileStructureDataException
      * @throws Exception
      */
@@ -147,9 +132,7 @@ class DoiXlsxProcessService
     /**
      * Zpracuje řádek obsahující data(ne první řádek, ten obsahuje nadpisy sloupce) a uloží do datového objektu.
      *
-     * @param $row
      * @param DoiColumnHeaderEnum|null[] $columnHeaders - Nadpisy sloupců v pořadí, v jakém jsou v souboru.
-     * @return DoiData
      * @throws DoiDataException
      */
     public function processRow($row, array $columnHeaders) {
@@ -164,7 +147,7 @@ class DoiXlsxProcessService
 
         foreach($row->getCellIterator() as $cell) {
             // Procházíme buňku. Uložíme si její hodnotu.
-            $currentCellValue = (string) $cell->getValue(); // todo prazdne bunky (nully a prazdne stringy)
+            $currentCellValue = (string) $cell->getValue();
 
             // Podíváme se jaký má konkrétní sloupec nadpis a podle toho uložíme hodnotu.
             switch ($columnHeaders[$cellCounter++]) {
@@ -243,8 +226,6 @@ class DoiXlsxProcessService
 
     /**
      * @param FileStructureData $fileStructureData
-     * @return void
-     * @throws Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function createXlsxFromDoiDataList(FileStructureData $fileStructureData): void
@@ -403,17 +384,13 @@ class DoiXlsxProcessService
     }
 
     /**
-     * Vytvori z bunky v zadaném sheen na zadanych coordiante combobox s moznostma.
+     * Creates a combobox with options from a cell in the specified sheen on the specified coordiants.
      *
-     * @param Worksheet $sheet
-     * @param string $cooridnate
-     * @param array $options
-     * @return void
+     * @param array<string> $options
      * @throws Exception
      */
     public function createCombobox(Worksheet $sheet, string $cooridnate, array $options)
     {
-        // todo jazyk
         $validation = $sheet->getCell($cooridnate)->getDataValidation();
         $validation->setType(DataValidation::TYPE_LIST);
         $validation->setFormula1('"' . implode(',', $options) . '"');
@@ -423,20 +400,17 @@ class DoiXlsxProcessService
         $validation->setPrompt($this->translator->translate('xlsx_process.create_checkbox.promt'));
         $validation->setShowErrorMessage(true);
         $validation->setErrorStyle(DataValidation::STYLE_STOP);
-        $validation->setErrorTitle('Invalid option');
+        $validation->setErrorTitle($this->translator->translate('xlsx_process.create_checkbox.invalidOption'));
         $validation->setError($this->translator->translate('xlsx_process.create_checkbox.error'));
     }
 
     /**
-     * @param stdClass $doi
-     * @return DoiData
      * @throws DoiDataException
      */
     public function createDoiData(stdClass $doi): DoiData
     {
         $this->doiDataBuilder->reset();
 
-        // todo mozna tady nejak lip vyresit ty issety
         if (isset($doi->id))
             $this->doiDataBuilder->doi(ltrim(strstr($doi->id, '/'), '/'));
         if (isset($doi->attributes->state))
@@ -503,8 +477,6 @@ class DoiXlsxProcessService
     }
 
     /**
-     * @param RowCellIterator $columnIterator
-     * @return void
      * @throws Exception
      */
     protected function setHeaderAndMoveNext(RowCellIterator $columnIterator, DoiColumnHeaderEnum $columnHeaderEnum): void
@@ -514,10 +486,6 @@ class DoiXlsxProcessService
         $columnIterator->next();
     }
 
-    /**
-     * @param Worksheet $sheet
-     * @return void
-     */
     protected function setSheetAutosize(Worksheet $sheet): void
     {
         foreach ($sheet->getColumnIterator() as $column) {

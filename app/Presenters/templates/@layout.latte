@@ -19,7 +19,6 @@
 </head>
 
 <body>
-{*todo preklady*}
 	<div class="container">
 		<br>
 		<h1>{$data->title}</h1>
@@ -28,10 +27,10 @@
 			<ul class="nav navbar-nav">
 
 				<li{if $data->navbarActiveIndex === 0} class="active"{/if}>
-						<a href="{plink Homepage:default}">{_homepage.title}</a>
+					<a href="{plink Homepage:default}">{_homepage.title}</a>
 				</li>
 				<li{if $data->navbarActiveIndex === 1} class="active"{/if}>
-						<a href="{plink FileStructure:default}">{_file_structure.title}</a>
+					<a href="{plink FileStructure:default}">{_file_structure.title}</a>
 				</li>
 				<li{if $data->navbarActiveIndex === 2} class="active"{/if}>
 					<a href="{plink ImportDoiMain:default}">{_import_doi_main.title}</a>
