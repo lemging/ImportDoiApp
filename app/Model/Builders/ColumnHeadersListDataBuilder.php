@@ -17,22 +17,19 @@ class ColumnHeadersListDataBuilder
     public ColumnHeadersListData $columnHeadersListData;
 
     /**
-     * Do vyjimky se ukládají všechny chyby ve struktuře souboru.
+     * The exception stores all errors in the file structure.
      *
      * @var DoiFileStructureDataException $fileStructureDataException
      */
     public DoiFileStructureDataException $fileStructureDataException;
 
-    /**
-     * Konstruktor.
-     */
     private function __construct()
     {
         $this->fileStructureDataException = new DoiFileStructureDataException();
         $this->columnHeadersListData = new ColumnHeadersListData();
     }
 
-    public static function create()
+    public static function create(): ColumnHeadersListDataBuilder
     {
         return new self();
     }
@@ -61,10 +58,10 @@ class ColumnHeadersListDataBuilder
                 $expectedNextColumnHeader = DoiColumnHeaderEnum::CreatorNameIdentifier;
                 break;
             case DoiColumnHeaderEnum::CreatorNameIdentifier->value:
-                // Tvurce musi byt pohromade
+                // The creator must be together
                 $expectedLastHeader = DoiColumnHeaderEnum::CreatorName;
 
-                // Identifikator tvurce muze byt vicekrat, takze muze nasledovat i sam po sobe
+                // The creator identifier can be multiple, so it can follow itself
                 if ($lastHeader !== $expectedLastHeader && $lastHeader !== DoiColumnHeaderEnum::CreatorNameIdentifier)
                 {
                     $this->fileStructureDataException->addWrongColumnHeaderOrderException(
@@ -82,10 +79,10 @@ class ColumnHeadersListDataBuilder
                 $expectedNextColumnHeader = DoiColumnHeaderEnum::CreatorAffiliation;
                 break;
             case DoiColumnHeaderEnum::CreatorAffiliation->value:
-                // Tvurce musi byt pohromade
+                // The creator must be together
                 $expectedLastHeader = DoiColumnHeaderEnum::CreatorNameIdentifier;
 
-                // Afilace tvurce muze byt vicekrat, takze muze nasledovat i sam po sobe
+                // The creator's affiliation can be multiple times, so it can follow even after itself
                 if ($lastHeader !== $expectedLastHeader && $lastHeader !== DoiColumnHeaderEnum::CreatorAffiliation)
                 {
                     $this->fileStructureDataException->addWrongColumnHeaderOrderException(
@@ -103,7 +100,7 @@ class ColumnHeadersListDataBuilder
                 $expectedNextColumnHeader = DoiColumnHeaderEnum::CreatorType;
                 break;
             case DoiColumnHeaderEnum::CreatorType->value:
-                // Tvurce musi byt pohromade
+                // The creator must be together
                 $expectedLastHeader = DoiColumnHeaderEnum::CreatorAffiliation;
 
                 if ($lastHeader !== $expectedLastHeader)
@@ -126,7 +123,7 @@ class ColumnHeadersListDataBuilder
                 $expectedNextColumnHeader = DoiColumnHeaderEnum::TitleType;
                 break;
             case DoiColumnHeaderEnum::TitleType->value:
-                // Titulek musi byt pohromade
+                // The title must be together
                 if ($lastHeader !== DoiColumnHeaderEnum::Title)
                 {
                     $this->fileStructureDataException->addWrongColumnHeaderOrderException(
@@ -144,7 +141,7 @@ class ColumnHeadersListDataBuilder
                 $expectedNextColumnHeader = DoiColumnHeaderEnum::TitleLanguage;
                 break;
             case DoiColumnHeaderEnum::TitleLanguage->value:
-                // Titulek musi byt pohromade
+                // The title must be together
                 if ($lastHeader !== DoiColumnHeaderEnum::TitleType)
                 {
                     $this->fileStructureDataException->addWrongColumnHeaderOrderException(
@@ -169,7 +166,7 @@ class ColumnHeadersListDataBuilder
                 $this->addSourceType($cellCoordinate);
                 break;
             case '' || null:
-                // nezpracovava se, takze ocekavany nadpis zustava
+                // It is not processed, so the expected title remains
                 $this->addNullValue();
                 return $expectedColumnHeader;
             default:
@@ -181,7 +178,7 @@ class ColumnHeadersListDataBuilder
 
         if (end($this->columnHeadersListData->columnHeaders))
         {
-            // zkontrolujeme zda se pridal ocekavany nazev sloupce
+            // Check if the expected column name has been added
             $this->checkExpectedColumnHeader(
                 $expectedColumnHeader,
                 $lastHeader,
@@ -194,10 +191,9 @@ class ColumnHeadersListDataBuilder
     }
 
     /**
-     * Ziská poslední zpracovaný nadpis soupce(přeskakuje prázdné nadpisy).
+     * Gets the last processed header of the table(skips empty headers).
      *
      * @param array<DoiColumnHeaderEnum|null> $headers
-     * @return DoiColumnHeaderEnum|null
      */
     private static function getLastHeader(array $headers): ?DoiColumnHeaderEnum
     {
@@ -217,10 +213,8 @@ class ColumnHeadersListDataBuilder
     }
 
     /**
-     * Přidá doi do seznamu nadpisů, který udržuje pořadí nadpisů sloupců v souboru. Zároveň uloží souřadnice nadpisu.
-     *
-     * @param string $cellCoordinate
-     * @return void
+     * Adds a doi to the list of headings that maintains the order of column headings in the file.
+     * It also stores the coordinates of the heading.
      */
     public function addDoi(string $cellCoordinate): void
     {
@@ -229,10 +223,8 @@ class ColumnHeadersListDataBuilder
     }
 
     /**
-     * Přidá stav doi do seznamu nadpisů, který udržuje pořadí nadpisů sloupců v souboru. Zároveň uloží souřadnice nadpisu.
-     *
-     * @param string $cellCoordinate
-     * @return void
+     * Adds the doi state to the title list, which maintains the order of column headings in the file.
+     * It also stores the coordinates of the heading.
      */
     public function addDoiState(string $cellCoordinate): void
     {
@@ -241,10 +233,8 @@ class ColumnHeadersListDataBuilder
     }
 
     /**
-     * * Přidá url do seznamu nadpisů, který udržuje pořadí nadpisů sloupců v souboru. Zároveň uloží souřadnice nadpisu.
-     *
-     * @param string $cellCoordinate
-     * @return void
+     * Adds url to the list of headings that maintains the order of column headings in the file.
+     * It also stores the coordinates of the heading.
      */
     public function addDoiUrl(string $cellCoordinate): void
     {
@@ -253,10 +243,8 @@ class ColumnHeadersListDataBuilder
     }
 
     /**
-     * Přidá název tvůrce do seznamu nadpisů, který udržuje pořadí nadpisů sloupců v souboru. Zároveň uloží souřadnice nadpisu.
-     *
-     * @param string $cellCoordinate
-     * @return void
+     * Adds the creator name to the list of headings that maintains the order of column headings in the file.
+     * It also stores the coordinates of the heading.
      */
     public function addCreatorNameIdentifier(string $cellCoordinate): void
     {
@@ -265,10 +253,8 @@ class ColumnHeadersListDataBuilder
     }
 
     /**
-     * Přidá typ tvurce do seznamu nadpisů, který udržuje pořadí nadpisů sloupců v souboru. Zároveň uloží souřadnice nadpisu.
-     *
-     * @param string $cellCoordinate
-     * @return void
+     * Adds a creator type to the list of headings that maintains the order of column headings in the file.
+     * It also stores the coordinates of the heading.
      */
     public function addCreatorType(string $cellCoordinate): void
     {
@@ -277,10 +263,8 @@ class ColumnHeadersListDataBuilder
     }
 
     /**
-     * Přidá název tvůrce do seznamu nadpisů, který udržuje pořadí nadpisů sloupců v souboru. Zároveň uloží souřadnice nadpisu.
-     *
-     * @param string $cellCoordinate
-     * @return void
+     * Adds the creator name to the list of headings that maintains the order of column headings in the file.
+     * It also stores the coordinates of the heading.
      */
     public function addCreatorName(string $cellCoordinate): void
     {
@@ -289,10 +273,8 @@ class ColumnHeadersListDataBuilder
     }
 
     /**
-     * Přidá afilaci tvůrce do seznamu nadpisů, který udržuje pořadí nadpisů sloupců v souboru. Zároveň uloží souřadnice nadpisu.
-     *
-     * @param string $cellCoordinate
-     * @return void
+     * Adds the creator affiliation to the title list, which maintains the order of column headings in the file.
+     * It also stores the coordinates of the heading.
      */
     public function addCreatorAffiliation(string $cellCoordinate): void
     {
@@ -301,10 +283,8 @@ class ColumnHeadersListDataBuilder
     }
 
     /**
-     * Přidá titulek do seznamu nadpisů, který udržuje pořadí nadpisů sloupců v souboru. Zároveň uloží souřadnice nadpisu.
-     *
-     * @param string $cellCoordinate
-     * @return void
+     * Adds a heading to the list of headings that maintains the order of column headings in the file.
+     * It also stores the coordinates of the heading.
      */
     public function addTitle(string $cellCoordinate): void
     {
@@ -313,10 +293,8 @@ class ColumnHeadersListDataBuilder
     }
 
     /**
-     * Přidá typ titulku do seznamu nadpisů, který udržuje pořadí nadpisů sloupců v souboru. Zároveň uloží souřadnice nadpisu.
-     *
-     * @param string $cellCoordinate
-     * @return void
+     * Adds a headline type to the headline list that maintains the order of column headings in the file.
+     * It also stores the coordinates of the heading.
      */
     public function addTitleType(string $cellCoordinate): void
     {
@@ -325,7 +303,8 @@ class ColumnHeadersListDataBuilder
     }
 
     /**
-     * Přidá jazyk titulku do seznamu nadpisů, který udržuje pořadí nadpisů sloupců v souboru. Zároveň uloží souřadnice nadpisu.
+     * Adds the subtitle language to the list of headings that maintains the order of column headings in the file.
+     * It also saves the coordinates of the heading.
      *
      * @param string $cellCoordinate
      * @return void
@@ -337,7 +316,8 @@ class ColumnHeadersListDataBuilder
     }
 
     /**
-     * Přidá vydavatele do seznamu nadpisů, který udržuje pořadí nadpisů sloupců v souboru. Zároveň uloží souřadnice nadpisu.
+     * Adds the publisher to the title list, which maintains the order of column headings in the file.
+     * It also saves the coordinates of the heading.
      *
      * @param string $cellCoordinate
      * @return void
@@ -349,7 +329,8 @@ class ColumnHeadersListDataBuilder
     }
 
     /**
-     * Přidá rok publikace do seznamu nadpisů, který udržuje pořadí nadpisů sloupců v souboru. Zároveň uloží souřadnice nadpisu.
+     * Adds the publication year to the title list, which maintains the order of column headings in the file.
+     * It also saves the coordinates of the heading.
      *
      * @param string $cellCoordinate
      * @return void
@@ -361,7 +342,8 @@ class ColumnHeadersListDataBuilder
     }
 
     /**
-     * Přidá typ zdroje do seznamu nadpisů, který udržuje pořadí nadpisů sloupců v souboru. Zároveň uloží souřadnice nadpisu.
+     * Adds a resource type to the list of headings that maintains the order of column headings in the file.
+     * It also saves the coordinates of the heading.
      *
      * @param string $cellCoordinate
      * @return void
@@ -373,7 +355,7 @@ class ColumnHeadersListDataBuilder
     }
 
     /**
-     * Prida null hodonotu do seznamu nadpisů sloupců. Slouží k zachování struktury souborů.
+     * Add null value to the list of column headings. It is used to preserve the file structure.
      */
     public function addNullValue(): void
     {
@@ -381,10 +363,9 @@ class ColumnHeadersListDataBuilder
     }
 
     /**
-     * Zkontroluje zda soubor obsahoval požadovanou strukturu, pokud ano, vrati datovy objekt,
-     * pokud ne vyhodí vyjímku obsahující všechny chyby.
-     *
-     * @return ColumnHeadersListData
+     * Checks if the file contained the required structure, if yes, returns the data object,
+     * if not throws an exception containing all errors.
+
      * @throws DoiFileStructureDataException
      */
     public function build(): ColumnHeadersListData
@@ -482,13 +463,6 @@ class ColumnHeadersListDataBuilder
         return $this->columnHeadersListData;
     }
 
-    /**
-     * @param DoiColumnHeaderEnum|null $expectedColumnHeader
-     * @param mixed $lastHeader
-     * @param DoiColumnHeaderEnum|null $currentHeader
-     * @param string|null $cellCoordinate
-     * @return void
-     */
     public function checkExpectedColumnHeader(
         ?DoiColumnHeaderEnum $expectedColumnHeader,
         ?DoiColumnHeaderEnum $lastHeader,
@@ -499,7 +473,7 @@ class ColumnHeadersListDataBuilder
         if (
             $expectedColumnHeader !== null &&
             $currentHeader !== $expectedColumnHeader &&
-            $lastHeader !== $currentHeader // atributy, kterych muze byt vice muzou pokracovat za sebou
+            $lastHeader !== $currentHeader // attributes, which can be more than one, can continue in succession
         ) {
             if ($lastHeader === null)
             {

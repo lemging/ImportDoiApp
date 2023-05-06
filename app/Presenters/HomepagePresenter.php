@@ -14,8 +14,6 @@ class HomepagePresenter extends ABasePresenter
     }
 
     /**
-     * Základní akce.
-     *
      * @throws Exception
      */
     public function actionDefault(): void

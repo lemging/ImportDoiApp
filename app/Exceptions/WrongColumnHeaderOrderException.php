@@ -7,8 +7,8 @@ use Exception;
 use Throwable;
 
 /**
- * Nektere atributy musi nasledovat po sobe, aby se vedelo, ze k sobe patri.
- * Tato vyjimka znamena, ze toto poradi je nespravne.
+ * Some attributes must follow each other to know that they belong together.
+ * This exception means that this order is incorrect.
  */
 class WrongColumnHeaderOrderException extends AColumnHeaderException
 {
@@ -26,7 +26,7 @@ class WrongColumnHeaderOrderException extends AColumnHeaderException
         parent::__construct($header, $coordinates, $message, $code, $previous);
     }
 
-    public function getErrorMessage()
+    public function getErrorMessage(): string
     {
         return  'Atribut <strong>' . $this->header->value . '</strong> v sloupci ' . $this->getCoordinateString() . ' musí ' .
             ($this->next ? 'predcházet před' : 'následovat po') .

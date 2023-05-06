@@ -36,7 +36,7 @@ final class ImportDoiConfirmationFacade
     }
 
     /**
-     * Zpracuje to xlsx soubor a pripravi data pro ImportDoiConfirmationPresenter.
+     * This will process the xlsx file and prepare the data for the ImportDoiConfirmationPresenter.
      *
      * @throws Exception
      * @throws SystemException
@@ -47,31 +47,32 @@ final class ImportDoiConfirmationFacade
         $importDoiData->title = $this->translator->translate('import_doi_confirmation.title');
         $importDoiData->navbarActiveIndex = 2;
 
-        // Načteme si soubor.
+        // Let's read the file.
         $spreadsheet = IOFactory::load($destination);
 
         $this->doiXlsxSolverService->setDoiDataBuilder(DoiDataBuilder::create());
         $this->doiXlsxSolverService->setDoiCreatorDataBuilder(CreatorDataBuilder::create());
         $this->doiXlsxSolverService->setDoiTitleDataBuilder(TitleDataBuilder::create());
 
-        // Projdeme všechny listy, pro případ, že by uživatel chtěl dělit data do více listů.
+        // Go through all the sheets, in case the user wants to split the data into multiple sheets.
         foreach ($spreadsheet->getWorksheetIterator() as $sheet)
         {
-            // Načteme všchny řádky v listu.
+            // Read all rows in the sheet.
             foreach ($sheet->getRowIterator() as $row) {
                 if ($row->getRowIndex() === 1) {
-                    // Na prvním řádku jsou nadpisy sloupců.
+                    // Read all rows in the sheet.
                     try
                     {
-                        // Uložíme nadpisy sloupců v pořadí v jakém byly v souboru(prázdné nadpisy reprezentuje
-                        // hodnota null) a pokračujeme ve zpracování ostatních řádků listu.
+                        // Save the column headings in the order they were in the file (empty headings are
+                        // represented by the null value) and continue processing the other rows of the sheet.
                         $fileHeaders = $this->doiXlsxSolverService->getFileStructure($row);
 
                         continue;
                     }
                     catch (DoiFileStructureDataException $fileStructureDataException)
                     {
-                        // Soubor má nesprávnou strukturu. Přidáme název listu a uložíme vyjímku a list nezpracováváme.
+                        // The file is structured incorrectly.
+                        // Add the sheet name and save the exception and do not process the sheet.
                         $fileStructureDataException->setSheetTitle($sheet->getTitle());
                         $importDoiData->doiFileStructureErrorsData[] = $fileStructureDataException->createDataObject();
 
@@ -84,8 +85,8 @@ final class ImportDoiConfirmationFacade
                     throw new SystemException();
                 }
 
-                // Zpracuje řádek a uloží data do datového objektu.
-                // Pokud obsahoval nevalidní data, vyhodí se DoiDataException se všema chybama, kterou uložíme.
+                // Processes the row and saves the data to the data object.
+                // If it contained invalid data, a DoiDataException is thrown with all errors, which we save.
                 try
                 {
                     $doiData = $this->doiXlsxSolverService->processRow($row, $fileHeaders);
@@ -104,8 +105,8 @@ final class ImportDoiConfirmationFacade
     }
 
     /**
-     * Odešle všechny dois data na API a přidá dois, případně aktualizuje.
-     * Vrátí zprávy pro uživatele o úspěšnosti odeslání.
+     * Sends all dois data to the API and adds or updates the dois.
+     * Returns messages to the user about the success of the upload.
      *
      * @param DoiData[] $doisData
      * @return array{doiSendResponseMessages: array{status: JsonSendStatusEnum, message: string},
@@ -113,34 +114,34 @@ final class ImportDoiConfirmationFacade
      */
     public function sendDoisDataToApi(array $doisData): array
     {
-        // Pole, do kterého se budou ukládat statusy a zprávy pro uživatele pro jednotlivé doi.
+        // A field to store statuses and messages for users for each doi.
         $doiSendResponseStatusesAndMessages = [];
 
-        // Informace pro získání obecného statusu a zprávy, která platí pro všechny dois.
+        // Information to get a general status and message that applies to all dois.
         $allJsonsSuccessfullySend = true;
         $allJsonsFailedSend = true;
 
-        // Projdeme všechny datové objekty s informacemi o doi, které chceme vytvořit nebo aktualizovat.
+        // Go through all the data objects with doi information that we want to create or update.
         foreach ($doisData as $doiData)
         {
-            // Z datového souboru si vytvoříme JSON.
+            // We create JSON from the data file.
             $doiJson = $this->doiApiCommunicationService->generateJsonFromDoiData($doiData);
 
-            // Pokusíme se odeslat json do API a vytvořit tím nový doi. Uložíme si odpověd API.
+            // We will try to send json to the API and create a new doi. Let's save the API response.
             $response = $this->doiApiCommunicationService->addOrUpdateDoiByJsonToApi($doiJson);
 
-            // Zpracujeme odpověd a získáme status a zprávu pro uživatele.
+            // We process the response and get the status and message for the user.
             $statusAndMessage = $this->doiApiCommunicationService->processAddDoiResponse(
                 $response, $doiData->rowNumber, $doiData->doi
             );
 
-            // Pokud API odpovědělo, že doi id už existuje, pokusíme se ho aktualizovat s novými daty.
+            // If the API responds that the doi id already exists, we will try to update it with the new data.
             if ($statusAndMessage[self::JSON_SEND_STATUS] == JsonSendStatusEnum::AlreadyExists)
             {
-                // Pokusíme se odeslat json do API a aktualizovat tím nový doi. Uložíme si odpověd API.
+                // We will try to send json to the API and update the new doi. Let's save the API response.
                 $response = $this->doiApiCommunicationService->addOrUpdateDoiByJsonToApi($doiJson, $doiData->doi);
 
-                // Zpracujeme odpověd a získáme status a zprávu pro uživatele.
+                // We process the response and get the status and message for the user.
                 $statusAndMessage = $this->doiApiCommunicationService->processUpdateDoiResponse(
                     $response, $doiData->rowNumber, $doiData->doi
                 );

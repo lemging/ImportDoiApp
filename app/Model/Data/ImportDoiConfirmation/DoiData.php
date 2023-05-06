@@ -8,10 +8,11 @@ use App\Enums\DoiStateEnum;
 
 class DoiData
 {
-    // todo doplnit vsechny potrebne atributy
+    public const COUNTS_KEY_CREATORS = 'creators';
+    public const COUNTS_KEY_TITLES = 'titles';
+
     public ?int $rowNumber = null;
 
-    // todo maj tady byt vychozi hodnoty ?
     public ?string $doi = null;
 
     public DoiStateEnum $state = DoiStateEnum::Draft;

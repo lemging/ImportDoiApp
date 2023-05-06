@@ -28,7 +28,7 @@ class DoiDataBuilder
         $this->doiDataException = new DoiDataException();
     }
 
-    static function create()
+    static function create(): DoiDataBuilder
     {
         return new self();
     }
@@ -36,7 +36,7 @@ class DoiDataBuilder
     /**
      * @throws DoiDataException
      */
-    public function build()
+    public function build(): DoiData
     {
         if ($this->doiData->doi === null || $this->doiData->doi === '')
         {
@@ -73,7 +73,7 @@ class DoiDataBuilder
             $this->doiDataException->setNewResourceTypeNotSetException();
         }
 
-        // Drafty nemusi mit validni data
+        // Drafts don't have to have valid data
         if ($this->doiData->state !== DoiStateEnum::Draft && $this->doiDataException->getExceptionCount() > 0)
         {
             throw $this->doiDataException;
@@ -93,19 +93,19 @@ class DoiDataBuilder
         return $this->doiData;
     }
 
-    public function rowNumber(int $rowNumber)
+    public function rowNumber(int $rowNumber): void
     {
         $this->doiDataException->setRowNumber($rowNumber);
         $this->doiData->rowNumber = $rowNumber;
     }
 
-    public function doi(string $doi)
+    public function doi(string $doi): void
     {
         $this->doiData->doi = $doi;
         $this->doiDataException->setDoi($doi);
     }
 
-    public function doiStateString(string $doiState, ?string $coordinate = null)
+    public function doiStateString(string $doiState, ?string $coordinate = null): void
     {
         switch($doiState)
         {
@@ -131,29 +131,29 @@ class DoiDataBuilder
 
     }
 
-    public function url(string $url)
+    public function url(string $url): void
     {
         $this->doiData->url = $url;
     }
 
-    public function addDoiCreator(CreatorData $doiCreatorData)
+    public function addDoiCreator(CreatorData $doiCreatorData): void
     {
         $this->doiData->creators[] = $doiCreatorData;
-        $this->doiData->counts['creators'] += 1;
+        $this->doiData->counts[DoiData::COUNTS_KEY_CREATORS] += 1;
     }
 
-    public function addDoiTitle(TitleData $doiTitleData)
+    public function addDoiTitle(TitleData $doiTitleData): void
     {
         $this->doiData->titles[] = $doiTitleData;
-        $this->doiData->counts['titles'] += 1;
+        $this->doiData->counts[DoiData::COUNTS_KEY_TITLES] += 1;
     }
 
-    public function publisher(string $publisher)
+    public function publisher(string $publisher): void
     {
         $this->doiData->publisher = $publisher;
     }
 
-    public function publicationYear(int $publicationYear, ?string $coordinate = null)
+    public function publicationYear(int $publicationYear, ?string $coordinate = null): void
     {
         $this->doiData->publicationYear = $publicationYear;
 
@@ -168,23 +168,23 @@ class DoiDataBuilder
         }
     }
 
-    public function resourceType(string $resourceType)
+    public function resourceType(string $resourceType): void
     {
         $this->doiData->resourceType = $resourceType;
     }
 
-    public function reset()
+    public function reset(): void
     {
         $this->doiData = new DoiData();
         $this->doiDataException = new DoiDataException();
     }
 
-    public function addDoiCreatorDataException(DoiCreatorDataException $doiCreatorDataException)
+    public function addDoiCreatorDataException(DoiCreatorDataException $doiCreatorDataException): void
     {
         $this->doiDataException->addDoiCreatorDataException($doiCreatorDataException);
     }
 
-    public function addDoiTitleDataException(DoiTitleDataException $doiTitleDataException)
+    public function addDoiTitleDataException(DoiTitleDataException $doiTitleDataException): void
     {
         $this->doiDataException->addDoiTitleDataException($doiTitleDataException);
     }

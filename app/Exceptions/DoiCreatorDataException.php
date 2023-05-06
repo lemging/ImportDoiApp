@@ -21,11 +21,9 @@ class DoiCreatorDataException extends ADataException
         return $doiDataErrorData;
     }
 
-    private function getErrorMessages()
+    private function getErrorMessages(): array
     {
-        /**
-         * @var ADoiCellDataException[] $cellValidationExceptions
-         */
+        /** @var ADoiCellDataException[] $cellValidationExceptions */
         $cellValidationExceptions = [
             $this->typeNotSetException,
             $this->nameNotSetException,
@@ -44,17 +42,11 @@ class DoiCreatorDataException extends ADataException
         return $errorMessages;
     }
 
-    /**
-     * @return NotSetException|null
-     */
     public function getTypeNotSetException(): ?NotSetException
     {
         return $this->typeNotSetException;
     }
 
-    /**
-     * @param NotSetException|null $typeNotSetException
-     */
     public function setTypeNotSetException(NotSetException $notSetException): void
     {
         $this->exceptionCount++;
@@ -62,17 +54,11 @@ class DoiCreatorDataException extends ADataException
         $this->typeNotSetException = $notSetException;
     }
 
-    /**
-     * @return NotSetException|null
-     */
     public function getNameNotSetException(): ?NotSetException
     {
         return $this->nameNotSetException;
     }
 
-    /**
-     * @param NotSetException|null $nameNotSetException
-     */
     public function setNameNotSetException(NotSetException $notSetException): void
     {
         $this->exceptionCount++;
@@ -80,17 +66,11 @@ class DoiCreatorDataException extends ADataException
         $this->nameNotSetException = $notSetException;
     }
 
-    /**
-     * @return DoiAttributeValueNotFoundException|null
-     */
     public function getTypeNotFoundException(): ?DoiAttributeValueNotFoundException
     {
         return $this->typeNotFoundException;
     }
 
-    /**
-     * @param DoiAttributeValueNotFoundException|null $typeNotFoundException
-     */
     public function setTypeNotFoundException(?DoiAttributeValueNotFoundException $typeNotFoundException): void
     {
         $this->exceptionCount++;

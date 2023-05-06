@@ -7,98 +7,98 @@ use App\Enums\DoiColumnHeaderEnum;
 class ColumnHeadersListData
 {
     /**
-     * Souřadnice všech nadpisů sloupců s názvem doi.
+     * Coordinates of all column headings with the name doi.
      *
      * @var string[]
      */
     public array $doiColumnHeadersCoordinates = [];
 
     /**
-     * Souřadnice všech nadpisů sloupců s názvem stav doi.
+     * Coordinates of all column headings with the doi status name.
      *
      * @var string[]
      */
     public array $doiStateColumnHeadersCoordinates = [];
 
     /**
-     * Souřadnice všech nadpisů sloupců s názvem url.
+     * Coordinates of all column headings with the url name.
      *
      * @var string[]
      */
     public array $doiUrlColumnHeadersCoordinates = [];
 
     /**
-     * Souřadnice všech nadpisů sloupců s názvem identifikator tvurce.
+     * Coordinates of all column headings named creator identifier.
      *
      * @var string[]
      */
     public array $creatorNameIdentifierColumnHeadersCoordinates = [];
 
     /**
-     * Souřadnice všech nadpisů sloupců s názvem typ tvurce.
+     * Coordinates of all column headings with the creator type name.
      *
      * @var string[]
      */
     public array $creatorTypeColumnHeadersCoordinates = [];
 
     /**
-     * Souřadnice všech nadpisů sloupců s názvem název tvůrce.
+     * Coordinates of all column headings with the name of the creator.
      *
      * @var string[]
      */
     public array $creatorNameColumnHeadersCoordinates = [];
 
     /**
-     * Souřadnice všech nadpisů sloupců s názvem afilace.
+     * Coordinates of all column headings with the affiliation name.
      *
      * @var string[]
      */
     public array $creatorAffiliationColumnHeadersCoordinates = [];
 
     /**
-     * Souřadnice všech nadpisů sloupců s názvem titulek.
+     * Coordinates of all column headings with the title of the headline.
      *
      * @var string[]
      */
     public array $titleColumnHeadersCoordinates = [];
 
     /**
-     * Souřadnice všech nadpisů sloupců s názvem typ titulku.
+     * Coordinates of all column headings with the headline type name.
      *
      * @var string[]
      */
     public array $titleTypeColumnHeadersCoordinates = [];
 
     /**
-     * Souřadnice všech nadpisů sloupců s názvem jazyk titulku.
+     * Coordinates of all column headings with the title language.
      *
      * @var string[]
      */
     public array $titleLanguageColumnHeadersCoordinates = [];
 
     /**
-     * Souřadnice všech nadpisů sloupců s názvem vydavatel.
+     * Coordinates of all column headings with the name of the publisher.
      *
      * @var string[]
      */
     public array $publisherColumnHeadersCoordinates = [];
 
     /**
-     * Souřadnice všech nadpisů sloupců s názvem rok publikace.
+     * Coordinates of all column headings with the year of publication.
      *
      * @var string[]
      */
     public array $publicationYearColumnHeadersCoordinates = [];
 
     /**
-     * Souřadnice všech nadpisů sloupců s názvem typ zdroje.
+     * Coordinates of all column headings with the resource type name.
      *
      * @var string[]
      */
     public array $sourceTypeColumnHeadersCoordinates = [];
 
     /**
-     * Nadpisy sloupců v xlsx souboru. Null znamena prazdne pole.
+     * Column headings in xlsx file. Null means empty field.
      *
      * @var array<DoiColumnHeaderEnum|null> $columnHeaders
      */

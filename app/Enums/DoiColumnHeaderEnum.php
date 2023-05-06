@@ -4,16 +4,7 @@ namespace App\Enums;
 
 enum DoiColumnHeaderEnum: string
 {
-    /**
-     * Digital Object Identifier.
-     *
-     * @var string
-     */
     case Doi = 'doi';
-
-    /**
-     *
-     */
     case DoiState = 'doi state';
     case DoiUrl = 'url';
     case CreatorNameIdentifier = 'creator identifier';
@@ -26,25 +17,28 @@ enum DoiColumnHeaderEnum: string
     case Publisher = 'publisher';
     case PublicationYear = 'publication year';
     case ResourceType = 'resource type';
+    private const COLUMN_KEY_NAME = 'name';
+    private const COLUMN_KEY_VALUE = 'value';
 
     /**
      * @return self[]
      */
     public static function names(): array
     {
-        return array_column(self::cases(), 'name'); //todo konst
+        return array_column(self::cases(), self::COLUMN_KEY_NAME);
     }
 
+    /**
+     * @return string[]
+     */
     public static function values(): array
     {
-        return array_column(self::cases(), 'value');
+        return array_column(self::cases(), self::COLUMN_KEY_VALUE);
     }
 
-    public static function array(): array
-    {
-        return array_combine(self::values(), self::names());
-    }
-
+    /**
+     * @return self[]
+     */
     public static function requiredColumnHeaderValues(): array
     {
         return [

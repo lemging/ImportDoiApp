@@ -12,17 +12,10 @@ use InvalidArgumentException;
 use Nette\Http\FileUpload;
 
 /**
- * Základní presenter pro nahrání souboru.
- * TODO mozna prejmenovat na file upload
+ * Basic presenter for uploading a file.
  */
 final class ImportDoiMainPresenter extends ABasePresenter
 {
-    /**
-     * Konstruktor.
-     *
-     * @param IImportDoiFormControlFactory $doiFormControlFactory
-     * @param ImportDoiMainFacade $doiImportFacade
-     */
     public function __construct(
         private IImportDoiFormControlFactory $doiFormControlFactory,
         private ImportDoiMainFacade $doiImportFacade,
@@ -32,7 +25,7 @@ final class ImportDoiMainPresenter extends ABasePresenter
     }
 
     /**
-     * Základní akce. Zobrazení komponenty s možností nahrát soubor, případné uložení souboru a přesměrování.
+     * Component view with the option to upload a file, save a file if necessary, and redirect.
      *
      * @return void
      */

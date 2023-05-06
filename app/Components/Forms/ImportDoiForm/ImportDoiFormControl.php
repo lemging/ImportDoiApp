@@ -10,29 +10,24 @@ use Nette\Localization\Translator;
 final class ImportDoiFormControl extends Control
 {
     /**
-     * Nazev upload tlacitka pro nahrani xlsx souboru.
+     * Name of upload button to upload xlsx file.
      *
      * @var string
      */
     private const XLSX_FILE_UPLOAD_NAME = 'xlsxFile';
 
     /**
-     * Nazev submit tlacitka.
+     * The name of the submit button.
      *
      * @var string
      */
     private const SUBMIT_NAME = 'submit';
 
     /**
-     * @var array<callable>
+     * @var callable[]
      */
     public array $onSuccess = [];
 
-    /**
-     * Konstruktor.
-     *
-     * @param Translator $translator
-     */
     public function __construct(
         private Translator $translator
     )
@@ -45,9 +40,6 @@ final class ImportDoiFormControl extends Control
         $this->template->render();
     }
 
-    /**
-     * @return Form
-     */
     public function createComponentForm(): Form
     {
         $form = new Form();
@@ -57,9 +49,8 @@ final class ImportDoiFormControl extends Control
         $form->addSubmit(self::SUBMIT_NAME, $this->translator->translate('import_doi_form.import'));
 
         $form->onSuccess[] = function(Form $form): void {
-            /**
-             * @var UploadControl $input
-             */
+
+            /** @var UploadControl $input */
             $input = $form[self::XLSX_FILE_UPLOAD_NAME];
 
             $this->onSuccess($input->getValue());

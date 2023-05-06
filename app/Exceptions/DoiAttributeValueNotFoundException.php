@@ -11,11 +11,11 @@ class DoiAttributeValueNotFoundException extends ADoiCellDataException
 {
     public function __construct(
         protected DoiColumnHeaderEnum $header,
-        protected ?string $coordinate = null,
-        protected ?array  $accepted = [],
-        string                     $message = "",
-        int                        $code = 0,
-        ?Throwable                 $previous = null
+        protected ?string             $coordinate = null,
+        protected ?array              $accepted = [],
+        string                        $message = "",
+        int                           $code = 0,
+        ?Throwable                    $previous = null
     )
     {
         parent::__construct($this->header, $coordinate, $message, $code, $previous);

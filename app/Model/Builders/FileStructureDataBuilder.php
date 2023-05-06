@@ -16,27 +16,27 @@ class FileStructureDataBuilder
         $this->fileStructureData = new FileStructureData();
     }
 
-    static function create()
+    static function create(): FileStructureDataBuilder
     {
         return new self();
     }
 
-    public function title(string $title)
+    public function title(string $title): void
     {
         $this->fileStructureData->title = $title;
     }
 
-    public function navbarActiveIndex(int $navbarActiveIndex)
+    public function navbarActiveIndex(int $navbarActiveIndex): void
     {
         $this->fileStructureData->navbarActiveIndex = $navbarActiveIndex;
     }
 
-    public function requiredColumnHeaders(array $requiredColumnHeaders)
+    public function requiredColumnHeaders(array $requiredColumnHeaders): void
     {
         $this->fileStructureData->requiredColumnHeaders = $requiredColumnHeaders;
     }
 
-    public function addDoiData(DoiData $doiData)
+    public function addDoiData(DoiData $doiData): void
     {
         $this->fileStructureData->doiDataList[] = $doiData;
 
@@ -49,12 +49,12 @@ class FileStructureDataBuilder
         }
     }
 
-    public function addDoiErrorData(DoiDataErrorData $doiDataErrorData)
+    public function addDoiErrorData(DoiDataErrorData $doiDataErrorData): void
     {
         $this->fileStructureData->doiErrorDataList[] = $doiDataErrorData;
     }
 
-    public function build()
+    public function build(): FileStructureData
     {
         return $this->fileStructureData;
     }

@@ -12,15 +12,10 @@ use Nette\Application\AbortException;
 use PhpOffice\PhpSpreadsheet\Exception;
 
 /**
- * Zpracovane data z nahraneho souboru a chyby v souboru.
+ * Processed data from the uploaded file and errors in the file.
  */
 class ImportDoiConfirmationPresenter extends ABasePresenter
 {
-    /**
-     * Konsturktor.
-     *
-     * @param ImportDoiConfirmationFacade              $importDoiConfirmationFacade
-     */
     public function __construct(
         private ImportDoiConfirmationFacade $importDoiConfirmationFacade,
         private IDoiValidAndInvalidListControlFactory $doiValidAndInvalidListControlFactory
@@ -29,8 +24,7 @@ class ImportDoiConfirmationPresenter extends ABasePresenter
     }
 
     /**
-     * Základní akce.
-     * Zobrazení všechn validních dat z nahraného souboru a všech chyb s možností odeslat nebo náhrát znovu.
+     * Display all valid data from the uploaded file and all errors with the option to upload or re-upload.
      *
      * @param $destination
      * @throws Exception
@@ -43,9 +37,8 @@ class ImportDoiConfirmationPresenter extends ABasePresenter
     }
 
     /**
-     * Odesle vsechny validni doi a presmeruje na stranku se zobrazením výsledků.
+     * Sends all valid doi and redirects to the results page.
      *
-     * @return void
      * @throws AbortException
      */
     public function handleAddDois(): void

@@ -24,7 +24,7 @@ class DoiTitleDataException extends ADataException
         return $doiDataErrorData;
     }
 
-    private function getErrorMessages()
+    private function getErrorMessages(): array
     {
         $cellValidationExceptions = [
             $this->titleNotSetException,
@@ -46,18 +46,11 @@ class DoiTitleDataException extends ADataException
         return $errorMessages;
     }
 
-
-    /**
-     * @return NotSetException
-     */
     public function getTitleNotSetException(): ?NotSetException
     {
         return $this->titleNotSetException;
     }
 
-    /**
-     * @param NotSetException $titleNotSetException
-     */
     public function setNewTitleNotSetException(): void
     {
         $this->exceptionCount++;
@@ -65,17 +58,11 @@ class DoiTitleDataException extends ADataException
         $this->titleNotSetException = new NotSetException(DoiColumnHeaderEnum::Title);
     }
 
-    /**
-     * @return NotSetException
-     */
     public function getTypeNotSetException(): ?NotSetException
     {
         return $this->typeNotSetException;
     }
 
-    /**
-     * @param NotSetException $typeNotSetException
-     */
     public function setNewTypeNotSetException(): void
     {
         $this->exceptionCount++;
@@ -83,17 +70,11 @@ class DoiTitleDataException extends ADataException
         $this->typeNotSetException = new NotSetException(DoiColumnHeaderEnum::TitleType);
     }
 
-    /**
-     * @return NotSetException
-     */
     public function getLanguageNotSetException(): ?NotSetException
     {
         return $this->languageNotSetException;
     }
 
-    /**
-     * @param NotSetException $languageNotSetException
-     */
     public function setLanguageNotSetException(): void
     {
         $this->exceptionCount++;
@@ -101,17 +82,11 @@ class DoiTitleDataException extends ADataException
         $this->languageNotSetException = new NotSetException(DoiColumnHeaderEnum::TitleLanguage);
     }
 
-    /**
-     * @return DoiAttributeValueNotFoundException
-     */
     public function getTypeNotFoundException(): ?DoiAttributeValueNotFoundException
     {
         return $this->typeNotFoundException;
     }
 
-    /**
-     * @param DoiAttributeValueNotFoundException $typeNotFoundException
-     */
     public function setTypeNotFoundException(DoiAttributeValueNotFoundException $typeNotFoundException): void
     {
         $this->exceptionCount++;

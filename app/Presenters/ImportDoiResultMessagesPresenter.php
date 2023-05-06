@@ -2,22 +2,18 @@
 
 namespace App\Presenters;
 
+use App\Enums\JsonSendStatusEnum;
 use App\Model\Facades\ImportDoiConfirmationFacade;
 use App\Model\Facades\ImportDoiResultMessagesFacade;
 
 /**
- * Zobrazuje zpracované odpovědi po odeslani doi na API.
+ * Displays the processed responses after sending a doi to the API.
  */
 class ImportDoiResultMessagesPresenter extends ABasePresenter
 {
     const DOI_SEND_RESPONSE_MESSAGES_SECTION = 'doiSendResponseMessagesSection';
     const DOI_SEND_RESPONSE_GENERAL_MESSAGE_AND_MESSAGES = 'doiSendResponseGeneralMessageAndMessages';
 
-    /**
-     * Konstuktor.
-     *
-     * @param ImportDoiResultMessagesFacade $importDoiResultMessagesFacade
-     */
     public function __construct(
         private ImportDoiResultMessagesFacade $importDoiResultMessagesFacade,
     )
@@ -26,10 +22,10 @@ class ImportDoiResultMessagesPresenter extends ABasePresenter
     }
 
     /**
-     * Zálkadní akce. Zobrazí zpracované odpovědi po odeslani doi na API.
+     * Displays the processed responses after sending a doi to the API.
      *
-     * @param array $resultMessages
-     * @return void
+     * @param array{doiSendResponseMessages: array{status: JsonSendStatusEnum, message: string},
+     *               doiSendResponseGeneralMessage: string} $resultMessages
      */
     public function actionDefault(array $resultMessages): void
     {

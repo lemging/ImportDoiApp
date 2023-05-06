@@ -24,7 +24,7 @@ class ImportDoiMainFacade
     }
 
     /**
-     * Pripravi zakldani data pro ImportDoiMainPresenter.
+     * Prepares the data for the ImportDoiMainPresenter.
      */
     public function prepareImportDoiMainData(): MainData
     {
@@ -36,9 +36,9 @@ class ImportDoiMainFacade
     }
 
     /**
-     * Zkontroluje, zda je soubor xlsx.
+     * Checks if the file is xlsx.
      *
-     * @throws InvalidArgumentException - pokud soubor neni xlsx
+     * @throws InvalidArgumentException - if the file is not xlsx
      */
     public function checkFileExtension(FileUpload $file): void
     {
@@ -46,14 +46,14 @@ class ImportDoiMainFacade
 
         if ($file_parts[self::EXTENSION] !== self::XLSX_EXTENSION)
         {
-            throw new InvalidArgumentException(); // todo mozna vlastni exception
+            throw new InvalidArgumentException();
         }
     }
 
     /**
-     * Uloží uploadnutý soubor.
+     * Saves the uploaded file.
      */
-    public function saveFile(FileUpload $file)
+    public function saveFile(FileUpload $file): string
     {
         $destination = self::UPLOADED_TEMP_XLSX_FILE_PATH;
         $file->move($destination);

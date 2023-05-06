@@ -17,6 +17,7 @@ use App\Model\Builders\DoiDataBuilder;
 use App\Model\Builders\TitleDataBuilder;
 use App\Model\Data\FileStructure\FileStructureData;
 use App\Model\Data\ImportDoiConfirmation\ConfirmationData;
+use App\Model\Data\ImportDoiConfirmation\CreatorData;
 use App\Model\Data\ImportDoiConfirmation\DoiData;
 use Nette\Localization\Translator;
 use PhpOffice\PhpSpreadsheet\Cell\DataValidation;
@@ -30,26 +31,27 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use stdClass;
 
 /**
- * Servise pro zpracovaní a validaci dat z xlsx souboru a uložení do datových objektů, případné uložení chyb.
+ * Service for processing and validation of data from xlsx file and saving into data objects, possible saving of errors.
  */
 class DoiXlsxProcessService
 {
     /**
-     * Builder pro DoiData. Zbuildí datový objekt DoiData, nebo vyhodí vyjímku obsahující všechny chyby v datech.
+     * Builder for DoiData. Builds a DoiData data object, or throws an exception containing all errors in the data.
      *
      * @var DoiDataBuilder $doiDataBuilder
      */
     private DoiDataBuilder $doiDataBuilder;
 
     /**
-     * Builder pro CreatorData. Zbuildí datový objekt CreatorData, nebo vyhodí vyjímku obsahující všechny chyby v datech.
+     * Builder for CreatorData.
+     * Builds a CreatorData data object, or throws an exception containing all errors in the data.
      *
      * @var CreatorDataBuilder $doiCreatorDataBuilder
      */
     private CreatorDataBuilder $doiCreatorDataBuilder;
 
     /**
-     * Builder pro TitleData. Zbuildí datový objekt TitleData, nebo vyhodí vyjímku obsahující všechny chyby v datech.
+     * Builder for TitleData. Builds a TitleData data object, or throws an exception containing all errors in the data.
      *
      * @var TitleDataBuilder
      */
@@ -77,9 +79,9 @@ class DoiXlsxProcessService
     }
 
     /**
-     * Získá strukturu souboru.
+     * Gets the structure of the file.
      *
-     * @param  $row - První řádek listu, který by měl obsahovat nadpisy sloupců.
+     * @param  $row - The first line of the sheet, which should contain the column headings.
      * @return array<DoiColumnHeaderEnum|null>
      * @throws DoiFileStructureDataException
      * @throws Exception
@@ -88,12 +90,12 @@ class DoiXlsxProcessService
     {
         $fileHeaderListBuilder = ColumnHeadersListDataBuilder::create();
 
-        // Získáme všechny buňky řádku.
+        // We get all cells of the row.
         $cells = $row->getColumnIterator();
 
         /**
-         * Některé sloupce vyžadují, aby je následoval určitý sloupec. Tuto hodnotu si ukládáme a při další přidávání
-         * sloupce, zkontrolujeme, zda je to ona.
+         * Some columns require a column to follow them.
+         * We store this value and the next time we add a column, we check to see if this is it.
          *
          * @var ?DoiColumnHeaderEnum $expectedNextColumnHeader
          */
@@ -101,11 +103,11 @@ class DoiXlsxProcessService
 
         foreach ($cells as $cell)
         {
-            // Procházíme jednotlivé buňky. Ukládáme nadpisy sloupců.
+            // Go through the cells. We save column headings.
 
             if ($cell->getValue() === null || $cell->getValue() === '') {
-                // Pokud narazíme na prázdný název sloupce, tak ho přeskakujeme.
-                // Uložíme ale nullovou hodnotu, abychom věděli, že tam je a později ho přeskakovali.
+                // If we encounter an empty column name, we skip it.
+                // But we store a null value, so we know it's there and skip it later.
                 $expectedNextColumnHeader = $fileHeaderListBuilder->addColumnHeader(
                     null,
                     $cell->getCoordinate(),
@@ -113,7 +115,7 @@ class DoiXlsxProcessService
                 );
             }
             else {
-                // Uložíme nadpis sloupce, abychom získali strukturu souboru(jednotlivé sloupce a jejich pořadí).
+                // Save the column heading to get the file structure(individual columns and their order).
                 $expectedNextColumnHeader = $fileHeaderListBuilder->addColumnHeader(
                     strtolower($cell->getValue()),
                     $cell->getCoordinate(),
@@ -122,34 +124,41 @@ class DoiXlsxProcessService
             }
         }
 
-        // Zkontrolujeme, že jestli existoval očekávaný nadpis sloupce, že to může být null, protože jsme na konci řádku.
-        $fileHeaderListBuilder->checkExpectedColumnHeader($expectedNextColumnHeader, null, null, null);
+        // We check that if there was an expected column heading, that it may be null because we are at the end of the row.
+        $fileHeaderListBuilder->checkExpectedColumnHeader(
+            $expectedNextColumnHeader,
+            null,
+            null,
+            null
+        );
 
-        // Build zkontroluje, zda je struktura korektní a případně vyhodí vyjímku obsahující všechny chyby.
+        // Build checks if the structure is correct and throws an exception containing all errors if necessary.
         return $fileHeaderListBuilder->build()->columnHeaders;
     }
 
     /**
-     * Zpracuje řádek obsahující data(ne první řádek, ten obsahuje nadpisy sloupce) a uloží do datového objektu.
+     * Parses the row containing the data(not the first row, that contains the column headings)
+     * and saves it to the data object.
      *
-     * @param DoiColumnHeaderEnum|null[] $columnHeaders - Nadpisy sloupců v pořadí, v jakém jsou v souboru.
+     * @param DoiColumnHeaderEnum|null[] $columnHeaders - Column headings in the order they appear in the file.
      * @throws DoiDataException
      */
-    public function processRow($row, array $columnHeaders) {
-        // Vyresetujeme builder. Teď neobsahuje žádné data ani chyby.
+    public function processRow($row, array $columnHeaders): DoiData
+    {
+        // Reset the builder. It now contains no data or errors.
         $this->doiDataBuilder->reset();
 
-        // Přiřadíme číslo řádku.
+        // Assign a line number.
         $this->doiDataBuilder->rowNumber($row->getRowIndex());
 
-        // Počítáme si, kolik jsem prošli buněk.
+        // We're counting how many cells we've gone through.
         $cellCounter = 0;
 
         foreach($row->getCellIterator() as $cell) {
-            // Procházíme buňku. Uložíme si její hodnotu.
+            // We're going through the cell. Save its value.
             $currentCellValue = (string) $cell->getValue();
 
-            // Podíváme se jaký má konkrétní sloupec nadpis a podle toho uložíme hodnotu.
+            // Let's see what the specific column heading is and store the value accordingly.
             switch ($columnHeaders[$cellCounter++]) {
             case DoiColumnHeaderEnum::Doi:
                 $this->doiDataBuilder->doi($currentCellValue);
@@ -161,7 +170,7 @@ class DoiXlsxProcessService
                 $this->doiDataBuilder->url($currentCellValue);
                 break;
             case DoiColumnHeaderEnum::CreatorName:
-                // Tvůce má sloupce v určitém pořadí, jméno je první, takže vyresetujeme data tvůrce.
+                // The creator has the columns in a certain order, the name is first, so we reset the creator data.
                 $this->doiCreatorDataBuilder->reset();
 
                 $this->doiCreatorDataBuilder->name($currentCellValue);
@@ -175,8 +184,8 @@ class DoiXlsxProcessService
             case DoiColumnHeaderEnum::CreatorType:
                 $this->doiCreatorDataBuilder->typeString($currentCellValue, $cell->getCoordinate());
 
-                // Tvůce má sloupce v určitém pořadí, typ je poslední, takže vytvoříme datový objekt
-                // a uložíme ho do DoiData, pokud obsahoval chyby, uložíme místo toho chyby.
+                // The creation has columns in a certain order, the type is last, so we create a data object
+                // and save it to DoiData, if it contained errors, we save the errors instead.
                 try {
                     $doiCreator = $this->doiCreatorDataBuilder->build();
                     $this->doiDataBuilder->addDoiCreator($doiCreator);
@@ -185,7 +194,7 @@ class DoiXlsxProcessService
                 }
                 break;
             case DoiColumnHeaderEnum::Title:
-                // Titulek má sloupce v určitém pořadí, název je první, takže vyresetujeme data titulku.
+                // The headline has columns in a certain order, the title is first, so we reset the headline data.
                 $this->doiTitleDataBuilder->reset();
 
                 $this->doiTitleDataBuilder->title($currentCellValue);
@@ -196,8 +205,8 @@ class DoiXlsxProcessService
             case DoiColumnHeaderEnum::TitleLanguage:
                 $this->doiTitleDataBuilder->language($currentCellValue);
 
-                // Titulek má sloupce v určitém pořadí, jazyk je poslední, takže vytvoříme datový objekt
-                // a uložíme ho do DoiData, pokud obsahoval chyby, uložíme místo toho chyby.
+                // The header has columns in a certain order, the language is the last one, so we create a data object
+                // and save it to DoiData, if it contained errors, we save the errors instead.
                 try {
                     $doiTitle = $this->doiTitleDataBuilder->build();
                     $this->doiDataBuilder->addDoiTitle($doiTitle);
@@ -215,18 +224,17 @@ class DoiXlsxProcessService
                 $this->doiDataBuilder->resourceType($currentCellValue);
                 break;
             case null:
-                // Sloupce s prazdnym nazvem sloupce se preskakuji
+                // Columns with empty column name are skipped
                 break;
             }
         }
 
-        // Vytvoří datový objekt, nebo vyhodí vyjímku obsahující všechny chyby.
+        // Creates a data object or throws an exception containing all errors.
         return $this->doiDataBuilder->build();
     }
 
     /**
-     * @param FileStructureData $fileStructureData
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws Exception
      */
     public function createXlsxFromDoiDataList(FileStructureData $fileStructureData): void
     {
@@ -241,16 +249,16 @@ class DoiXlsxProcessService
         $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::DoiState);
         $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::DoiUrl);
 
-        for ($i = 0; $i < $fileStructureData->maxCounts['creators']; $i++)
+        for ($i = 0; $i < $fileStructureData->maxCounts[DoiData::COUNTS_KEY_CREATORS]; $i++)
         {
             $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::CreatorName);
 
-            for ($j = 0; $j < $fileStructureData->maxCounts['nameIdentifiers']; $j++)
+            for ($j = 0; $j < $fileStructureData->maxCounts[CreatorData::COUNT_KEY_NAME_IDENTIFIERS]; $j++)
             {
                 $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::CreatorNameIdentifier);
             }
 
-            for ($j = 0; $j < $fileStructureData->maxCounts['affiliation']; $j++)
+            for ($j = 0; $j < $fileStructureData->maxCounts[CreatorData::COUNT_KEY_AFFILIATION]; $j++)
             {
                 $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::CreatorAffiliation);
             }
@@ -258,7 +266,7 @@ class DoiXlsxProcessService
             $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::CreatorType);
         }
 
-        for ($i = 0; $i < $fileStructureData->maxCounts['titles']; $i++)
+        for ($i = 0; $i < $fileStructureData->maxCounts[DoiData::COUNTS_KEY_TITLES]; $i++)
         {
             $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::Title);
             $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::TitleType);
@@ -290,7 +298,7 @@ class DoiXlsxProcessService
             $columnIterator->current()->setValue($doiData->url);
             $columnIterator->next();
 
-            for ($i = 0; $i < $fileStructureData->maxCounts['creators']; $i++)
+            for ($i = 0; $i < $fileStructureData->maxCounts[DoiData::COUNTS_KEY_CREATORS]; $i++)
             {
                 if ($i < count($doiData->creators))
                 {
@@ -299,7 +307,7 @@ class DoiXlsxProcessService
 
                 $columnIterator->next();
 
-                for ($j = 0; $j < $fileStructureData->maxCounts['nameIdentifiers']; $j++)
+                for ($j = 0; $j < $fileStructureData->maxCounts[CreatorData::COUNT_KEY_NAME_IDENTIFIERS]; $j++)
                 {
                     if ($i < count($doiData->creators) && $j < count($doiData->creators[$i]->nameIdentifiers))
                     {
@@ -309,7 +317,7 @@ class DoiXlsxProcessService
                     $columnIterator->next();
                 }
 
-                for ($j = 0; $j < $fileStructureData->maxCounts['affiliation']; $j++)
+                for ($j = 0; $j < $fileStructureData->maxCounts[CreatorData::COUNT_KEY_AFFILIATION]; $j++)
                 {
                     if ($i < count($doiData->creators) && $j < count($doiData->creators[$i]->affiliations))
                     {
@@ -332,7 +340,7 @@ class DoiXlsxProcessService
                 $columnIterator->next();
             }
 
-            for ($i = 0; $i < $fileStructureData->maxCounts['titles']; $i++)
+            for ($i = 0; $i < $fileStructureData->maxCounts[DoiData::COUNTS_KEY_TITLES]; $i++)
             {
                 if ($i < count($doiData->titles))
                 {
@@ -386,10 +394,10 @@ class DoiXlsxProcessService
     /**
      * Creates a combobox with options from a cell in the specified sheen on the specified coordiants.
      *
-     * @param array<string> $options
+     * @param string[] $options
      * @throws Exception
      */
-    public function createCombobox(Worksheet $sheet, string $cooridnate, array $options)
+    public function createCombobox(Worksheet $sheet, string $cooridnate, array $options): void
     {
         $validation = $sheet->getCell($cooridnate)->getDataValidation();
         $validation->setType(DataValidation::TYPE_LIST);
@@ -472,7 +480,7 @@ class DoiXlsxProcessService
         if (isset($doi->attributes->types->resourceType))
             $this->doiDataBuilder->resourceType($doi->attributes->types->resourceType);
 
-        // Vytvoří datový objekt, nebo vyhodí vyjímku obsahující všechny chyby.
+        // Creates a data object or throws an exception containing all errors.
         return $this->doiDataBuilder->build();
     }
 

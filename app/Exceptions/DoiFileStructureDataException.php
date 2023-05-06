@@ -24,12 +24,12 @@ class DoiFileStructureDataException extends ADataException
     private array $duplicitColumnHeaderExceptions = [];
 
     /**
-     * @var MissingRequiredHeaderException[]
+     * @var MissingRequiredHeaderException[] $missingRequiredHeaderExceptions
      */
     private array $missingRequiredHeaderExceptions = [];
 
     /**
-     * @return array
+     * @return WrongColumnHeaderOrderException[]
      */
     public function getWrongColumnHeaderOrderExceptions(): array
     {
@@ -44,7 +44,7 @@ class DoiFileStructureDataException extends ADataException
     }
 
     /**
-     * @return array
+     * @return UnknownColumnHeaderException[]
      */
     public function getUnknownColumnHeaderExceptions(): array
     {
@@ -62,7 +62,7 @@ class DoiFileStructureDataException extends ADataException
     }
 
     /**
-     * @return array
+     * @return DuplicitColumnHeaderException[]
      */
     public function getDuplicitColumnHeaderExceptions(): array
     {
@@ -80,7 +80,7 @@ class DoiFileStructureDataException extends ADataException
     }
 
     /**
-     * @return array
+     * @return MissingRequiredHeaderException[]
      */
     public function getMissingRequiredHeaderExceptions(): array
     {
@@ -97,23 +97,17 @@ class DoiFileStructureDataException extends ADataException
         $this->missingRequiredHeaderExceptions[] = $missingRequiredHeaderException;
     }
 
-    /**
-     * @return string
-     */
     public function getSheetTitle(): string
     {
         return $this->sheetTitle;
     }
 
-    /**
-     * @param string $sheetTitle
-     */
     public function setSheetTitle(string $sheetTitle): void
     {
         $this->sheetTitle = $sheetTitle;
     }
 
-    public function createDataObject()
+    public function createDataObject(): FileStructureErrorData
     {
         $doiFileStructureErrorsData = new FileStructureErrorData();
 

@@ -7,7 +7,7 @@ use Exception;
 use Throwable;
 
 /**
- * Zadany nadpis sloupce neodpovida zadnemu pozadovanemu nadpisu.
+ * The specified column heading does not match any required heading.
  */
 class UnknownColumnHeaderException extends Exception
 {

@@ -16,7 +16,7 @@ class ImportDoiResultMessagesFacade
     }
 
     /**
-     * Pripravi zakladni data pro ImportDoiResultMessagesPresenter. Zpracuje data z parametru do datových objektů.
+     * Prepares basic data for ImportDoiResultMessagesPresenter. Processes data from parameters into data objects.
      *
      * @param array{doiSendResponseMessages: array{status: array{name: string, value: string}, message: string},
      *              doiSendResponseGeneralMessage: string}  $statusesAndMessages

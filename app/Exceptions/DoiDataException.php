@@ -66,7 +66,7 @@ class DoiDataException extends ADataException
         return $doiDataErrorData;
     }
 
-    public function createDataObjectDataFromApi()
+    public function createDataObjectDataFromApi(): DoiDataErrorData
     {
         $doiDataErrorData = new DoiDataErrorData();
 
@@ -116,19 +116,11 @@ class DoiDataException extends ADataException
         return $errorMessages;
     }
 
-
-
-    /**
-     * @return NotSetException
-     */
     public function getDoiNotSetException(): NotSetException
     {
         return $this->doiNotSetException;
     }
 
-    /**
-     * @param NotSetException $doiNotSetException
-     */
     public function setNewDoiNotSetException(): void
     {
         $this->exceptionCount++;
@@ -136,25 +128,16 @@ class DoiDataException extends ADataException
         $this->doiNotSetException = new NotSetException(DoiColumnHeaderEnum::Doi);
     }
 
-    /**
-     * @return NotSetException
-     */
     public function getDoiStateNotSetException(): NotSetException
     {
         return $this->doiStateNotSetException;
     }
 
-    /**
-     * @return NotSetException|null
-     */
     public function getUrlNotSetException(): ?NotSetException
     {
         return $this->urlNotSetException;
     }
 
-    /**
-     * @param NotSetException|null $urlNotSetException
-     */
     public function setNewUrlNotSetException(): void
     {
         $this->exceptionCount++;
@@ -162,17 +145,11 @@ class DoiDataException extends ADataException
         $this->urlNotSetException = new NotSetException(DoiColumnHeaderEnum::DoiUrl);
     }
 
-    /**
-     * @return NotSetException|null
-     */
     public function getDoiCreatorsNotSetException(): ?NotSetException
     {
         return $this->doiCreatorsNotSetException;
     }
 
-    /**
-     * @param NotSetException|null $doiCreatorsNotSetException
-     */
     public function setNewDoiCreatorsNotSetException(): void
     {
         $this->exceptionCount++;
@@ -180,17 +157,11 @@ class DoiDataException extends ADataException
         $this->doiCreatorsNotSetException = new NotSetException(DoiColumnHeaderEnum::CreatorName);
     }
 
-    /**
-     * @return NotSetException|null
-     */
     public function getDoiTitlesNotSetException(): ?NotSetException
     {
         return $this->doiTitlesNotSetException;
     }
 
-    /**
-     * @param NotSetException|null $doiTitlesNotSetException
-     */
     public function setNewDoiTitlesNotSetException(): void
     {
         $this->exceptionCount++;
@@ -198,17 +169,11 @@ class DoiDataException extends ADataException
         $this->doiTitlesNotSetException = new NotSetException(DoiColumnHeaderEnum::Title);
     }
 
-    /**
-     * @return NotSetException|null
-     */
     public function getPublisherNotSetException(): ?NotSetException
     {
         return $this->publisherNotSetException;
     }
 
-    /**
-     * @param NotSetException|null $publisherNotSetException
-     */
     public function setNewPublisherNotSetException(): void
     {
         $this->exceptionCount++;
@@ -216,17 +181,11 @@ class DoiDataException extends ADataException
         $this->publisherNotSetException = new NotSetException(DoiColumnHeaderEnum::Publisher);
     }
 
-    /**
-     * @return NotSetException|null
-     */
     public function getPublicationYearNotSetException(): ?NotSetException
     {
         return $this->publicationYearNotSetException;
     }
 
-    /**
-     * @param NotSetException|null $publicationYearNotSetException
-     */
     public function setNewPublicationYearNotSetException(): void
     {
         $this->exceptionCount++;
@@ -234,17 +193,11 @@ class DoiDataException extends ADataException
         $this->publicationYearNotSetException = new NotSetException(DoiColumnHeaderEnum::PublicationYear);
     }
 
-    /**
-     * @return NotSetException|null
-     */
     public function getResourceTypeNotSetException(): ?NotSetException
     {
         return $this->resourceTypeNotSetException;
     }
 
-    /**
-     * @param NotSetException|null $resourceTypeNotSetException
-     */
     public function setNewResourceTypeNotSetException(): void
     {
         $this->exceptionCount++;
@@ -252,17 +205,11 @@ class DoiDataException extends ADataException
         $this->resourceTypeNotSetException = new NotSetException(DoiColumnHeaderEnum::ResourceType);
     }
 
-    /**
-     * @return DoiAttributeValueNotFoundException|null
-     */
     public function getDoiStateNotFoundException(): ?DoiAttributeValueNotFoundException
     {
         return $this->doiStateNotFoundException;
     }
 
-    /**
-     * @param DoiAttributeValueNotFoundException $doiStateNotFoundException
-     */
     public function setDoiStateNotFoundException(DoiAttributeValueNotFoundException $doiStateNotFoundException): void
     {
         $this->exceptionCount++;
@@ -271,16 +218,13 @@ class DoiDataException extends ADataException
     }
 
     /**
-     * @return array
+     * @return DoiCreatorDataException[]
      */
     public function getDoiCreatorDataExceptions(): array
     {
         return $this->doiCreatorDataExceptions;
     }
 
-    /**
-     * @param DoiCreatorDataException $doiCreatorDataException
-     */
     public function addDoiCreatorDataException(DoiCreatorDataException $doiCreatorDataException): void
     {
         $this->exceptionCount++;
@@ -289,7 +233,7 @@ class DoiDataException extends ADataException
     }
 
     /**
-     * @return array
+     * @return DoiTitleDataException[]
      */
     public function getDoiTitleDataExceptions(): array
     {
@@ -303,33 +247,21 @@ class DoiDataException extends ADataException
         $this->doiTitleDataExceptions[] = $doiTitleDataException;
     }
 
-    /**
-     * @return int
-     */
     public function getRowNumber(): int
     {
         return $this->rowNumber;
     }
 
-    /**
-     * @param int $rowNumber
-     */
     public function setRowNumber(int $rowNumber): void
     {
         $this->rowNumber = $rowNumber;
     }
 
-    /**
-     * @return string|null
-     */
     public function getSheetTitle(): ?string
     {
         return $this->sheetTitle;
     }
 
-    /**
-     * @param string|null $sheetTitle
-     */
     public function setSheetTitle(?string $sheetTitle): void
     {
         $this->sheetTitle = $sheetTitle;
@@ -349,17 +281,11 @@ class DoiDataException extends ADataException
         $this->publicationYearNotInLimitsException = $publicationYearNotInLimitsException;
     }
 
-    /**
-     * @return string
-     */
     public function getDoi(): string
     {
         return $this->doi;
     }
 
-    /**
-     * @param string $doi
-     */
     public function setDoi(string $doi): void
     {
         $this->doi = $doi;

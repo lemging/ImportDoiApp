@@ -7,10 +7,13 @@ use Exception;
 use Throwable;
 
 /**
- * Abstraktní třída pro vyjímky chyb z nadpisů sloupců.
+ * Abstract class for column heading error exceptions.
  */
 abstract class AColumnHeaderException extends Exception
 {
+    /**
+     * @param string[] $coordinates
+     */
     public function __construct(
         protected DoiColumnHeaderEnum $header,
         protected array   $coordinates = [],

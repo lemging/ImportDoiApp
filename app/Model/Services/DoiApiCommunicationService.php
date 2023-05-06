@@ -9,7 +9,7 @@ use App\Model\Facades\ImportDoiConfirmationFacade;
 use Nette\Localization\Translator;
 
 /**
- * Service pro práci s JSONy a komunikaci s API.
+ * Service for working with JSONs and communicating with APIs.
  */
 class DoiApiCommunicationService
 {
@@ -47,6 +47,7 @@ class DoiApiCommunicationService
     const DOI_RESPONSE_KEY_ERROR = 'errors';
     const DOI_RESPONSE_KEY_ERROR_TITLE = 'title';
     const DOI_RESPONSE_KEY_ERROR_SOURCE = 'source';
+    private const DOI_TAKEN_MESSAGE = 'This DOI has already been taken';
 
     public function __construct(
         private Translator $translator
@@ -55,10 +56,7 @@ class DoiApiCommunicationService
     }
 
     /**
-     * Vytvoří json akceptovatelný API z doiData.
-     *
-     * @param DoiData $doiData
-     * @return string
+     * Creates an API-acceptable json from doiData.
      */
     public function generateJsonFromDoiData(DoiData $doiData): string
     {
@@ -139,7 +137,7 @@ class DoiApiCommunicationService
     }
 
     /**
-     * Odešle JSON na API. V případě, že id je null, tak přidá nový doi, jinak aktualizuje. Vrátí dekodovanou odpoved.
+     * Sends JSON to the API. If the id is null, it adds a new doi, otherwise it updates. Returns the decoded response.
      */
     public function addOrUpdateDoiByJsonToApi(string $json, ?string $doiId = null): array
     {
@@ -181,7 +179,7 @@ class DoiApiCommunicationService
     }
 
     /**
-     * Zpracuje odpověď získanou z API pro přidávní doi. Vrátí textvou odpověď pro uživatele a status.
+     * Processes the response received from the API to add a doi. Returns a text response for the user and status.
      *
      * @return array{status: JsonSendStatusEnum, message: string}
      */
@@ -189,12 +187,11 @@ class DoiApiCommunicationService
     {
         if (array_key_exists(self::DOI_RESPONSE_KEY_ERROR, $response))
         {
-            // Ve vytvoreni doi se vyskytla chyba.
-            if ($response[self::DOI_RESPONSE_KEY_ERROR][0][self::DOI_RESPONSE_KEY_ERROR_TITLE] ===
-                'This DOI has already been taken'
+            // There was an error in the doi creation.
+            if ($response[self::DOI_RESPONSE_KEY_ERROR][0][self::DOI_RESPONSE_KEY_ERROR_TITLE] === self::DOI_TAKEN_MESSAGE
             )
             {
-                // Chybou je, že doi se stejným id u exituje. Bude se zkouset DOI aktualizovat.
+                // The bug is that a doi with the same id exists. Will try to update the DOI.
                 return [
                     ImportDoiConfirmationFacade::JSON_SEND_STATUS => JsonSendStatusEnum::AlreadyExists,
                     ImportDoiConfirmationFacade::RESPONSE_MESSAGE => null
@@ -213,7 +210,7 @@ class DoiApiCommunicationService
         }
         else
         {
-            // Doi se v pořádku vytvořil.
+            // Doi formed all right.
             return [
                 ImportDoiConfirmationFacade::JSON_SEND_STATUS => JsonSendStatusEnum::Success,
                 ImportDoiConfirmationFacade::RESPONSE_MESSAGE => $this->translator->translate(
@@ -224,7 +221,7 @@ class DoiApiCommunicationService
     }
 
     /**
-     * Zpracuje odpověď získanou z API pro aktualizaci doi. Vrátí textvou odpověď pro uživatele a status.
+     * Processes the response received from the API to update the doi. Returns a text response for the user and status.
      *
      * @return array{status: JsonSendStatusEnum, message: string}
      */
@@ -254,7 +251,7 @@ class DoiApiCommunicationService
     }
 
     /**
-     * Vytvoří obecnou odpověď pro uživatele získanou z hodnot všech odpovědí.
+     * Creates a generic response for the user obtained from the values of all responses.
      */
     public function createGeneralResponseMessage(bool $allSuccessfullySend, bool $allFailedSend): string
     {

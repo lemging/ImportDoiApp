@@ -13,6 +13,7 @@ use App\Model\Services\DoiApiCommunicationService;
 use App\Model\Services\DoiXlsxProcessService;
 use App\Presenters\FileStructurePresenter;
 use Nette\Localization\Translator;
+use PhpOffice\PhpSpreadsheet\Writer\Exception;
 
 class FileStructureFacade
 {
@@ -26,6 +27,9 @@ class FileStructureFacade
     {
     }
 
+    /**
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     */
     public function prepareFileStructureData(): FileStructureData
     {
         $fileStructureDataBuilder = FileStructureDataBuilder::create();
@@ -47,7 +51,7 @@ class FileStructureFacade
             }
 
             try {
-                // Vytvoří datový objekt, nebo vyhodí vyjímku obsahující všechny chyby.
+                // Creates a data object or throws an exception containing all errors.
                 $doiData = $this->doiXlsxProcessService->createDoiData($doi);
                 $fileStructureDataBuilder->addDoiData($doiData);
             } catch (DoiDataException $doiDataException) {

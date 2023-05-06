@@ -21,18 +21,18 @@ class CreatorDataBuilder
         $this->doiCreatorDataException = new DoiCreatorDataException();
     }
 
-    public static function create()
+    public static function create(): CreatorDataBuilder
     {
         return new self();
     }
 
-    public function addNameIdentifier(string $nameIdentifier)
+    public function addNameIdentifier(string $nameIdentifier): void
     {
         $this->doiCreatorData->nameIdentifiers[] = $nameIdentifier;
-        $this->doiCreatorData->counts['nameIdentifiers'] += 1;
+        $this->doiCreatorData->counts[CreatorData::COUNT_KEY_NAME_IDENTIFIERS] += 1;
     }
 
-    public function typeString(string $type, ?string $coordinate = null)
+    public function typeString(string $type, ?string $coordinate = null): void
     {
 
         switch($type)
@@ -58,18 +58,21 @@ class CreatorDataBuilder
         }
     }
 
-    public function name(string $name)
+    public function name(string $name): void
     {
         $this->doiCreatorData->name = $name;
     }
 
-    public function addAffiliation(string $affiliation)
+    public function addAffiliation(string $affiliation): void
     {
         $this->doiCreatorData->affiliations[] = $affiliation;
-        $this->doiCreatorData->counts['affiliation'] += 1;
+        $this->doiCreatorData->counts[CreatorData::COUNT_KEY_AFFILIATION] += 1;
     }
 
-    public function build()
+    /**
+     * @throws DoiCreatorDataException
+     */
+    public function build(): CreatorData
     {
         if ($this->doiCreatorData->name === null || $this->doiCreatorData->name === '')
         {
@@ -90,7 +93,7 @@ class CreatorDataBuilder
         return $this->doiCreatorData;
     }
 
-    public function reset()
+    public function reset(): void
     {
         $this->doiCreatorData = new CreatorData();
         $this->doiCreatorDataException = new DoiCreatorDataException();
