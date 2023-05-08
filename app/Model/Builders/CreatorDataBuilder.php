@@ -9,6 +9,9 @@ use App\Exceptions\DoiCreatorDataException;
 use App\Exceptions\NotSetException;
 use App\Model\Data\ImportDoiConfirmation\CreatorData;
 
+/**
+ * Builds a CreatorData data object, or throws an exception containing all errors in the data.
+ */
 class CreatorDataBuilder
 {
     private CreatorData $doiCreatorData;

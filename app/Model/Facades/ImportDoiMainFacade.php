@@ -2,8 +2,10 @@
 
 namespace App\Model\Facades;
 
+use App\Exceptions\AccountUnsetException;
 use App\Model\Data\ImportDoiMain\MainData;
 use App\Presenters\ImportDoiMainPresenter;
+use App\Providers\AccountProvider;
 use InvalidArgumentException;
 use Nette\Http\FileUpload;
 use Nette\Localization\Translator;
@@ -18,7 +20,8 @@ class ImportDoiMainFacade
     const UPLOADED_TEMP_XLSX_FILE_PATH = '../temp/xlsxTempFiles/tempfileUloaded.xlsx';
 
     public function __construct(
-        private Translator $translator
+        private Translator $translator,
+        private AccountProvider $accountProvider
     )
     {
     }
@@ -31,6 +34,18 @@ class ImportDoiMainFacade
         $data = new MainData();
         $data->title = $this->translator->translate('import_doi_main.title');
         $data->navbarActiveIndex = 2;
+
+        // Check if account data are set
+        try
+        {
+            $this->accountProvider->getLogin();
+            $this->accountProvider->getPassword();
+            $this->accountProvider->getDoiPrefix();
+        }
+        catch (AccountUnsetException $exception)
+        {
+            $data->accountUnsetErrorMessage = $exception->getMessage();
+        }
 
         return $data;
     }

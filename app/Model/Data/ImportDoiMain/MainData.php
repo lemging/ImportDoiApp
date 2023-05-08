@@ -6,5 +6,4 @@ use App\Model\Data\AData;
 
 class MainData extends AData
 {
-
 }

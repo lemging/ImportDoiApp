@@ -1,5 +1,8 @@
 parameters:
-
+    account:
+        login: 'unset'
+        password: 'unset'
+        doiPrefix: 'unset'
 
 application:
 	errorPresenter: Error
@@ -21,9 +24,9 @@ extensions:
 
 translation:
 	locales:
-		whitelist: [en_US, cs]
-		default: en_US
-		fallback: [en_US]
+		whitelist: [en, cs]
+		default: en
+		fallback: [en]
 	dirs:
 		- %appDir%/langs
 	returnOriginalMessage: true # to not translate undefined messages, default is true

@@ -4,8 +4,11 @@ namespace App\Model\Services;
 
 use App\Enums\DoiStateEnum;
 use App\Enums\JsonSendStatusEnum;
+use App\Exceptions\AccountUnsetException;
 use App\Model\Data\ImportDoiConfirmation\DoiData;
 use App\Model\Facades\ImportDoiConfirmationFacade;
+use App\Providers\AccountProvider;
+use CurlHandle;
 use Nette\Localization\Translator;
 
 /**
@@ -50,13 +53,15 @@ class DoiApiCommunicationService
     private const DOI_TAKEN_MESSAGE = 'This DOI has already been taken';
 
     public function __construct(
-        private Translator $translator
+        private Translator $translator,
+        private AccountProvider $accountProvider
     )
     {
     }
 
     /**
      * Creates an API-acceptable json from doiData.
+     * @throws AccountUnsetException
      */
     public function generateJsonFromDoiData(DoiData $doiData): string
     {
@@ -105,8 +110,8 @@ class DoiApiCommunicationService
         }
 
         $attributes = [
-            self::DOI_ARRAY_KEY_PREFIX => '10.82522/', //todo zadavani prefixu
-            self::DOI_ARRAY_KEY_DOI => '10.82522/' . $doiData->doi,
+            self::DOI_ARRAY_KEY_PREFIX => $this->accountProvider->getDoiPrefix() . '/',
+            self::DOI_ARRAY_KEY_DOI => $this->accountProvider->getDoiPrefix() . '/' . $doiData->doi,
             self::DOI_ARRAY_KEY_IDENTIFIER => self::DOI_IDENTIFIER_DOI,
             self::DOI_ARRAY_KEY_CREATORS => $creatorArrays,
             self::DOI_ARRAY_KEY_TITLES => $titleArrays,
@@ -138,6 +143,7 @@ class DoiApiCommunicationService
 
     /**
      * Sends JSON to the API. If the id is null, it adds a new doi, otherwise it updates. Returns the decoded response.
+     * @throws AccountUnsetException
      */
     public function addOrUpdateDoiByJsonToApi(string $json, ?string $doiId = null): array
     {
@@ -148,14 +154,14 @@ class DoiApiCommunicationService
         }
         else
         {
-            $ch = curl_init(self::DOI_URL_FOR_UPDATING_DOI . '10.82522/' . $doiId);
+            $ch = curl_init(self::DOI_URL_FOR_UPDATING_DOI . $this->accountProvider->getDoiPrefix() . '/' . $doiId);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
         }
 
-        curl_setopt( $ch, CURLOPT_POSTFIELDS, $json );
-        curl_setopt( $ch, CURLOPT_HTTPHEADER, array('Content-Type: application/vnd.api+json'));
-        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-        curl_setopt($ch, CURLOPT_USERPWD, "UPWJ.BXXIQF:HJcdp_SDJ-PN5TuDL9CjVuEp");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $json );
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/vnd.api+json'));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $this->curlSetUserPwd($ch);
 
         $result = curl_exec($ch);
         curl_close($ch);
@@ -163,13 +169,16 @@ class DoiApiCommunicationService
         return json_decode($result, true);
     }
 
+    /**
+     * @throws AccountUnsetException
+     */
     public function getDoiListFromApi()
     {
         $ch = curl_init();
 
-        curl_setopt($ch, CURLOPT_URL, 'https://api.test.datacite.org/dois?prefix=10.82522');
+        curl_setopt($ch, CURLOPT_URL, 'https://api.test.datacite.org/dois?prefix=' . $this->accountProvider->getDoiPrefix());
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_USERPWD, "UPWJ.BXXIQF:HJcdp_SDJ-PN5TuDL9CjVuEp"); // todo metoda
+        $this->curlSetUserPwd($ch);
 
         $output = curl_exec($ch);
 
@@ -281,5 +290,13 @@ class DoiApiCommunicationService
             }
         }
         return $message;
+    }
+
+    /**
+     * @throws AccountUnsetException
+     */
+    protected function curlSetUserPwd(CurlHandle $ch): void
+    {
+        curl_setopt($ch, CURLOPT_USERPWD, $this->accountProvider->getLogin() . ':' . $this->accountProvider->getPassword());
     }
 }

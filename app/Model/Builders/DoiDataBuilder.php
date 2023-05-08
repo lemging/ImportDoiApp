@@ -16,6 +16,9 @@ use App\Model\Data\ImportDoiConfirmation\CreatorData;
 use App\Model\Data\ImportDoiConfirmation\DoiData;
 use App\Model\Data\ImportDoiConfirmation\TitleData;
 
+/**
+ * Builder for DoiData. Builds a DoiData data object, or throws an exception containing all errors in the data.
+ */
 class DoiDataBuilder
 {
     private DoiData $doiData;

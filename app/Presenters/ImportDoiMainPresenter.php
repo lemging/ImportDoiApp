@@ -6,7 +6,9 @@ namespace App\Presenters;
 
 use App\Components\Forms\ImportDoiForm\IImportDoiFormControlFactory;
 use App\Components\Forms\ImportDoiForm\ImportDoiFormControl;
+use App\Exceptions\AccountUnsetException;
 use App\Model\Facades\ImportDoiMainFacade;
+use App\Providers\AccountProvider;
 use Contributte\Translation\Translator;
 use InvalidArgumentException;
 use Nette\Http\FileUpload;
@@ -18,8 +20,8 @@ final class ImportDoiMainPresenter extends ABasePresenter
 {
     public function __construct(
         private IImportDoiFormControlFactory $doiFormControlFactory,
-        private ImportDoiMainFacade $doiImportFacade,
-        private Translator $translator
+        private ImportDoiMainFacade          $doiImportFacade,
+        private Translator                   $translator,
     ) {
         parent::__construct();
     }
@@ -27,7 +29,7 @@ final class ImportDoiMainPresenter extends ABasePresenter
     /**
      * Component view with the option to upload a file, save a file if necessary, and redirect.
      *
-     * @return void
+     * @throws AccountUnsetException
      */
     public function actionDefault(): void
     {

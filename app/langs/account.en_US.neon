@@ -1,0 +1,5 @@
+errorMessages:
+    missingLogin: V souboru local.neon není zadané přihlašovací jméno na Váš účet na DataCite.org.
+    missingPassword: V souboru local.neon není zadané heslo na Váš účet na DataCite.org.
+    missingDoiPrefix: V souboru local.neon není zadaný prefix Vašich DOI.
+    warning: Warning

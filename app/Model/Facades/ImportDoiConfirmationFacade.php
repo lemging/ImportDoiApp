@@ -3,6 +3,7 @@
 namespace App\Model\Facades;
 
 use App\Enums\JsonSendStatusEnum;
+use App\Exceptions\AccountUnsetException;
 use App\Exceptions\DoiDataException;
 use App\Exceptions\DoiFileStructureDataException;
 use App\Exceptions\SystemException;
@@ -49,10 +50,6 @@ final class ImportDoiConfirmationFacade
 
         // Let's read the file.
         $spreadsheet = IOFactory::load($destination);
-
-        $this->doiXlsxSolverService->setDoiDataBuilder(DoiDataBuilder::create());
-        $this->doiXlsxSolverService->setDoiCreatorDataBuilder(CreatorDataBuilder::create());
-        $this->doiXlsxSolverService->setDoiTitleDataBuilder(TitleDataBuilder::create());
 
         // Go through all the sheets, in case the user wants to split the data into multiple sheets.
         foreach ($spreadsheet->getWorksheetIterator() as $sheet)
@@ -106,11 +103,12 @@ final class ImportDoiConfirmationFacade
 
     /**
      * Sends all dois data to the API and adds or updates the dois.
-     * Returns messages to the user about the success of the upload.
+     * It returns messages to the user about the success of the upload.
      *
      * @param DoiData[] $doisData
      * @return array{doiSendResponseMessages: array{status: JsonSendStatusEnum, message: string},
      *               doiSendResponseGeneralMessage: string}
+     * @throws AccountUnsetException
      */
     public function sendDoisDataToApi(array $doisData): array
     {

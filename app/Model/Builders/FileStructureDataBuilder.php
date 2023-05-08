@@ -31,6 +31,11 @@ class FileStructureDataBuilder
         $this->fileStructureData->navbarActiveIndex = $navbarActiveIndex;
     }
 
+    public function accountUnsetErrorMessage(string $message): void
+    {
+        $this->fileStructureData->accountUnsetErrorMessage = $message;
+    }
+
     public function requiredColumnHeaders(array $requiredColumnHeaders): void
     {
         $this->fileStructureData->requiredColumnHeaders = $requiredColumnHeaders;

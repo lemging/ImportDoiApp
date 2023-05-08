@@ -4,6 +4,7 @@ namespace App\Presenters;
 
 use App\Components\DoiValidAndInvalidList\DoiValidAndInvalidListControl;
 use App\Components\DoiValidAndInvalidList\IDoiValidAndInvalidListControlFactory;
+use App\Exceptions\AccountUnsetException;
 use App\Exceptions\SystemException;
 use App\Model\Data\FileStructure\FileStructureData;
 use App\Model\Data\ImportDoiConfirmation\ConfirmationData;
@@ -43,7 +44,15 @@ class ImportDoiConfirmationPresenter extends ABasePresenter
      */
     public function handleAddDois(): void
     {
-        $messages = $this->importDoiConfirmationFacade->sendDoisDataToApi($this->data->doiDataList);
+        try
+        {
+            $messages = $this->importDoiConfirmationFacade->sendDoisDataToApi($this->data->doiDataList);
+        }
+        catch (AccountUnsetException $exception)
+        {
+            $this->flashMessage($exception->getMessage());
+            $this->redirect('ImportDoiMain:default');
+        }
         $session = $this->getSession()->getSection(ImportDoiResultMessagesPresenter::DOI_SEND_RESPONSE_MESSAGES_SECTION);
         $session->set(ImportDoiResultMessagesPresenter::DOI_SEND_RESPONSE_GENERAL_MESSAGE_AND_MESSAGES, $messages);
         $this->redirect('ImportDoiResultMessages:default');

@@ -3,6 +3,7 @@
 namespace App\Model\Facades;
 
 use App\Enums\DoiColumnHeaderEnum;
+use App\Exceptions\AccountUnsetException;
 use App\Exceptions\DoiDataException;
 use App\Model\Builders\CreatorDataBuilder;
 use App\Model\Builders\DoiDataBuilder;
@@ -37,26 +38,29 @@ class FileStructureFacade
         $fileStructureDataBuilder->navbarActiveIndex(1);
         $fileStructureDataBuilder->requiredColumnHeaders(DoiColumnHeaderEnum::requiredColumnHeaderValues());
 
-        $doiList = $this->doiApiCommunicationService->getDoiListFromApi();
-
-        $this->doiXlsxProcessService->setDoiDataBuilder(DoiDataBuilder::create());
-        $this->doiXlsxProcessService->setDoiCreatorDataBuilder(CreatorDataBuilder::create());
-        $this->doiXlsxProcessService->setDoiTitleDataBuilder(TitleDataBuilder::create());
-
-        foreach ($doiList as $doi)
+        try
         {
-            if($doi->type !== self::DOIS_TYPE)
-            {
-                continue;
-            }
+            $doiList = $this->doiApiCommunicationService->getDoiListFromApi();
 
-            try {
-                // Creates a data object or throws an exception containing all errors.
-                $doiData = $this->doiXlsxProcessService->createDoiData($doi);
-                $fileStructureDataBuilder->addDoiData($doiData);
-            } catch (DoiDataException $doiDataException) {
-                $fileStructureDataBuilder->addDoiErrorData($doiDataException->createDataObjectDataFromApi());
+            foreach ($doiList as $doi)
+            {
+                if($doi->type !== self::DOIS_TYPE)
+                {
+                    continue;
+                }
+
+                try {
+                    // Creates a data object or throws an exception containing all errors.
+                    $doiData = $this->doiXlsxProcessService->createDoiData($doi);
+                    $fileStructureDataBuilder->addDoiData($doiData);
+                } catch (DoiDataException $doiDataException) {
+                    $fileStructureDataBuilder->addDoiErrorData($doiDataException->createDataObjectDataFromApi());
+                }
             }
+        }
+        catch (AccountUnsetException $exception)
+        {
+            $fileStructureDataBuilder->accountUnsetErrorMessage($exception->getMessage());
         }
 
         $fileStructureData = $fileStructureDataBuilder->build();

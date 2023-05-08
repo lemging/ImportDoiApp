@@ -35,47 +35,10 @@ use stdClass;
  */
 class DoiXlsxProcessService
 {
-    /**
-     * Builder for DoiData. Builds a DoiData data object, or throws an exception containing all errors in the data.
-     *
-     * @var DoiDataBuilder $doiDataBuilder
-     */
-    private DoiDataBuilder $doiDataBuilder;
-
-    /**
-     * Builder for CreatorData.
-     * Builds a CreatorData data object, or throws an exception containing all errors in the data.
-     *
-     * @var CreatorDataBuilder $doiCreatorDataBuilder
-     */
-    private CreatorDataBuilder $doiCreatorDataBuilder;
-
-    /**
-     * Builder for TitleData. Builds a TitleData data object, or throws an exception containing all errors in the data.
-     *
-     * @var TitleDataBuilder
-     */
-    private TitleDataBuilder $doiTitleDataBuilder;
-
     public function __construct(
         private Translator $translator
     )
     {
-    }
-
-    public function setDoiDataBuilder(DoiDataBuilder $doiDataBuilder): void
-    {
-        $this->doiDataBuilder = $doiDataBuilder;
-    }
-
-    public function setDoiCreatorDataBuilder(CreatorDataBuilder $doiCreatorDataBuilder): void
-    {
-        $this->doiCreatorDataBuilder = $doiCreatorDataBuilder;
-    }
-
-    public function setDoiTitleDataBuilder(TitleDataBuilder $doiTitleDataBuilder): void
-    {
-        $this->doiTitleDataBuilder = $doiTitleDataBuilder;
     }
 
     /**
@@ -146,13 +109,16 @@ class DoiXlsxProcessService
     public function processRow($row, array $columnHeaders): DoiData
     {
         // Reset the builder. It now contains no data or errors.
-        $this->doiDataBuilder->reset();
+        $doiDataBuilder = DoiDataBuilder::create();
 
         // Assign a line number.
-        $this->doiDataBuilder->rowNumber($row->getRowIndex());
+        $doiDataBuilder->rowNumber($row->getRowIndex());
 
         // We're counting how many cells we've gone through.
         $cellCounter = 0;
+
+        $doiCreatorDataBuilder = CreatorDataBuilder::create();
+        $doiTitleDataBuilder = TitleDataBuilder::create();
 
         foreach($row->getCellIterator() as $cell) {
             // We're going through the cell. Save its value.
@@ -161,67 +127,67 @@ class DoiXlsxProcessService
             // Let's see what the specific column heading is and store the value accordingly.
             switch ($columnHeaders[$cellCounter++]) {
             case DoiColumnHeaderEnum::Doi:
-                $this->doiDataBuilder->doi($currentCellValue);
+                $doiDataBuilder->doi($currentCellValue);
                 break;
             case DoiColumnHeaderEnum::DoiState:
-                $this->doiDataBuilder->doiStateString($currentCellValue, $cell->getCoordinate());
+                $doiDataBuilder->doiStateString($currentCellValue, $cell->getCoordinate());
                 break;
             case DoiColumnHeaderEnum::DoiUrl:
-                $this->doiDataBuilder->url($currentCellValue);
+                $doiDataBuilder->url($currentCellValue);
                 break;
             case DoiColumnHeaderEnum::CreatorName:
                 // The creator has the columns in a certain order, the name is first, so we reset the creator data.
-                $this->doiCreatorDataBuilder->reset();
+                $doiCreatorDataBuilder->reset();
 
-                $this->doiCreatorDataBuilder->name($currentCellValue);
+                $doiCreatorDataBuilder->name($currentCellValue);
                 break;
             case DoiColumnHeaderEnum::CreatorNameIdentifier:
-                $this->doiCreatorDataBuilder->addNameIdentifier($currentCellValue);
+                $doiCreatorDataBuilder->addNameIdentifier($currentCellValue);
                 break;
             case DoiColumnHeaderEnum::CreatorAffiliation:
-                $this->doiCreatorDataBuilder->addAffiliation($currentCellValue);
+                $doiCreatorDataBuilder->addAffiliation($currentCellValue);
                 break;
             case DoiColumnHeaderEnum::CreatorType:
-                $this->doiCreatorDataBuilder->typeString($currentCellValue, $cell->getCoordinate());
+                $doiCreatorDataBuilder->typeString($currentCellValue, $cell->getCoordinate());
 
                 // The creation has columns in a certain order, the type is last, so we create a data object
                 // and save it to DoiData, if it contained errors, we save the errors instead.
                 try {
-                    $doiCreator = $this->doiCreatorDataBuilder->build();
-                    $this->doiDataBuilder->addDoiCreator($doiCreator);
+                    $doiCreator = $doiCreatorDataBuilder->build();
+                    $doiDataBuilder->addDoiCreator($doiCreator);
                 } catch (DoiCreatorDataException $doiCreatorDataException) {
-                    $this->doiDataBuilder->addDoiCreatorDataException($doiCreatorDataException);
+                    $doiDataBuilder->addDoiCreatorDataException($doiCreatorDataException);
                 }
                 break;
             case DoiColumnHeaderEnum::Title:
                 // The headline has columns in a certain order, the title is first, so we reset the headline data.
-                $this->doiTitleDataBuilder->reset();
+                $doiTitleDataBuilder->reset();
 
-                $this->doiTitleDataBuilder->title($currentCellValue);
+                $doiTitleDataBuilder->title($currentCellValue);
                 break;
             case DoiColumnHeaderEnum::TitleType:
-                $this->doiTitleDataBuilder->typeString($currentCellValue, $cell->getCoordinate());
+                $doiTitleDataBuilder->typeString($currentCellValue, $cell->getCoordinate());
                 break;
             case DoiColumnHeaderEnum::TitleLanguage:
-                $this->doiTitleDataBuilder->language($currentCellValue);
+                $doiTitleDataBuilder->language($currentCellValue);
 
                 // The header has columns in a certain order, the language is the last one, so we create a data object
                 // and save it to DoiData, if it contained errors, we save the errors instead.
                 try {
-                    $doiTitle = $this->doiTitleDataBuilder->build();
-                    $this->doiDataBuilder->addDoiTitle($doiTitle);
+                    $doiTitle = $doiTitleDataBuilder->build();
+                    $doiDataBuilder->addDoiTitle($doiTitle);
                 } catch (DoiTitleDataException $doiCreatorDataException) {
-                    $this->doiDataBuilder->addDoiTitleDataException($doiCreatorDataException);
+                    $doiDataBuilder->addDoiTitleDataException($doiCreatorDataException);
                 }
                 break;
             case DoiColumnHeaderEnum::Publisher:
-                $this->doiDataBuilder->publisher($currentCellValue);
+                $doiDataBuilder->publisher($currentCellValue);
                 break;
             case DoiColumnHeaderEnum::PublicationYear:
-                $this->doiDataBuilder->publicationYear((int)$currentCellValue, $cell->getCoordinate());
+                $doiDataBuilder->publicationYear((int)$currentCellValue, $cell->getCoordinate());
                 break;
             case DoiColumnHeaderEnum::ResourceType:
-                $this->doiDataBuilder->resourceType($currentCellValue);
+                $doiDataBuilder->resourceType($currentCellValue);
                 break;
             case null:
                 // Columns with empty column name are skipped
@@ -230,7 +196,7 @@ class DoiXlsxProcessService
         }
 
         // Creates a data object or throws an exception containing all errors.
-        return $this->doiDataBuilder->build();
+        return $doiDataBuilder->build();
     }
 
     /**
@@ -242,7 +208,6 @@ class DoiXlsxProcessService
         $sheet = $spreadsheet->getActiveSheet();
         $rowIterator = $sheet->getRowIterator();
 
-        // todo konstanty
         $columnIterator = $rowIterator->current()->getColumnIterator();
 
         $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::Doi);
@@ -417,71 +382,73 @@ class DoiXlsxProcessService
      */
     public function createDoiData(stdClass $doi): DoiData
     {
-        $this->doiDataBuilder->reset();
+        $doiDataBuilder = DoiDataBuilder::create();
+        $doiCreatorDataBuilder = CreatorDataBuilder::create();
+        $doiTitleDataBuilder = TitleDataBuilder::create();
 
         if (isset($doi->id))
-            $this->doiDataBuilder->doi(ltrim(strstr($doi->id, '/'), '/'));
+            $doiDataBuilder->doi(ltrim(strstr($doi->id, '/'), '/'));
         if (isset($doi->attributes->state))
-            $this->doiDataBuilder->doiStateString($doi->attributes->state);
+            $doiDataBuilder->doiStateString($doi->attributes->state);
         if (isset($doi->attributes->url))
-            $this->doiDataBuilder->url($doi->attributes->url);
+            $doiDataBuilder->url($doi->attributes->url);
 
         foreach ($doi->attributes->creators as $creator) {
-            $this->doiCreatorDataBuilder->reset();
+            $doiCreatorDataBuilder->reset();
 
             if (isset($creator->name))
-                $this->doiCreatorDataBuilder->name($creator->name);
+                $doiCreatorDataBuilder->name($creator->name);
 
             foreach ($creator->nameIdentifiers as $nameIdentifier) {
                 if (isset($nameIdentifier->nameIdentifier))
-                    $this->doiCreatorDataBuilder->addNameIdentifier($nameIdentifier->nameIdentifier);
+                    $doiCreatorDataBuilder->addNameIdentifier($nameIdentifier->nameIdentifier);
             }
 
             foreach ($creator->affiliation as $affiliation) {
                 if (isset($affiliation)) {
-                    $this->doiCreatorDataBuilder->addAffiliation($affiliation);
+                    $doiCreatorDataBuilder->addAffiliation($affiliation);
                 }
             }
 
             if (isset($creator->nameType))
-                $this->doiCreatorDataBuilder->typeString($creator->nameType);
+                $doiCreatorDataBuilder->typeString($creator->nameType);
 
             try {
-                $doiCreator = $this->doiCreatorDataBuilder->build();
-                $this->doiDataBuilder->addDoiCreator($doiCreator);
+                $doiCreator = $doiCreatorDataBuilder->build();
+                $doiDataBuilder->addDoiCreator($doiCreator);
             } catch (DoiCreatorDataException $doiCreatorDataException) {
-                $this->doiDataBuilder->addDoiCreatorDataException($doiCreatorDataException);
+                $doiDataBuilder->addDoiCreatorDataException($doiCreatorDataException);
             }
         }
 
 
         foreach ($doi->attributes->titles as $title) {
-            $this->doiTitleDataBuilder->reset();
+            $doiTitleDataBuilder->reset();
 
             if (isset($title->title))
-                $this->doiTitleDataBuilder->title($title->title);
+                $doiTitleDataBuilder->title($title->title);
             if (isset($title->titleType))
-                $this->doiTitleDataBuilder->typeString($title->titleType);
+                $doiTitleDataBuilder->typeString($title->titleType);
             if (isset($title->lang))
-                $this->doiTitleDataBuilder->language($title->lang);
+                $doiTitleDataBuilder->language($title->lang);
 
             try {
-                $doiTitle = $this->doiTitleDataBuilder->build();
-                $this->doiDataBuilder->addDoiTitle($doiTitle);
+                $doiTitle = $doiTitleDataBuilder->build();
+                $doiDataBuilder->addDoiTitle($doiTitle);
             } catch (DoiTitleDataException $doiCreatorDataException) {
-                $this->doiDataBuilder->addDoiTitleDataException($doiCreatorDataException);
+                $doiDataBuilder->addDoiTitleDataException($doiCreatorDataException);
             }
         }
 
         if (isset($doi->attributes->publisher))
-            $this->doiDataBuilder->publisher($doi->attributes->publisher);
+            $doiDataBuilder->publisher($doi->attributes->publisher);
         if (isset($doi->attributes->publicationYear))
-            $this->doiDataBuilder->publicationYear((int)$doi->attributes->publicationYear);
+            $doiDataBuilder->publicationYear((int)$doi->attributes->publicationYear);
         if (isset($doi->attributes->types->resourceType))
-            $this->doiDataBuilder->resourceType($doi->attributes->types->resourceType);
+            $doiDataBuilder->resourceType($doi->attributes->types->resourceType);
 
         // Creates a data object or throws an exception containing all errors.
-        return $this->doiDataBuilder->build();
+        return $doiDataBuilder->build();
     }
 
     /**

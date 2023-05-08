@@ -8,6 +8,9 @@ use App\Exceptions\DoiAttributeValueNotFoundException;
 use App\Exceptions\DoiTitleDataException;
 use App\Model\Data\ImportDoiConfirmation\TitleData;
 
+/**
+ * Builder for TitleData. Builds a TitleData data object, or throws an exception containing all errors in the data.
+ */
 class TitleDataBuilder
 {
     private TitleData $doiTitleData;
