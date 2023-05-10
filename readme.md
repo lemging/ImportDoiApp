@@ -9,6 +9,7 @@ Create image
     <li>You can download a finished docker image from the docker hub with command <code>todo</code></li>
 </ol>    
 OR
+<br>
 <ol>
     <li>You can clone the project to yourself with the command <code>https://github.com/lemging/ImportDoiApp.git</code></li>
     <li>(Optional) Enter the credentials into Dockerfile. If you don't do this, you can enter them each time you run the container</li>

@@ -6,7 +6,7 @@
 {/if}
 
 {foreach $doiDataErrorDataList as $doiDataErrorData}
-    <ul style="list-style-type: none; padding: 0"> {*    todo udelat tridu*}
+    <ul class="list_reset">
         {if $doiDataErrorData->sheetTitle !== null}
             <li>{_doi_valid_and_invalid_data_list.doi_error_data_list.attributes.list}:
                 <strong>{$doiDataErrorData->sheetTitle}</strong></li>
@@ -48,7 +48,7 @@
 {/if}
 
 {foreach $doiDataList as $doiData}
-    <ul style="list-style-type: none; padding: 0"> {*    todo udelat tridu*}
+    <ul class="list_reset">
         {if $doiData->rowNumber !== null}
             <li>{_doi_valid_and_invalid_data_list.doi_data_list.attributes.row_number}:
                 <strong>{$doiData->rowNumber}</strong></li>

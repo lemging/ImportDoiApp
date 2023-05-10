@@ -1,5 +1,5 @@
 errorMessages:
-    missingLogin: V souboru local.neon není zadané přihlašovací jméno na Váš účet na DataCite.org. Stahování ani odesílání souboru nebude fungovat.
-    missingPassword: V souboru local.neon není zadané heslo na Váš účet na DataCite.org. Stahování ani odesílání souboru nebude fungovat.
-    missingDoiPrefix: V souboru local.neon není zadaný prefix Vašich DOI. Stahování ani odesílání souboru nebude fungovat.
+    missingLogin: V proměnné prostředí LOGIN není zadané přihlašovací jméno na Váš účet na DataCite.org. Stahování ani odesílání souboru nebude fungovat. Postupujte podle návodu v readme.md.
+    missingPassword: V proměnné prostředí PASSWORD není zadané heslo na Váš účet na DataCite.org. Stahování ani odesílání souboru nebude fungovat. Postupujte podle návodu v readme.md.
+    missingDoiPrefix: V proměnné prostředí DOI_PROFIX není zadaný prefix Vašich DOI. Stahování ani odesílání souboru nebude fungovat. Postupujte podle návodu v readme.md.
     warning: Varování

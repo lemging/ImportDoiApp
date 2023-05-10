@@ -1,5 +1,5 @@
 errorMessages:
-    missingLogin: V souboru local.neon není zadané přihlašovací jméno na Váš účet na DataCite.org.
-    missingPassword: V souboru local.neon není zadané heslo na Váš účet na DataCite.org.
-    missingDoiPrefix: V souboru local.neon není zadaný prefix Vašich DOI.
+    missingLogin: The LOGIN environment variable does not contain the login name for your DataCite.org account. Downloading or uploading a file will not work. Follow the instructions in readme.md.
+    missingPassword: The PASSWORD environment variable does not contain the password for your DataCite.org account. Downloading or uploading a file will not work. Follow the instructions in readme.md.
+    missingDoiPrefix: The DOI_PROFIX environment variable does not contain the prefix of your DOIs. Downloading or uploading a file will not work. Follow the instructions in readme.md.
     warning: Warning
