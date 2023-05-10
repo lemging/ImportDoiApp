@@ -10,6 +10,7 @@ use App\Model\Facades\ImportDoiConfirmationFacade;
 use App\Providers\AccountProvider;
 use CurlHandle;
 use Nette\Localization\Translator;
+use stdClass;
 
 /**
  * Service for working with JSONs and communicating with APIs.
@@ -51,6 +52,7 @@ class DoiApiCommunicationService
     const DOI_RESPONSE_KEY_ERROR_TITLE = 'title';
     const DOI_RESPONSE_KEY_ERROR_SOURCE = 'source';
     private const DOI_TAKEN_MESSAGE = 'This DOI has already been taken';
+    private const GET_DOIS_DATACITE_API_URL = 'https://api.test.datacite.org/dois?prefix=';
 
     public function __construct(
         private Translator $translator,
@@ -170,13 +172,20 @@ class DoiApiCommunicationService
     }
 
     /**
+     * Get all users DOI from DataCite API.
+     *
+     * @return stdClass[]
      * @throws AccountUnsetException
      */
-    public function getDoiListFromApi()
+    public function getDoiListFromApi(): array
     {
         $ch = curl_init();
 
-        curl_setopt($ch, CURLOPT_URL, 'https://api.test.datacite.org/dois?prefix=' . $this->accountProvider->getDoiPrefix());
+        curl_setopt(
+            $ch,
+            CURLOPT_URL,
+            self::GET_DOIS_DATACITE_API_URL . $this->accountProvider->getDoiPrefix()
+        );
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $this->curlSetUserPwd($ch);
 

@@ -15,4 +15,4 @@ services:
 	- App\Model\Facades\ImportDoiMainFacade
 	- App\Model\Facades\HomepageFacade
 	- App\Model\Facades\FileStructureFacade
-	- App\Providers\AccountProvider(%account%)
+	- App\Providers\AccountProvider

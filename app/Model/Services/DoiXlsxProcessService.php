@@ -202,7 +202,7 @@ class DoiXlsxProcessService
     /**
      * @throws Exception
      */
-    public function createXlsxFromDoiDataList(FileStructureData $fileStructureData): void
+    public function createXlsxFromFileStructureData(FileStructureData $fileStructureData): void
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -357,7 +357,7 @@ class DoiXlsxProcessService
     }
 
     /**
-     * Creates a combobox with options from a cell in the specified sheen on the specified coordiants.
+     * Creates a combobox with options from a cell in the specified sheen on the specified coordinates.
      *
      * @param string[] $options
      * @throws Exception
@@ -370,7 +370,7 @@ class DoiXlsxProcessService
         $validation->setAllowBlank(true);
         $validation->setShowDropDown(true);
         $validation->setShowInputMessage(true);
-        $validation->setPrompt($this->translator->translate('xlsx_process.create_checkbox.promt'));
+        $validation->setPrompt($this->translator->translate('xlsx_process.create_checkbox.prompt'));
         $validation->setShowErrorMessage(true);
         $validation->setErrorStyle(DataValidation::STYLE_STOP);
         $validation->setErrorTitle($this->translator->translate('xlsx_process.create_checkbox.invalidOption'));

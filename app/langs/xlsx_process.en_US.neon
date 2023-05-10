@@ -1,4 +1,4 @@
 create_checkbox:
-    promt: 'You must select one of the options from the list.'
+    prompt: 'You must select one of the options from the list.'
     error: 'Select one of the options from the list.'
     invalidOption: 'Invalid option'

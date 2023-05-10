@@ -5,20 +5,17 @@ namespace App\Model\Facades;
 use App\Enums\DoiColumnHeaderEnum;
 use App\Exceptions\AccountUnsetException;
 use App\Exceptions\DoiDataException;
-use App\Model\Builders\CreatorDataBuilder;
-use App\Model\Builders\DoiDataBuilder;
 use App\Model\Builders\FileStructureDataBuilder;
-use App\Model\Builders\TitleDataBuilder;
 use App\Model\Data\FileStructure\FileStructureData;
 use App\Model\Services\DoiApiCommunicationService;
 use App\Model\Services\DoiXlsxProcessService;
-use App\Presenters\FileStructurePresenter;
 use Nette\Localization\Translator;
-use PhpOffice\PhpSpreadsheet\Writer\Exception;
+use stdClass;
 
 class FileStructureFacade
 {
     const DOIS_TYPE = 'dois';
+    private const NAVBAR_ACTIVE_INDEX_FILE_STRUCTURE = 1;
 
     public function __construct(
         private Translator                 $translator,
@@ -35,11 +32,16 @@ class FileStructureFacade
     {
         $fileStructureDataBuilder = FileStructureDataBuilder::create();
         $fileStructureDataBuilder->title($this->translator->translate('file_structure.title'));
-        $fileStructureDataBuilder->navbarActiveIndex(1);
+        $fileStructureDataBuilder->navbarActiveIndex(self::NAVBAR_ACTIVE_INDEX_FILE_STRUCTURE);
         $fileStructureDataBuilder->requiredColumnHeaders(DoiColumnHeaderEnum::requiredColumnHeaderValues());
 
         try
         {
+            /**
+             * Get list of users DOIs from DataCite API.
+             *
+             * @var stdClass[] $doiList
+             */
             $doiList = $this->doiApiCommunicationService->getDoiListFromApi();
 
             foreach ($doiList as $doi)
@@ -64,8 +66,14 @@ class FileStructureFacade
         }
 
         $fileStructureData = $fileStructureDataBuilder->build();
-        $this->doiXlsxProcessService->createXlsxFromDoiDataList($fileStructureData);
+
+        if ($fileStructureData->accountUnsetErrorMessage === null)
+        {
+            $this->doiXlsxProcessService->createXlsxFromFileStructureData($fileStructureData);
+        }
 
         return $fileStructureData;
     }
 }
+
+
