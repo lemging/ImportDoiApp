@@ -2,10 +2,9 @@
 
 namespace App\Enums;
 
-enum DoiCreatorTypeEnum: string {
-    case Person = 'Person';
+enum NameTypeEnum: string {
+    case Person = 'Personal';
     case Organization = 'Organizational';
-    case Unknown = 'Unknown';
 
     /**
      * @return string[]

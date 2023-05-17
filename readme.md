@@ -24,3 +24,7 @@ Run image
 </ol>
 
 A container will be created and the site will run on <code>localhost:(the port you specified)</code>.
+
+Use
+---------------
+When you open the page in the browser, the application will guide you. If you don't have any DOI on your DataCite account yet (you can't download your DOI in a valid structure) you can use the excel file exampleTable.xlsx in this folder, which contains the complete structure and an example row. 

@@ -7,8 +7,6 @@ namespace App\Model\Data;
  */
 abstract class AData
 {
-    public string $title = '';
-
     public ?int $navbarActiveIndex = null;
 
     public ?string $accountUnsetErrorMessage = null;

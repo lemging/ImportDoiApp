@@ -3,7 +3,7 @@
 namespace App\Model\Builders;
 
 use App\Enums\DoiColumnHeaderEnum;
-use App\Enums\DoiCreatorTypeEnum;
+use App\Enums\NameTypeEnum;
 use App\Exceptions\DoiAttributeValueNotFoundException;
 use App\Exceptions\DoiCreatorDataException;
 use App\Exceptions\NotSetException;
@@ -40,21 +40,18 @@ class CreatorDataBuilder
 
         switch($type)
         {
-            case DoiCreatorTypeEnum::Organization->value:
-                $this->doiCreatorData->type = DoiCreatorTypeEnum::Organization;
+            case NameTypeEnum::Organization->value:
+                $this->doiCreatorData->type = NameTypeEnum::Organization;
                 break;
-            case DoiCreatorTypeEnum::Person->value:
-                $this->doiCreatorData->type = DoiCreatorTypeEnum::Person;
-                break;
-            case DoiCreatorTypeEnum::Unknown->value:
-                $this->doiCreatorData->type = DoiCreatorTypeEnum::Unknown;
+            case NameTypeEnum::Person->value:
+                $this->doiCreatorData->type = NameTypeEnum::Person;
                 break;
             default:
                 $this->doiCreatorDataException->setTypeNotFoundException(
                     new DoiAttributeValueNotFoundException(
                         DoiColumnHeaderEnum::CreatorType,
                         $coordinate,
-                        DoiCreatorTypeEnum::values()
+                        NameTypeEnum::values()
                     )
                 );
                 break;

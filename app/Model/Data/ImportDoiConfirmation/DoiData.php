@@ -10,6 +10,10 @@ class DoiData
 {
     public const COUNTS_KEY_CREATORS = 'creators';
     public const COUNTS_KEY_TITLES = 'titles';
+    public const COUNTS_KEY_SUBJECTS = 'subjects';
+    public const COUNTS_KEY_NAME_IDENTIFIERS = 'nameIdentifiers';
+    public const COUNTS_KEY_AFFILIATION = 'affiliation';
+    public const COUNTS_KEY_CONTRIBUTORS = 'contributors';
 
     public ?int $rowNumber = null;
 
@@ -39,9 +43,23 @@ class DoiData
      * @var array<string, int>
      */
     public array $counts = [
-        'creators' => 0,
-        'titles' => 0,
-        'nameIdentifiers' => 0,
-        'affiliation' => 0,
+        self::COUNTS_KEY_CREATORS => 0,
+        self::COUNTS_KEY_TITLES => 0,
+        self::COUNTS_KEY_NAME_IDENTIFIERS => 0,
+        self::COUNTS_KEY_AFFILIATION => 0,
+        self::COUNTS_KEY_SUBJECTS => 0,
+        self::COUNTS_KEY_CONTRIBUTORS => 0,
+        ContributorData::CONTRIBUTOR_AFFILIATION => 0,
+        ContributorData::CONTRIBUTOR_NAME_IDENTIFIERS => 0,
     ];
+
+    /**
+     * @var SubjectData[]
+     */
+    public array $subjects = [];
+
+    /**
+     * @var ContributorData[]
+     */
+    public array $contributors = [];
 }

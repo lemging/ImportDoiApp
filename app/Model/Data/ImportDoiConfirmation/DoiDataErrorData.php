@@ -24,4 +24,9 @@ class DoiDataErrorData
      * @var DoiTitleDataErrorData[]
      */
     public array $doiTitleDataErrorDataList = [];
+
+    /**
+     * @var ContributorDataErrorData[]
+     */
+    public array $contributorDataErrorDataList = [];
 }

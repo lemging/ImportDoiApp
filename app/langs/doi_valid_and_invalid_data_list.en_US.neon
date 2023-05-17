@@ -8,6 +8,8 @@ doi_error_data_list:
             title: Incorrect <strong>creator</strong> data
         title:
             title: Incorrect <strong>title</strong> data
+        contributor:
+            title: Incorrect <strong>contributor</strong> data
 
 doi_data_list:
     title: Valid DOI
@@ -28,3 +30,16 @@ doi_data_list:
         publisher: Publisher
         publication_year: Publication year
         resource_type: Resource type
+        subject:
+            name: Subject
+            scheme: Scheme
+            uri: URI
+            classificationCode: Classification code
+        contributor:
+            name: Contributor
+            identifier: Identifier
+            type: Type
+            affilation: Affilation
+            name_type: Name type
+            given_name: Křestní jméno
+            family_name: Příjmení

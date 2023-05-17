@@ -2,23 +2,28 @@
 
 namespace App\Model\Services;
 
+use App\Enums\ContributorTypeEnum;
 use App\Enums\DoiColumnHeaderEnum;
-use App\Enums\DoiCreatorTypeEnum;
+use App\Enums\NameTypeEnum;
 use App\Enums\DoiStateEnum;
 use App\Enums\DoiTitleLanguageEnum;
 use App\Enums\DoiTitleTypeEnum;
+use App\Exceptions\ContributorDataException;
 use App\Exceptions\DoiCreatorDataException;
 use App\Exceptions\DoiDataException;
 use App\Exceptions\DoiFileStructureDataException;
 use App\Exceptions\DoiTitleDataException;
 use App\Model\Builders\ColumnHeadersListDataBuilder;
+use App\Model\Builders\ContributorDataBuilder;
 use App\Model\Builders\CreatorDataBuilder;
 use App\Model\Builders\DoiDataBuilder;
 use App\Model\Builders\TitleDataBuilder;
 use App\Model\Data\FileStructure\FileStructureData;
 use App\Model\Data\ImportDoiConfirmation\ConfirmationData;
+use App\Model\Data\ImportDoiConfirmation\ContributorData;
 use App\Model\Data\ImportDoiConfirmation\CreatorData;
 use App\Model\Data\ImportDoiConfirmation\DoiData;
+use App\Model\Data\ImportDoiConfirmation\SubjectData;
 use Nette\Localization\Translator;
 use PhpOffice\PhpSpreadsheet\Cell\DataValidation;
 use PhpOffice\PhpSpreadsheet\Exception;
@@ -35,6 +40,8 @@ use stdClass;
  */
 class DoiXlsxProcessService
 {
+    public const TEMPFILE_TO_DOWNLOAD = '../www/xlsxTempFilesToDownload/structuredDois.xlsx';
+
     public function __construct(
         private Translator $translator
     )
@@ -119,6 +126,7 @@ class DoiXlsxProcessService
 
         $doiCreatorDataBuilder = CreatorDataBuilder::create();
         $doiTitleDataBuilder = TitleDataBuilder::create();
+        $contributorDataBuilder = ContributorDataBuilder::create();
 
         foreach($row->getCellIterator() as $cell) {
             // We're going through the cell. Save its value.
@@ -189,6 +197,57 @@ class DoiXlsxProcessService
             case DoiColumnHeaderEnum::ResourceType:
                 $doiDataBuilder->resourceType($currentCellValue);
                 break;
+            case DoiColumnHeaderEnum::Subject:
+                // The subject has columns in a certain order, the subject is first, so we create new data object.
+                $subjectData = new SubjectData();
+                $subjectData->subject = $currentCellValue;
+                break;
+            case DoiColumnHeaderEnum::SubjectUri:
+                $subjectData->subjectUri = $currentCellValue;
+                break;
+            case DoiColumnHeaderEnum::SubjectScheme:
+                $subjectData->subjectScheme = $currentCellValue;
+                break;
+            case DoiColumnHeaderEnum::SubjectClassificationCode:
+                $subjectData->subjectClassificationCode = $currentCellValue;
+
+                // The subject has columns in a certain order, the classification code is the last one,
+                // so we create a data object and save it to DoiData
+                $doiDataBuilder->addSubject($subjectData);
+                break;
+            case DoiColumnHeaderEnum::ContributorName:
+                $contributorDataBuilder->reset();
+
+                $contributorDataBuilder->contributorName($currentCellValue);
+                break;
+            case DoiColumnHeaderEnum::ContributorNameIdentifier:
+                $contributorDataBuilder->addNameIdentifier($currentCellValue);
+                break;
+            case DoiColumnHeaderEnum::ContributorAffiliation:
+                $contributorDataBuilder->addAffiliation($currentCellValue);
+                break;
+            case DoiColumnHeaderEnum::ContributorType:
+                $contributorDataBuilder->contributorType($currentCellValue, $cell->getCoordinate());
+                break;
+            case DoiColumnHeaderEnum::ContributorNameType:
+                $contributorDataBuilder->contributorNameType($currentCellValue, $cell->getCoordinate());
+                break;
+            case DoiColumnHeaderEnum::ContributorGivenName:
+                $contributorDataBuilder->contributorGivenName($currentCellValue);
+                break;
+            case DoiColumnHeaderEnum::ContributorFamilyName:
+                $contributorDataBuilder->contributorFamilyName($currentCellValue);
+
+                // The header has columns in a certain order, the language is the last one, so we create a data object
+                // and save it to DoiData, if it contained errors, we save the errors instead.
+                try {
+                    $contributorData = $contributorDataBuilder->build();
+                    $doiDataBuilder->addContributor($contributorData);
+                } catch (ContributorDataException $contributorDataException) {
+                    $doiDataBuilder->addContributorDataException($contributorDataException);
+                }
+                break;
+
             case null:
                 // Columns with empty column name are skipped
                 break;
@@ -242,6 +301,32 @@ class DoiXlsxProcessService
         $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::PublicationYear);
         $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::ResourceType);
 
+        for ($i = 0; $i < $fileStructureData->maxCounts[DoiData::COUNTS_KEY_SUBJECTS]; $i++)
+        {
+            $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::Subject);
+            $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::SubjectUri);
+            $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::SubjectScheme);
+            $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::SubjectClassificationCode);
+        }
+
+        for ($i = 0; $i < $fileStructureData->maxCounts[DoiData::COUNTS_KEY_CONTRIBUTORS]; $i++)
+        {
+            $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::ContributorName);
+            for ($i = 0; $i < $fileStructureData->maxCounts[ContributorData::CONTRIBUTOR_NAME_IDENTIFIERS]; $i++)
+            {
+                $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::ContributorNameIdentifier);
+            }
+
+            for ($i = 0; $i < $fileStructureData->maxCounts[ContributorData::CONTRIBUTOR_AFFILIATION]; $i++)
+            {
+                $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::ContributorAffiliation);
+            }
+
+            $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::ContributorType);
+            $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::ContributorNameType);
+            $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::ContributorGivenName);
+            $this->setHeaderAndMoveNext($columnIterator, DoiColumnHeaderEnum::ContributorFamilyName);
+        }
 
         $rowIterator->next();
 
@@ -295,7 +380,7 @@ class DoiXlsxProcessService
                 $this->createCombobox(
                     $sheet,
                     $columnIterator->current()->getCoordinate(),
-                    DoiCreatorTypeEnum::values()
+                    NameTypeEnum::values()
                 );
                 if ($i < count($doiData->creators))
                 {
@@ -347,13 +432,117 @@ class DoiXlsxProcessService
             $columnIterator->current()->setValue($doiData->resourceType);
             $columnIterator->next();
 
+            for ($i = 0; $i < $fileStructureData->maxCounts[DoiData::COUNTS_KEY_SUBJECTS]; $i++)
+            {
+                if ($i < count($doiData->subjects))
+                {
+                    $columnIterator->current()->setValue($doiData->subjects[$i]->subject);
+                }
+
+                $columnIterator->next();
+
+                if ($i < count($doiData->subjects))
+                {
+                    $columnIterator->current()->setValue($doiData->subjects[$i]->subjectUri);
+                }
+
+                $columnIterator->next();
+
+                if ($i < count($doiData->subjects))
+                {
+                    $columnIterator->current()->setValue($doiData->subjects[$i]->subjectScheme);
+                }
+
+                $columnIterator->next();
+
+                if ($i < count($doiData->subjects))
+                {
+                    $columnIterator->current()->setValue($doiData->subjects[$i]->subjectClassificationCode);
+                }
+
+                $columnIterator->next();
+            }
+
+            for ($i = 0; $i < $fileStructureData->maxCounts[DoiData::COUNTS_KEY_CONTRIBUTORS]; $i++)
+            {
+                if ($i < count($doiData->contributors))
+                {
+                    $columnIterator->current()->setValue($doiData->contributors[$i]->contributorName);
+                }
+
+                $columnIterator->next();
+
+                for ($j = 0; $j < $fileStructureData->maxCounts[ContributorData::CONTRIBUTOR_NAME_IDENTIFIERS]; $j++)
+                {
+                    if ($i < count($doiData->contributors) && $j < count($doiData->contributors[$i]->contributorNameIdentifiers))
+                    {
+                        $columnIterator->current()->setValue($doiData->contributors[$i]->contributorNameIdentifiers[$j]);
+                    }
+                    $columnIterator->next();
+                }
+
+                for ($j = 0; $j < $fileStructureData->maxCounts[ContributorData::CONTRIBUTOR_AFFILIATION]; $j++)
+                {
+                    if ($i < count($doiData->contributors) && $j < count($doiData->contributors[$i]->contributorAffiliations))
+                    {
+                        $columnIterator->current()->setValue($doiData->contributors[$i]->contributorAffiliations[$j]);
+                    }
+                    $columnIterator->next();
+                }
+
+                if ($i < count($doiData->contributors))
+                {
+                    $this->createCombobox(
+                        $sheet,
+                        $columnIterator->current()->getCoordinate(),
+                        // In excel only the 19 values are allowed
+                        array_slice(ContributorTypeEnum::values(), 0, 19)
+                    );
+                    $columnIterator->current()->setValue($doiData->contributors[$i]->contributorType);
+                }
+
+                $columnIterator->next();
+
+                if ($i < count ($doiData->contributors))
+                {
+                    $this->createCombobox(
+                        $sheet,
+                        $columnIterator->current()->getCoordinate(),
+                        NameTypeEnum::values()
+                    );
+
+                    $columnIterator->current()->setValue($doiData->contributors[$i]->contributorNameType);
+                }
+
+                $columnIterator->next();
+
+                if ($i < count ($doiData->contributors))
+                {
+                    $columnIterator->current()->setValue($doiData->contributors[$i]->contributorGivenName);
+                }
+
+                $columnIterator->next();
+
+                if ($i < count ($doiData->contributors))
+                {
+                    $columnIterator->current()->setValue($doiData->contributors[$i]->contributorFamilyName);
+                }
+
+                $columnIterator->next();
+            }
+
             $rowIterator->next();
         }
+
+
+
+        $rowIterator->next();
+
 
         $this->setSheetAutosize($sheet);
 
         $writer = new Xlsx($spreadsheet);
-        $writer->save('../www/xlsxTempFilesToDownload/structuredDois.xlsx'); //todo constanta
+        $writer->save(self::TEMPFILE_TO_DOWNLOAD);
     }
 
     /**
@@ -385,6 +574,7 @@ class DoiXlsxProcessService
         $doiDataBuilder = DoiDataBuilder::create();
         $doiCreatorDataBuilder = CreatorDataBuilder::create();
         $doiTitleDataBuilder = TitleDataBuilder::create();
+        $contributorDataBuilder = ContributorDataBuilder::create();
 
         if (isset($doi->id))
             $doiDataBuilder->doi(ltrim(strstr($doi->id, '/'), '/'));
@@ -446,6 +636,68 @@ class DoiXlsxProcessService
             $doiDataBuilder->publicationYear((int)$doi->attributes->publicationYear);
         if (isset($doi->attributes->types->resourceType))
             $doiDataBuilder->resourceType($doi->attributes->types->resourceType);
+
+        if (isset($doi->attributes->subjects)) {
+            foreach ($doi->attributes->subjects as $subject) {
+                $subjectData = new SubjectData();
+
+                if (isset($subject->subject))
+                    $subjectData->subject = $subject->subject;
+
+                if (isset($subject->schemeUri))
+                    $subjectData->subjectUri = $subject->schemeUri;
+
+                if (isset($subject->subjectScheme))
+                    $subjectData->subjectScheme = $subject->subjectScheme;
+
+                if (isset($subject->classificationCode))
+                    $subjectData->subjectClassificationCode = $subject->classificationCode;
+
+                $doiDataBuilder->addSubject($subjectData);
+            }
+        }
+
+        if (isset($doi->attributes->contributors) && count($doi->attributes->contributors) > 0)
+        {
+            foreach ($doi->attributes->contributors as $contributor)
+            {
+                $contributorDataBuilder->reset();
+
+                if (isset($contributor->name))
+                    $contributorDataBuilder->contributorName($contributor->name);
+
+                if (isset($contributor->affiliation))
+                    foreach ($contributor->affiliation as $affiliation)
+                    {
+                        $contributorDataBuilder->addAffiliation($affiliation);
+                    }
+
+                if (isset($contributor->nameIdentifiers))
+                    foreach ($contributor->nameIdentifiers as $nameIdentifier)
+                    {
+                        $contributorDataBuilder->addNameIdentifier($nameIdentifier->nameIdentifier);
+                    }
+
+                if (isset($contributor->contributorType))
+                    $contributorDataBuilder->contributorType($contributor->contributorType, null);
+
+                if (isset($contributor->nameType))
+                    $contributorDataBuilder->contributorNameType($contributor->nameType, null);
+
+                if (isset($contributor->givenName))
+                    $contributorDataBuilder->contributorGivenName($contributor->givenName);
+
+                if (isset($contributor->familyName))
+                    $contributorDataBuilder->contributorFamilyName($contributor->familyName);
+
+                try {
+                    $contributorData = $contributorDataBuilder->build();
+                    $doiDataBuilder->addContributor($contributorData);
+                } catch (ContributorDataException $contributorDataException) {
+                    $doiDataBuilder->addContributorDataException($contributorDataException);
+                }
+            }
+        }
 
         // Creates a data object or throws an exception containing all errors.
         return $doiDataBuilder->build();

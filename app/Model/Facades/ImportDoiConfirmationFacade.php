@@ -20,6 +20,7 @@ use Nette\Http\SessionSection;
 use Nette\Localization\Translator;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use Tracy\Debugger;
 
 final class ImportDoiConfirmationFacade
 {
@@ -63,7 +64,6 @@ final class ImportDoiConfirmationFacade
                         // Save the column headings in the order they were in the file (empty headings are
                         // represented by the null value) and continue processing the other rows of the sheet.
                         $fileHeaders = $this->doiXlsxSolverService->getFileStructure($row);
-
                         continue;
                     }
                     catch (DoiFileStructureDataException $fileStructureDataException)
@@ -119,25 +119,40 @@ final class ImportDoiConfirmationFacade
         $allJsonsSuccessfullySend = true;
         $allJsonsFailedSend = true;
 
+        $doiList = json_decode($this->doiApiCommunicationService->getDoiListFromApi(), true);
+        $doiMap = $this->doiApiCommunicationService->createDoiMap($doiList);
+
         // Go through all the data objects with doi information that we want to create or update.
         foreach ($doisData as $doiData)
         {
             // We create JSON from the data file.
-            $doiJson = $this->doiApiCommunicationService->generateJsonFromDoiData($doiData);
+            $doiArray = $this->doiApiCommunicationService->generateArrayFromDoiData($doiData);
 
-            // We will try to send json to the API and create a new doi. Let's save the API response.
-            $response = $this->doiApiCommunicationService->addOrUpdateDoiByJsonToApi($doiJson);
+            // We check if the doi already exists in the API.
+            $existingDoi = $this->doiApiCommunicationService->getExistingDoi($doiArray, $doiMap);
 
-            // We process the response and get the status and message for the user.
-            $statusAndMessage = $this->doiApiCommunicationService->processAddDoiResponse(
-                $response, $doiData->rowNumber, $doiData->doi
-            );
-
-            // If the API responds that the doi id already exists, we will try to update it with the new data.
-            if ($statusAndMessage[self::JSON_SEND_STATUS] == JsonSendStatusEnum::AlreadyExists)
+            if ($existingDoi === null)
             {
+                // We will try to send json to the API and create a new doi. Let's save the API response.
+                $response = $this->doiApiCommunicationService->addDoiByJsonToApi($doiArray);
+
+                // We process the response and get the status and message for the user.
+                $statusAndMessage = $this->doiApiCommunicationService->processAddDoiResponse(
+                    $response, $doiData->rowNumber, $doiData->doi
+                );
+            }
+            else
+            {
+                $json = $this->doiApiCommunicationService->getCombinedNewAndExistingDoiJson($doiArray, $existingDoi);
+
+                // If the json is null, it means that the doi already exists in the API and the data is the same.
+                if ($json === null)
+                {
+                    continue;
+                }
+
                 // We will try to send json to the API and update the new doi. Let's save the API response.
-                $response = $this->doiApiCommunicationService->addOrUpdateDoiByJsonToApi($doiJson, $doiData->doi);
+                $response = $this->doiApiCommunicationService->updateDoiByJsonToApi($json, $doiData->doi);
 
                 // We process the response and get the status and message for the user.
                 $statusAndMessage = $this->doiApiCommunicationService->processUpdateDoiResponse(

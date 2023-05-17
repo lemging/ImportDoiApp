@@ -42,7 +42,7 @@ class FileStructureFacade
              *
              * @var stdClass[] $doiList
              */
-            $doiList = $this->doiApiCommunicationService->getDoiListFromApi();
+            $doiList = json_decode($this->doiApiCommunicationService->getDoiListFromApi())->data;
 
             foreach ($doiList as $doi)
             {

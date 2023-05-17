@@ -39,7 +39,16 @@
                     <li>{$doiCreatorCellDataError |noescape}</li>
                 {/foreach}
             </ul>
-        {/foreach}
+    {/foreach}
+
+    {foreach $doiDataErrorData->contributorDataErrorDataList as $contributorDataErrorData}
+            <li>{_doi_valid_and_invalid_data_list.doi_error_data_list.attributes.contributor.title|noescape}:</li>
+            <ul>
+                {foreach $contributorDataErrorData->doiCellDataErrors as $doiCreatorCellDataError}
+                    <li>{$doiCreatorCellDataError |noescape}</li>
+                {/foreach}
+            </ul>
+    {/foreach}
     </ul>
 {/foreach}
 
@@ -83,6 +92,31 @@
         <li>{_doi_valid_and_invalid_data_list.doi_data_list.attributes.publisher}: <strong>{$doiData->publisher}</strong></li>
         <li>{_doi_valid_and_invalid_data_list.doi_data_list.attributes.publication_year}: <strong>{$doiData->publicationYear}</strong></li>
         <li>{_doi_valid_and_invalid_data_list.doi_data_list.attributes.resource_type}: <strong>{$doiData->resourceType}</strong></li>
+
+        {foreach $doiData->subjects as $subject}
+            <li>{_doi_valid_and_invalid_data_list.doi_data_list.attributes.subject.name}: <strong>{$subject->subject}</strong></li>
+            <ul>
+                <li>{_doi_valid_and_invalid_data_list.doi_data_list.attributes.subject.scheme}: <strong>{$subject->subjectScheme}</strong></li>
+                <li>{_doi_valid_and_invalid_data_list.doi_data_list.attributes.subject.uri}: <strong>{$subject->subjectUri}</strong></li>
+                <li>{_doi_valid_and_invalid_data_list.doi_data_list.attributes.subject.classificationCode}: <strong>{$subject->subjectClassificationCode}</strong></li>
+            </ul>
+        {/foreach}
+
+        {foreach $doiData->contributors as $contributor}
+            <li>{_doi_valid_and_invalid_data_list.doi_data_list.attributes.contributor.name}: <strong>{$contributor->contributorName}</strong></li>
+            <ul>
+                {foreach $contributor->contributorNameIdentifiers as $contributorNameIdentifier}
+                    <li>{_doi_valid_and_invalid_data_list.doi_data_list.attributes.contributor.identifier}: <strong>{$contributorNameIdentifier}</strong></li>
+                {/foreach}
+                {foreach $contributor->contributorAffiliations as $contributorAffiliation}
+                    <li>{_doi_valid_and_invalid_data_list.doi_data_list.attributes.contributor.affilation}: <strong>{$contributorAffiliation}</strong></li>
+                {/foreach}
+                <li>{_doi_valid_and_invalid_data_list.doi_data_list.attributes.contributor.type}: <strong>{$contributor->contributorType}</strong></li>
+                <li>{_doi_valid_and_invalid_data_list.doi_data_list.attributes.contributor.name_type}: <strong>{$contributor->contributorNameType}</strong></li>
+                <li>{_doi_valid_and_invalid_data_list.doi_data_list.attributes.contributor.given_name}: <strong>{$contributor->contributorGivenName}</strong></li>
+                <li>{_doi_valid_and_invalid_data_list.doi_data_list.attributes.contributor.family_name}: <strong>{$contributor->contributorFamilyName}</strong></li>
+            </ul>
+        {/foreach}
     </ul>
     <br>
 {/foreach}

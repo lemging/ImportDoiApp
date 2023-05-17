@@ -45,6 +45,11 @@ class DoiDataException extends ADataException
      */
     private array $doiTitleDataExceptions = [];
 
+    /**
+     * @var ContributorDataException[] $contributorDataExceptions
+     */
+    private array $contributorDataExceptions = [];
+
     public function createDataObjectDataFromXlsx(): DoiDataErrorData
     {
         $doiDataErrorData = new DoiDataErrorData();
@@ -62,6 +67,10 @@ class DoiDataException extends ADataException
             $doiDataErrorData->doiTitleDataErrorDataList[] = $doiTitleDataException->createDataObject();
         }
 
+        foreach($this->contributorDataExceptions as $contributorDataException)
+        {
+            $doiDataErrorData->contributorDataErrorDataList[] = $contributorDataException->createDataObject();
+        }
 
         return $doiDataErrorData;
     }
@@ -82,6 +91,10 @@ class DoiDataException extends ADataException
             $doiDataErrorData->doiTitleDataErrorDataList[] = $doiTitleDataException->createDataObject();
         }
 
+        foreach($this->contributorDataExceptions as $contributorDataException)
+        {
+            $doiDataErrorData->contributorDataErrorDataList[] = $contributorDataException->createDataObject();
+        }
 
         return $doiDataErrorData;
     }
@@ -289,5 +302,12 @@ class DoiDataException extends ADataException
     public function setDoi(string $doi): void
     {
         $this->doi = $doi;
+    }
+
+    public function addContributorDataException(ContributorDataException $contributorDataException): void
+    {
+        $this->exceptionCount++;
+
+        $this->contributorDataExceptions[] = $contributorDataException;
     }
 }

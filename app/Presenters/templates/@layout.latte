@@ -39,7 +39,7 @@
 <body>
 	<div class="container">
 		<br>
-		<h1>{$data->title}</h1>
+		<h1>Import Doi App</h1>
 
 		<nav class="navbar navbar-inverse">
 			<ul class="nav navbar-nav">
@@ -56,17 +56,17 @@
 			</ul>
 		</nav>
 
-		<div n:foreach="$flashes as $flash" n:class="flash, $flash->type">
-			<div class="alert alert-danger">
-				{$flash->message}
-			</div>
-		</div>
-
 		{if $data->accountUnsetErrorMessage !== null}
 			<div class="alert alert-warning">
 				<strong>{_account.errorMessages.warning}!</strong> {$data->accountUnsetErrorMessage}
 			</div>
 		{/if}
+
+		<div n:foreach="$flashes as $flash" n:class="flash, $flash->type">
+			<div class="alert alert-danger">
+				{$flash->message}
+			</div>
+		</div>
 
 		{include content}
 	</div>

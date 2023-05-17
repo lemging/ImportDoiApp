@@ -1,8 +1,8 @@
 creation_failed: 'Řádek %row_number%: DOI s id %doi_id% se nepodařilo se vytvořit. Chyba: '
-doi_created: 'Řádek %row_number%: DOI uspesne vytvoren s id %doi_id%.'
+doi_created: 'Řádek %row_number%: DOI úspěšně vytvořen s id %doi_id%.'
 update_failed: 'Řádek %row_number%: DOI s id %doi_id% už existuje, ale nepodařilo se aktualizovat. Chyba: '
 doi_updated: 'Řádek %row_number%: DOI s id %doi_id% už existuje. Úspěšně aktualizován.'
 general:
-    all_send: 'Všechny DOI se úspěšně přidali nebo akualizovali.'
+    all_send: 'Všechny upravené DOI se úspěšně přidali nebo akualizovali.'
     all_failed_send: 'Žádný DOI se nepodařilo přidat nebo akualizovat.'
     some_send: 'Některé DOI se podařilo přidat  nebo akualizovat, některé se nepodařilo.'

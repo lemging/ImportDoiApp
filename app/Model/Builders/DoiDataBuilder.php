@@ -6,14 +6,17 @@ namespace App\Model\Builders;
 
 use App\Enums\DoiColumnHeaderEnum;
 use App\Enums\DoiStateEnum;
+use App\Exceptions\ContributorDataException;
 use App\Exceptions\DoiAttributeValueNotFoundException;
 use App\Exceptions\DoiCreatorDataException;
 use App\Exceptions\DoiDataException;
 use App\Exceptions\DoiTitleDataException;
 use App\Exceptions\PublicationYearNotInLimitsException;
 use App\Model\Data\FileStructure\ColumnHeadersListData;
+use App\Model\Data\ImportDoiConfirmation\ContributorData;
 use App\Model\Data\ImportDoiConfirmation\CreatorData;
 use App\Model\Data\ImportDoiConfirmation\DoiData;
+use App\Model\Data\ImportDoiConfirmation\SubjectData;
 use App\Model\Data\ImportDoiConfirmation\TitleData;
 
 /**
@@ -86,6 +89,16 @@ class DoiDataBuilder
         {
             foreach ($creator->counts as $attribute => $count)
             {
+                if ($count > $this->doiData->counts[$attribute])
+                {
+                    $this->doiData->counts[$attribute] = $count;
+                }
+            }
+        }
+
+        foreach ($this->doiData->contributors as $contributor)
+        {
+            foreach ($contributor->counts as $attribute => $count) {
                 if ($count > $this->doiData->counts[$attribute])
                 {
                     $this->doiData->counts[$attribute] = $count;
@@ -190,5 +203,22 @@ class DoiDataBuilder
     public function addDoiTitleDataException(DoiTitleDataException $doiTitleDataException): void
     {
         $this->doiDataException->addDoiTitleDataException($doiTitleDataException);
+    }
+
+    public function addContributorDataException(ContributorDataException $contributorDataException): void
+    {
+        $this->doiDataException->addContributorDataException($contributorDataException);
+    }
+
+    public function addSubject(SubjectData $subjectData): void
+    {
+        $this->doiData->subjects[] = $subjectData;
+        $this->doiData->counts[DoiData::COUNTS_KEY_SUBJECTS] += 1;
+    }
+
+    public function addContributor(ContributorData $contributorData): void
+    {
+        $this->doiData->contributors[] = $contributorData;
+        $this->doiData->counts[DoiData::COUNTS_KEY_CONTRIBUTORS] += 1;
     }
 }

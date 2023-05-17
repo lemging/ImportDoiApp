@@ -8,6 +8,8 @@ doi_error_data_list:
             title: Chybná data <strong>tvurce</strong>
         title:
             title: Chybná data <strong>titulku</strong>
+        contributor:
+            title: Chybná data <strong>přispěvatele</strong>
 
 doi_data_list:
     title: Validní DOI
@@ -28,3 +30,17 @@ doi_data_list:
         publisher: Vydavatel
         publication_year: Rok vydání
         resource_type: Typ zdroje
+        subject:
+            name: Předmět
+            scheme: Schéma
+            uri: URI
+            classificationCode: Klasifikační kód
+        contributor:
+            name: Jméno
+            identifier: Identifikator jmena
+            type: Typ
+            affilation: Afilace
+            name_type: Typ jména
+            given_name: Křestní jméno
+            family_name: Příjmení
+
