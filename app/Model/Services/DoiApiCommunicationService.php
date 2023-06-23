@@ -3,6 +3,7 @@
 namespace App\Model\Services;
 
 use App\Enums\DoiStateEnum;
+use App\Enums\DoiTitleTypeEnum;
 use App\Enums\JsonSendStatusEnum;
 use App\Exceptions\AccountUnsetException;
 use App\Model\Data\ImportDoiConfirmation\DoiData;
@@ -104,7 +105,11 @@ class DoiApiCommunicationService
 
             $titleArray[self::DOI_ARRAY_KEY_TITLE_LANG] = $title->language;
             $titleArray[self::DOI_ARRAY_KEY_TITLE_NAME] = $title->title;
-            $titleArray[self::DOI_ARRAY_KEY_TITLE_TYPE] = $title->type->value;
+
+            if ($title->type !== DoiTitleTypeEnum::ClassicTitle)
+            {
+                $titleArray[self::DOI_ARRAY_KEY_TITLE_TYPE] = $title->type->value;
+            }
 
             $titleArrays[$i++] = $titleArray;
         }
@@ -207,16 +212,56 @@ class DoiApiCommunicationService
             }
         }
 
+        if (in_array($doiData->resourceType, [
+            'Audiovisual',
+            'Book',
+            'Book Chapter',
+            'Collection',
+            'Computational Notebook',
+            'Conference Paper',
+            'Conference Proceeding',
+            'Data Paper',
+            'Dataset',
+            'Dissertation',
+            'Event',
+            'Image',
+            'Interactive Resource',
+            'Journal',
+            'Journal Article',
+            'Model',
+            'Output Management Plan',
+            'Peer Review',
+            'Physical Object',
+            'Preprint',
+            'Report',
+            'Service',
+            'Software',
+            'Sound',
+            'Standard',
+            'Text',
+            'Workflow'
+            ])
+        )
+        {
+            $type = [
+                self::DOI_ARRAY_KEY_RESOURCE_TYPE_GENERAL => $doiData->resourceType,
+            ];
+        }
+        else
+        {
+            $type = [
+                self::DOI_ARRAY_KEY_RESOURCE_TYPE => $doiData->resourceType,
+                self::DOI_ARRAY_KEY_RESOURCE_TYPE_GENERAL => self::DOI_RESOURCE_TYPE_GENERAL_OTHER
+            ];
+        }
+
         $attributes = [
             self::DOI_ARRAY_KEY_DOI => $this->accountProvider->getDoiPrefix() . '/' . $doiData->doi,
             self::DOI_ARRAY_KEY_CREATORS => $creatorArrays,
             self::DOI_ARRAY_KEY_TITLES => $titleArrays,
             self::DOI_ARRAY_KEY_PUBLISHER => $doiData->publisher,
             self::DOI_ARRAY_KEY_PUBLICATION_YEAR => $doiData->publicationYear,
-            self::DOI_ARRAY_KEY_TYPES => [
-                self::DOI_ARRAY_KEY_RESOURCE_TYPE => $doiData->resourceType,
-                self::DOI_ARRAY_KEY_RESOURCE_TYPE_GENERAL => self::DOI_RESOURCE_TYPE_GENERAL_OTHER
-            ],
+            self::DOI_ARRAY_KEY_TYPES => $type,
             self::DOI_ARRAY_KEY_URL => $doiData->url,
         ];
 

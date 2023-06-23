@@ -3,6 +3,7 @@
 namespace App\Enums;
 
 enum DoiTitleTypeEnum: string {
+    case ClassicTitle = '';
     case AlternativeTitle = 'AlternativeTitle';
     case Subtitle = 'Subtitle';
     case TranslatedTitle = 'TranslatedTitle';

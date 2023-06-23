@@ -71,6 +71,9 @@ class TitleDataBuilder
     {
         switch($type)
         {
+            case DoiTitleTypeEnum::ClassicTitle->value:
+                $this->doiTitleData->type = DoiTitleTypeEnum::ClassicTitle;
+                break;
             case DoiTitleTypeEnum::AlternativeTitle->value:
                 $this->doiTitleData->type = DoiTitleTypeEnum::AlternativeTitle;
                 break;
